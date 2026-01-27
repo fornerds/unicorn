@@ -40,13 +40,25 @@ export const AIChatSection = () => {
   const { messages, sendMessage, status, error, setMessages } = useChat({
     transport: {
       async sendMessages({ messages, abortSignal }) {
-        const response = await fetch('/api/chat', {
+        // basePath를 고려한 API 경로
+        const basePath = typeof window !== 'undefined' && window.location.pathname.startsWith('/unicorn') ? '/unicorn' : '';
+        const apiPath = `${basePath}/api/chat`;
+        
+        const response = await fetch(apiPath, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ messages }),
           signal: abortSignal,
         });
-        if (!response.ok) throw new Error('Failed to send message');
+        
+        // 405 Method Not Allowed는 정적 export 환경에서 발생 (API 라우트 미지원)
+        if (response.status === 405) {
+          throw new Error('정적 사이트에서는 AI 채팅 기능을 사용할 수 없습니다. 개발 서버에서만 사용 가능합니다.');
+        }
+        
+        if (!response.ok) {
+          throw new Error(`Failed to send message: ${response.status} ${response.statusText}`);
+        }
         if (!response.body) throw new Error('No response body');
         
         // @tanstack/ai의 toHttpResponse는 newline-delimited JSON 형식으로 스트림을 반환
@@ -189,6 +201,17 @@ export const AIChatSection = () => {
     },
     onError: (error: Error) => {
       console.error('Chat error:', error);
+      // 정적 사이트 환경에서의 에러를 사용자에게 표시
+      if (error.message.includes('정적 사이트') || error.message.includes('405')) {
+        setMessages([
+          ...messages,
+          {
+            id: `error-${Date.now()}`,
+            role: 'assistant',
+            parts: [{ type: 'text', text: '죄송합니다. 현재 정적 사이트 환경에서는 AI 채팅 기능을 사용할 수 없습니다. 이 기능은 개발 서버에서만 작동합니다.' }],
+          },
+        ]);
+      }
     },
   });
 
