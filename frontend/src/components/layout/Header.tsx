@@ -59,7 +59,7 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   const isAboutPage = pathname === ROUTES.ABOUT;
   
   // 홈페이지에서만 isFirstSection을 사용 (about 페이지와 분리)
-  const isTransparent = isHomePage && isFirstSection;
+  const isTransparent = isHomePage && isFirstSection && mounted;
 
   const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
   
@@ -74,6 +74,9 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   }
   
   const iconColor = isTransparent ? '#ffffff' : isAboutPage ? '#1f2937' : '#374151';
+  
+  // 투명 배경일 때 명시적으로 배경색 설정
+  const headerStyle = isTransparent ? { backgroundColor: 'transparent' } : {};
 
   const shouldShowAnimation = showInitialAnimation && isFirstSection;
 
@@ -84,6 +87,7 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
           'flex items-center justify-between px-[60px] py-[20px] w-full transition-colors duration-300 sticky top-0 z-50',
           bgColor
         )}
+        style={headerStyle}
       >
         <div className="flex items-center justify-center p-[10px] shrink-0">
           <Link href={ROUTES.HOME} className="flex items-center">

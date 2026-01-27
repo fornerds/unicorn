@@ -22,9 +22,13 @@ export default function HomePage() {
   }, [setShowInitialAnimation]);
 
   useEffect(() => {
+    // 초기 상태 설정: 페이지 로드 시 첫 섹션이 보이는 상태로 시작
+    setIsFirstSection(true);
+
     const firstSection = firstSectionRef.current;
     if (!firstSection) return;
 
+    // IntersectionObserver 설정
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -40,6 +44,13 @@ export default function HomePage() {
         rootMargin: '-100px 0px',
       }
     );
+
+    // 즉시 한 번 확인하여 초기 상태 설정
+    const rect = firstSection.getBoundingClientRect();
+    const isVisible = rect.top >= -100 && rect.top <= window.innerHeight / 2;
+    if (isVisible) {
+      setIsFirstSection(true);
+    }
 
     observer.observe(firstSection);
 
