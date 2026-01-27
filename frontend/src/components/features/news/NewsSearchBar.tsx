@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { withBasePath } from '@/utils/assets';
 
 interface NewsSearchBarProps {
   value: string;
@@ -19,7 +20,7 @@ export const NewsSearchBar = ({ value, onChange }: NewsSearchBarProps) => {
       />
       <div className="flex items-center justify-center p-[2px] rounded-[8px] w-[24px] h-[24px]">
         <Image
-          src="/icons/search.svg"
+          src={withBasePath('/icons/search.svg')}
           alt="검색"
           width={18}
           height={18}

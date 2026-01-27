@@ -131,7 +131,7 @@ export default function AboutPage() {
                 </div>
                 <div className="absolute right-[49px] top-[52px] w-[661px] h-[412px] hidden lg:block">
                   <Image
-                    src="/images/mission.png"
+                    src={withBasePath('/images/mission.png')}
                     alt="Mission"
                     fill
                     unoptimized
@@ -150,7 +150,7 @@ export default function AboutPage() {
                 >
                   <div className="absolute left-[0px] bottom-[-16px] w-[200px] h-[200px]">
                     <Image
-                      src="/images/vision01.png"
+                      src={withBasePath('/images/vision01.png')}
                       alt="Vision background"
                       fill
                       unoptimized
@@ -159,7 +159,7 @@ export default function AboutPage() {
                   </div>
                   <div className="absolute right-[60px] bottom-[-1px] w-[430px] h-[220px]">
                     <Image
-                      src="/images/vision02.png"
+                      src={withBasePath('/images/vision02.png')}
                       alt="Vision"
                       fill
                       unoptimized
@@ -245,7 +245,7 @@ export default function AboutPage() {
           <div 
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: `linear-gradient(0deg, rgba(255, 255, 255, 0.17) 0%, rgba(255, 255, 255, 0.17) 100%), url('/images/detailbackground.png') lightgray 50% / cover no-repeat`,
+              background: `linear-gradient(0deg, rgba(255, 255, 255, 0.17) 0%, rgba(255, 255, 255, 0.17) 100%), url('${withBasePath('/images/detailbackground.png')}') lightgray 50% / cover no-repeat`,
               filter: 'blur(2px)',
             }}
           />
@@ -279,7 +279,7 @@ export default function AboutPage() {
           <div className="absolute bg-gradient-to-r from-[rgba(120,132,160,0)] to-[rgba(69,78,98,0.7)] h-[353px] right-0 top-0 w-[334px] pointer-events-none" />
           <div className="absolute right-[80px] top-[-12px] w-[530px] h-[377px] hidden lg:block pointer-events-none">
             <Image
-              src="/images/detail.png"
+              src={withBasePath('/images/detail.png')}
               alt="Detail"
               fill
               unoptimized
