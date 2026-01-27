@@ -59,7 +59,8 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   const isAboutPage = pathname === ROUTES.ABOUT;
   
   // 홈페이지에서만 isFirstSection을 사용 (about 페이지와 분리)
-  const isTransparent = isHomePage && isFirstSection && mounted;
+  // mounted 조건 제거: 초기 렌더링 시에도 투명하게 표시
+  const isTransparent = isHomePage && isFirstSection;
 
   const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
   
@@ -75,7 +76,7 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   
   const iconColor = isTransparent ? '#ffffff' : isAboutPage ? '#1f2937' : '#374151';
   
-  // 투명 배경일 때 명시적으로 배경색 설정
+  // 투명 배경일 때 명시적으로 배경색 설정 (중요: CSS 클래스만으로는 부족할 수 있음)
   const headerStyle = isTransparent ? { backgroundColor: 'transparent' } : {};
 
   const shouldShowAnimation = showInitialAnimation && isFirstSection;
