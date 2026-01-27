@@ -1,0 +1,42 @@
+import { cn } from '@/utils/cn';
+
+interface SpeedIconProps {
+  className?: string;
+  width?: number | string;
+  height?: number | string;
+  stroke?: string;
+  strokeWidth?: number | string;
+  fill?: string;
+}
+
+export const SpeedIcon = ({
+  className,
+  width = 56,
+  height = 56,
+  stroke = 'currentColor',
+  strokeWidth = 2,
+  fill = 'currentColor',
+}: SpeedIconProps) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      viewBox="0 0 56 56"
+      fill="none"
+      className={cn(className)}
+    >
+      <path
+        d="M24.7113 29.3766C23.8357 30.2522 23.3438 31.4399 23.3438 32.6783C23.3438 33.2914 23.4645 33.8986 23.6992 34.4651C23.9338 35.0316 24.2778 35.5463 24.7113 35.9799C25.1449 36.4135 25.6597 36.7574 26.2262 36.9921C26.7927 37.2267 27.3998 37.3475 28.013 37.3475C29.2514 37.3475 30.439 36.8556 31.3147 35.9799L44.5213 16.1699L24.7113 29.3766Z"
+        fill={fill}
+      />
+      <path
+        d="M37 13.4933C34.5083 12.5272 31.8135 12 28.9985 12C16.2978 12 6 22.7552 6 36.0201C6 38.4229 6.34046 40.7406 6.97105 42.9284C7.52098 44.8364 9.36378 46 11.3494 46H46.6519C48.6369 46 50.4792 44.8372 51.0289 42.9299C51.6595 40.7421 52 38.4229 52 36.0201C52 30.5633 50.258 25.5316 47.3246 21.5"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};

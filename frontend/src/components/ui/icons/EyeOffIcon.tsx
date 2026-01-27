@@ -1,0 +1,43 @@
+import { cn } from '@/utils/cn';
+
+interface EyeOffIconProps {
+  className?: string;
+  width?: number | string;
+  height?: number | string;
+  stroke?: string;
+  strokeWidth?: number | string;
+}
+
+export const EyeOffIcon = ({
+  className,
+  width = 20,
+  height = 20,
+  stroke = 'currentColor',
+  strokeWidth = 1.5,
+}: EyeOffIconProps) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      viewBox="0 0 20 20"
+      fill="none"
+      className={cn(className)}
+    >
+      <path
+        d="M14.4998 14.3306C13.2048 15.2807 11.6279 15.8071 9.99984 15.8327C4.69681 15.8327 1.6665 9.99936 1.6665 9.99936C2.60884 8.30908 3.78622 6.99687 5.37021 5.83268M8.40893 4.34103C8.93039 4.22355 9.46428 4.16482 9.99984 4.16603C15.3029 4.16603 18.3332 9.99936 18.3332 9.99936C17.8733 10.8274 17.3249 11.607 16.6968 12.3254M11.6059 11.5452C11.3978 11.7601 11.1469 11.9325 10.8681 12.052C10.5893 12.1716 10.2884 12.2359 9.98324 12.2411C9.67808 12.2463 9.37496 12.1922 9.09197 12.0822C8.80897 11.9722 8.5519 11.8084 8.33608 11.6007C8.12027 11.393 7.95013 11.1456 7.83583 10.8732C7.72152 10.6008 7.66539 10.3091 7.67077 10.0153C7.67616 9.72162 7.74295 9.43195 7.86717 9.16362C7.99139 8.89529 8.11279 8.70492 8.33608 8.50466"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M1.6665 1.66602L18.3332 16.666"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};

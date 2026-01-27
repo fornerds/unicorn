@@ -1,0 +1,36 @@
+import { cn } from '@/utils/cn';
+
+interface DeleteIconProps {
+  className?: string;
+  width?: number | string;
+  height?: number | string;
+  stroke?: string;
+  strokeWidth?: number | string;
+}
+
+export const DeleteIcon = ({
+  className,
+  width = 20,
+  height = 22,
+  stroke = 'currentColor',
+  strokeWidth = 1,
+}: DeleteIconProps) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      viewBox="0 0 20 22"
+      fill="none"
+      className={cn(className)}
+    >
+      <path
+        d="M0.5 4.7H2.57407M2.57407 4.7L19.1667 4.7M2.57407 4.7L2.57407 19.4C2.57407 19.957 2.79259 20.4911 3.18156 20.8849C3.57052 21.2787 4.09807 21.5 4.64815 21.5L15.0185 21.5C15.5686 21.5 16.0961 21.2787 16.4851 20.8849C16.8741 20.4911 17.0926 19.957 17.0926 19.4L17.0926 4.7M5.68519 4.7L5.68519 2.6C5.68519 2.04305 5.9037 1.5089 6.29267 1.11508C6.68163 0.721249 7.20918 0.5 7.75926 0.5L11.9074 0.5C12.4575 0.5 12.985 0.721249 13.374 1.11508C13.763 1.5089 13.9815 2.04305 13.9815 2.6V4.7M7.75926 9.95L7.75926 16.25M11.9074 9.95V16.25"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};

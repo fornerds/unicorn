@@ -1,0 +1,68 @@
+@import url('https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #your-primary-color;
+    --primary-light: #your-primary-light;
+    --primary-dark: #your-primary-dark;
+  }
+
+  /* EliceDXNeolliOTF 폰트 설정 */
+  @font-face {
+    font-family: 'EliceDXNeolliOTF';
+    src: url('/fonts/EliceDXNeolliOTF-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'EliceDXNeolliOTF';
+    src: url('/fonts/EliceDXNeolliOTF-Medium.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'EliceDXNeolliOTF';
+    src: url('/fonts/EliceDXNeolliOTF-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+}
+
+@layer components {
+  /* 커스텀 컴포넌트 스타일 */
+}
+
+@layer utilities {
+  /* 커스텀 유틸리티 클래스 */
+}
+
+@keyframes moveToHeader {
+  from {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  to {
+    top: 20px;
+    left: 70px;
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes shrinkToHeader {
+  from {
+    font-size: 128px;
+  }
+  to {
+    font-size: 32px;
+  }
+}
