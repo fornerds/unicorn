@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { CheckIcon, DeleteIcon, MinusIcon, PlusIcon, ArrowDownIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
 import { ROUTES } from '@/utils/constants';
+import { withBasePath } from '@/utils/assets';
 
 interface CartItem {
   id: string;
@@ -247,7 +248,7 @@ export default function CartPage() {
                       <div className="bg-[#f9fafb] flex items-center rounded-[12px] shrink-0 w-[140px] h-[140px]">
                         <div className="relative w-full h-full">
                           <Image
-                            src={item.imageUrl}
+                            src={withBasePath(item.imageUrl)}
                             alt={item.name}
                             fill
                             unoptimized

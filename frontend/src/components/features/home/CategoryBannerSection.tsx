@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ROUTES } from '@/utils/constants';
 import Image from 'next/image';
+import { withBasePath } from '@/utils/assets';
 
 const categories = [
   {
@@ -12,7 +13,7 @@ const categories = [
     width: 539,
     textTop: 48,
     textLeft: 40,
-    image: '/images/HOME.png',
+    image: withBasePath('/images/HOME.png'),
     imageConfig: {
       type: 'positioned',
       left: 100,
@@ -29,7 +30,7 @@ const categories = [
     width: 651,
     textTop: 48,
     textLeft: 40,
-    image: '/images/FIREFIGHTING.png',
+    image: withBasePath('/images/FIREFIGHTING.png'),
     imageConfig: {
       type: 'positioned',
       left: 140,
@@ -46,7 +47,7 @@ const categories = [
     width: 544,
     textTop: 47,
     textLeft: 33,
-    image: '/images/INDUSTRIAL.png',
+    image: withBasePath('/images/INDUSTRIAL.png'),
     imageConfig: {
       type: 'positioned',
       left: 248,
@@ -63,7 +64,7 @@ const categories = [
     width: 719,
     textTop: 42,
     textLeft: 39,
-    image: '/images/MEDICAL.png',
+    image: withBasePath('/images/MEDICAL.png'),
     imageConfig: {
       type: 'positioned',
       left: 240,
@@ -80,7 +81,7 @@ const categories = [
     width: 1067,
     textTop: 42,
     textLeft: 39,
-    image: '/images/LOGISTICS.png',
+    image: withBasePath('/images/LOGISTICS.png'),
     imageConfig: {
       type: 'positioned',
       left: -4,

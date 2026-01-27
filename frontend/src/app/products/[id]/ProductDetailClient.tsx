@@ -6,6 +6,7 @@ import { LikeIcon, LikeIconFilled } from '@/components/ui/icons';
 import { MinusIcon, PlusIcon } from '@/components/ui/icons';
 import { WeightIcon, HeightIcon, TimeIcon, BatteryIcon, SpeedIcon } from '@/components/ui/icons';
 import { ArrowDownIcon } from '@/components/ui/icons';
+import { withBasePath } from '@/utils/assets';
 
 const mockProduct = {
   id: '1',
@@ -77,7 +78,7 @@ export const ProductDetailClient = () => {
           <div className="flex flex-col gap-[8px] items-start w-full lg:w-[calc(66.11%-15px)] lg:max-w-[1190px]">
             <div className="aspect-[3665/2062] relative rounded-[12px] w-full overflow-hidden">
               <Image
-                src={mockProduct.images[selectedImageIndex]}
+                src={withBasePath(mockProduct.images[selectedImageIndex])}
                 alt={mockProduct.name}
                 fill
                 unoptimized
@@ -100,7 +101,7 @@ export const ProductDetailClient = () => {
                   }}
                 >
                   <Image
-                    src={image}
+                    src={withBasePath(image)}
                     alt={`${mockProduct.name} ${index + 1}`}
                     fill
                     unoptimized

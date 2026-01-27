@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ROUTES } from '@/utils/constants';
 import { LikeIcon, LikeIconFilled } from '@/components/ui/icons';
 import { useState } from 'react';
+import { withBasePath } from '@/utils/assets';
 
 interface ProductCardProps {
   id: string;
@@ -105,7 +106,7 @@ export const ProductCard = ({
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute h-[77.14%] left-[15.99%] top-[11.4%] w-[68.06%]">
               <Image
-                src={imageUrl}
+                src={withBasePath(imageUrl)}
                 alt={name}
                 fill
                 unoptimized

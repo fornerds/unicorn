@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { NewsItem } from '@/data/mockNews';
 import { ROUTES } from '@/utils/constants';
+import { withBasePath } from '@/utils/assets';
 
 interface NewsCardProps {
   news: NewsItem;
@@ -36,7 +37,7 @@ export const NewsCard = ({ news }: NewsCardProps) => {
           <div className="flex h-[270px] items-center justify-center overflow-hidden w-full">
             <div className="flex-1 h-full relative w-full">
               <Image
-                src={news.imageUrl}
+                src={withBasePath(news.imageUrl)}
                 alt={news.title}
                 fill
                 className="object-cover"

@@ -6,35 +6,35 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Video } from '@/components/ui/Video';
 import { DownloadIcon, EmailIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
-
-const innovationCards = [
-  {
-    id: 1,
-    title: 'AI엔진',
-    description: '자체 개발한 딥러닝 AI 엔진으로 로봇의 학습 능력과 판단력을 극대화했습니다. 실시간 환경 인식과 자율 의사결정이 가능합니다.',
-    image: '/images/Innovation01.png',
-  },
-  {
-    id: 2,
-    title: '고객맞춤 기능 설정',
-    description: '마이크로미터 단위의 정밀한 동작 제어가 가능한 모터 시스템으로 의료용 수술부터 섬세한 조립 작업까지 완벽하게 수행합니다.',
-    image: '/images/Innovation02.png',
-  },
-  {
-    id: 3,
-    title: 'AI엔진',
-    description: '자체 개발한 딥러닝 AI 엔진으로 로봇의 학습 능력과 판단력을 극대화했습니다. 실시간 환경 인식과 자율 의사결정이 가능합니다.',
-    image: '/images/Innovation03.png',
-  },
-  {
-    id: 4,
-    title: '고객맞춤 기능 설정',
-    description: '마이크로미터 단위의 정밀한 동작 제어가 가능한 모터 시스템으로 의료용 수술부터 섬세한 조립 작업까지 완벽하게 수행합니다.',
-    image: '/images/Innovation04.png',
-  },
-];
+import { withBasePath } from '@/utils/assets';
 
 export default function AboutPage() {
+  const innovationCards = [
+    {
+      id: 1,
+      title: 'AI엔진',
+      description: '자체 개발한 딥러닝 AI 엔진으로 로봇의 학습 능력과 판단력을 극대화했습니다. 실시간 환경 인식과 자율 의사결정이 가능합니다.',
+      image: withBasePath('/images/Innovation01.png'),
+    },
+    {
+      id: 2,
+      title: '고객맞춤 기능 설정',
+      description: '마이크로미터 단위의 정밀한 동작 제어가 가능한 모터 시스템으로 의료용 수술부터 섬세한 조립 작업까지 완벽하게 수행합니다.',
+      image: withBasePath('/images/Innovation02.png'),
+    },
+    {
+      id: 3,
+      title: 'AI엔진',
+      description: '자체 개발한 딥러닝 AI 엔진으로 로봇의 학습 능력과 판단력을 극대화했습니다. 실시간 환경 인식과 자율 의사결정이 가능합니다.',
+      image: withBasePath('/images/Innovation03.png'),
+    },
+    {
+      id: 4,
+      title: '고객맞춤 기능 설정',
+      description: '마이크로미터 단위의 정밀한 동작 제어가 가능한 모터 시스템으로 의료용 수술부터 섬세한 조립 작업까지 완벽하게 수행합니다.',
+      image: withBasePath('/images/Innovation04.png'),
+    },
+  ];
   const videoRef = useRef<HTMLDivElement>(null);
   const valueSectionRef = useRef<HTMLDivElement>(null);
   const innovationSectionRef = useRef<HTMLDivElement>(null);
