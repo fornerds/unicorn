@@ -6,8 +6,9 @@ const nextConfig = {
   // GitHub Pages 배포를 위한 설정
   // 동적 라우트가 있는 경우 generateStaticParams 필요
   output: process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_EXPORT === 'true' ? 'export' : undefined,
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
-  assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX || '',
+  // 개발 모드에서는 basePath를 사용하지 않음 (정적 export 시에만 사용)
+  basePath: process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_EXPORT === 'true' ? (process.env.NEXT_PUBLIC_BASE_PATH || '') : '',
+  assetPrefix: process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_EXPORT === 'true' ? (process.env.NEXT_PUBLIC_ASSET_PREFIX || '') : '',
   trailingSlash: true,
   
   // HMR 최적화 설정
