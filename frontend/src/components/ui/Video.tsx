@@ -1,4 +1,4 @@
-import { getVideoPath } from '@/utils/assets';
+import { getVideoPath, withBasePath } from '@/utils/assets';
 import { cn } from '@/utils/cn';
 
 interface VideoProps {
@@ -34,7 +34,7 @@ export const Video = ({
   onPause,
   onEnded,
 }: VideoProps) => {
-  const videoSrc = src.startsWith('/') ? src : getVideoPath(src);
+  const videoSrc = src.startsWith('/') ? withBasePath(src) : getVideoPath(src);
 
   return (
     <video
