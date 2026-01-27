@@ -55,8 +55,10 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
     }
   }, [showInitialAnimation, isFirstSection, setLogoAnimationComplete]);
 
-  const isHomePage = pathname === ROUTES.HOME;
-  const isAboutPage = pathname === ROUTES.ABOUT;
+  // basePath를 고려한 경로 비교 (GitHub Pages: /unicorn)
+  const normalizedPath = pathname.replace(/^\/unicorn/, '') || '/';
+  const isHomePage = normalizedPath === ROUTES.HOME || normalizedPath === '/';
+  const isAboutPage = normalizedPath === ROUTES.ABOUT;
   
   // 홈페이지에서만 isFirstSection을 사용 (about 페이지와 분리)
   // mounted 조건 제거: 초기 렌더링 시에도 투명하게 표시

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Divider } from '@/components/ui/Divider';
 import { ROUTES } from '@/utils/constants';
+import { withBasePath } from '@/utils/assets';
 
 interface OrderItem {
   id: string;
@@ -104,7 +105,7 @@ export default function CheckoutCompletePage() {
                     <div className="bg-[#f9fafb] flex items-center rounded-[12px] shrink-0 w-[104px] h-[104px]">
                       <div className="relative w-full h-full">
                         <Image
-                          src={item.imageUrl}
+                          src={withBasePath(item.imageUrl)}
                           alt={item.name}
                           fill
                           unoptimized
