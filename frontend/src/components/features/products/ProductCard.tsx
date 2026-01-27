@@ -108,6 +108,7 @@ export const ProductCard = ({
                 src={imageUrl}
                 alt={name}
                 fill
+                unoptimized
                 className="object-contain"
               />
             </div>

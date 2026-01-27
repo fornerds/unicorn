@@ -80,6 +80,7 @@ export const ProductDetailClient = () => {
                 src={mockProduct.images[selectedImageIndex]}
                 alt={mockProduct.name}
                 fill
+                unoptimized
                 className="object-cover rounded-[12px]"
               />
             </div>
@@ -102,6 +103,7 @@ export const ProductDetailClient = () => {
                     src={image}
                     alt={`${mockProduct.name} ${index + 1}`}
                     fill
+                    unoptimized
                     className="object-cover"
                   />
                 </button>

@@ -306,6 +306,7 @@ export default function CheckoutPage() {
                           src="/images/paypal.png"
                           alt="PayPal"
                           fill
+                          unoptimized
                           className="object-contain"
                         />
                       </div>
@@ -600,6 +601,7 @@ export default function CheckoutPage() {
                               src={item.imageUrl}
                               alt={item.name}
                               fill
+                              unoptimized
                               className="object-cover rounded-[12px]"
                             />
                           </div>

@@ -107,6 +107,7 @@ export default function CheckoutCompletePage() {
                           src={item.imageUrl}
                           alt={item.name}
                           fill
+                          unoptimized
                           className="object-cover rounded-[12px]"
                         />
                       </div>

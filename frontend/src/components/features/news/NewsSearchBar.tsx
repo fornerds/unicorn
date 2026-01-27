@@ -23,6 +23,7 @@ export const NewsSearchBar = ({ value, onChange }: NewsSearchBarProps) => {
           alt="검색"
           width={18}
           height={18}
+          unoptimized
           className="w-[18px] h-[18px]"
         />
       </div>

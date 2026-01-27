@@ -134,6 +134,7 @@ export default function AboutPage() {
                     src="/images/mission.png"
                     alt="Mission"
                     fill
+                    unoptimized
                     className="object-contain"
                   />
                 </div>
@@ -152,6 +153,7 @@ export default function AboutPage() {
                       src="/images/vision01.png"
                       alt="Vision background"
                       fill
+                      unoptimized
                       className="object-cover opacity-60"
                     />
                   </div>
@@ -160,6 +162,7 @@ export default function AboutPage() {
                       src="/images/vision02.png"
                       alt="Vision"
                       fill
+                      unoptimized
                       className="object-cover"
                     />
                   </div>
@@ -279,6 +282,7 @@ export default function AboutPage() {
               src="/images/detail.png"
               alt="Detail"
               fill
+              unoptimized
               className="object-cover"
             />
           </div>

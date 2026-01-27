@@ -250,6 +250,7 @@ export default function CartPage() {
                             src={item.imageUrl}
                             alt={item.name}
                             fill
+                            unoptimized
                             className="object-cover rounded-[12px]"
                           />
                         </div>
