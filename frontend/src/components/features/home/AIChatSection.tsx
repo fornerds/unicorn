@@ -197,7 +197,7 @@ export const AIChatSection = () => {
     if (setMessages) {
       setMessages([]);
     }
-  }, []);
+  }, [setMessages]);
 
   useEffect(() => {
     if (chatEndRef.current) {

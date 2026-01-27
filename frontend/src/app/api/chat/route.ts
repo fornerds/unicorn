@@ -87,10 +87,11 @@ export async function POST(req: NextRequest) {
     console.log('Converted messages:', JSON.stringify(openaiMessages, null, 2));
 
     // @tanstack/ai를 사용하여 채팅 스트림 생성
+    // 환경 변수 OPENAI_API_KEY를 사용하도록 설정
+    process.env.OPENAI_API_KEY = apiKey;
+    
     const stream = chat({
-      adapter: openaiText('gpt-4o-mini', {
-        apiKey: apiKey,
-      }),
+      adapter: openaiText('gpt-4o-mini'),
       messages: openaiMessages,
       systemPrompts: [`당신은 로봇 쇼핑몰 "UNICORN"의 AI 어시스턴트입니다. 
 사용자에게 로봇 제품을 추천하고 정보를 제공하는 것이 주 역할입니다.

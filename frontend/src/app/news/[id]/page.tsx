@@ -1,6 +1,4 @@
-'use client';
-
-import { useParams, useRouter } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowBackIcon } from '@/components/ui/icons/ArrowBackIcon';
@@ -8,29 +6,19 @@ import { NewsCard } from '@/components/features/news/NewsCard';
 import { mockNewsData } from '@/data/mockNews';
 import { ROUTES } from '@/utils/constants';
 
-export default function NewsDetailPage() {
-  const params = useParams();
-  const router = useRouter();
-  const newsId = params.id as string;
+export async function generateStaticParams() {
+  return mockNewsData.map((news) => ({
+    id: news.id,
+  }));
+}
+
+export default function NewsDetailPage({ params }: { params: { id: string } }) {
+  const newsId = params.id;
 
   const news = mockNewsData.find((item) => item.id === newsId);
 
   if (!news) {
-    return (
-      <div className="bg-white min-h-screen flex items-center justify-center">
-        <div className="flex flex-col gap-[20px] items-center">
-          <p className="font-suit font-normal text-[24px] leading-[1.5] text-[#6b7280]">
-            뉴스를 찾을 수 없습니다.
-          </p>
-          <Link
-            href={ROUTES.NEWS}
-            className="font-suit font-medium text-[16px] leading-[1.5] text-[#374151] hover:opacity-80 transition-opacity"
-          >
-            뉴스 목록으로 돌아가기
-          </Link>
-        </div>
-      </div>
-    );
+    notFound();
   }
 
   const relatedNews = mockNewsData
