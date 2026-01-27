@@ -156,6 +156,7 @@ export const CategoryBannerSection = () => {
                       src={category.image}
                       alt={category.title}
                       fill
+                      unoptimized
                       className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out group-hover:scale-110"
                       style={{ objectPosition: 'center' }}
                     />
@@ -175,6 +176,7 @@ export const CategoryBannerSection = () => {
                         alt={category.title}
                         width={category.imageConfig.width}
                         height={category.imageConfig.height}
+                        unoptimized
                         className="object-contain w-full h-full"
                       />
                     </div>
@@ -216,6 +218,7 @@ export const CategoryBannerSection = () => {
                       src={category.image}
                       alt={category.title}
                       fill
+                      unoptimized
                       className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out group-hover:scale-110"
                       style={{ objectPosition: 'center' }}
                     />
@@ -235,6 +238,7 @@ export const CategoryBannerSection = () => {
                         alt={category.title}
                         width={category.imageConfig.width}
                         height={category.imageConfig.height}
+                        unoptimized
                         className="object-contain w-full h-full"
                       />
                     </div>
