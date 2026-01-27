@@ -56,13 +56,28 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   }, [showInitialAnimation, isFirstSection, setLogoAnimationComplete]);
 
   // basePath를 고려한 경로 비교 (GitHub Pages: /unicorn)
-  const normalizedPath = pathname.replace(/^\/unicorn/, '') || '/';
-  const isHomePage = normalizedPath === ROUTES.HOME || normalizedPath === '/';
+  // /unicorn 또는 /unicorn/로 시작하는 경우 제거
+  const normalizedPath = pathname.replace(/^\/unicorn\/?/, '') || '/';
+  const isHomePage = normalizedPath === ROUTES.HOME || normalizedPath === '/' || pathname === '/unicorn' || pathname === '/unicorn/';
   const isAboutPage = normalizedPath === ROUTES.ABOUT;
   
   // 홈페이지에서만 isFirstSection을 사용 (about 페이지와 분리)
   // mounted 조건 제거: 초기 렌더링 시에도 투명하게 표시
   const isTransparent = isHomePage && isFirstSection;
+  
+  // 디버깅용 로그 (개발 환경에서만)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Header Debug:', {
+        pathname,
+        normalizedPath,
+        isHomePage,
+        isFirstSection,
+        isTransparent,
+        bgColor,
+      });
+    }
+  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent]);
 
   const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
   
@@ -78,10 +93,30 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   
   const iconColor = isTransparent ? '#ffffff' : isAboutPage ? '#1f2937' : '#374151';
   
-  // 투명 배경일 때 명시적으로 배경색 설정 (중요: CSS 클래스만으로는 부족할 수 있음)
-  const headerStyle = isTransparent ? { backgroundColor: 'transparent' } : {};
+  // 투명 배경일 때 명시적으로 배경색 설정 (인라인 스타일이 CSS 클래스보다 우선순위가 높음)
+  const headerStyle = isTransparent 
+    ? { 
+        backgroundColor: 'transparent',
+        background: 'transparent',
+      } 
+    : {};
 
   const shouldShowAnimation = showInitialAnimation && isFirstSection;
+  
+  // 디버깅용 로그 (개발 환경에서만)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Header Debug:', {
+        pathname,
+        normalizedPath,
+        isHomePage,
+        isFirstSection,
+        isTransparent,
+        bgColor,
+        headerStyle,
+      });
+    }
+  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent, bgColor, headerStyle]);
 
   return (
     <>
