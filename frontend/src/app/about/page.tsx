@@ -41,17 +41,22 @@ export default function AboutPage() {
   const valueSectionRef = useRef<HTMLDivElement>(null);
   const innovationSectionRef = useRef<HTMLDivElement>(null);
   const [videoHeight, setVideoHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(84);
 
   useEffect(() => {
-    const updateVideoHeight = () => {
+    const updateHeights = () => {
       if (videoRef.current) {
         setVideoHeight(window.innerHeight);
       }
+      const header = document.querySelector('header');
+      if (header) {
+        setHeaderHeight(header.offsetHeight);
+      }
     };
 
-    updateVideoHeight();
-    window.addEventListener('resize', updateVideoHeight);
-    return () => window.removeEventListener('resize', updateVideoHeight);
+    updateHeights();
+    window.addEventListener('resize', updateHeights);
+    return () => window.removeEventListener('resize', updateHeights);
   }, []);
 
   // 첫 번째 섹션(비디오)이 보이는지 확인하여 헤더 투명도 제어
@@ -98,14 +103,14 @@ export default function AboutPage() {
 
   return (
     <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
-      {/* 비디오 섹션 - sticky로 고정, 스크롤해도 같은 위치에 유지 */}
+      {/* 비디오 섹션 - sticky로 고정, header 아래에 위치 */}
       <div
         ref={videoRef}
         data-video-section
         className="sticky w-full overflow-hidden"
         style={{
-          top: 0,
-          height: videoHeight ? `${videoHeight}px` : '100vh',
+          top: `${headerHeight}px`,
+          height: videoHeight ? `${videoHeight - headerHeight}px` : `calc(100vh - ${headerHeight}px)`,
           zIndex: 1,
         }}
       >
