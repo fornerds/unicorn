@@ -11,6 +11,13 @@
     --primary-dark: #your-primary-dark;
   }
 
+  /* html, body 배경을 투명하게 설정 (헤더 투명 효과를 위해) */
+  html,
+  body {
+    background-color: transparent !important;
+    background: transparent !important;
+  }
+
   /* EliceDXNeolliOTF 폰트 설정 */
   @font-face {
     font-family: 'EliceDXNeolliOTF';

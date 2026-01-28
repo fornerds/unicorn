@@ -129,15 +129,31 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   useEffect(() => {
     if (headerRef.current) {
       if (isTransparent) {
+        // 헤더 배경 투명
         headerRef.current.style.backgroundColor = 'transparent';
         headerRef.current.style.background = 'transparent';
         // bg-white 클래스가 있다면 제거
         headerRef.current.classList.remove('bg-white');
+        
+        // body와 html 배경도 투명하게 설정 (sticky 헤더가 body 배경을 보여줄 수 있음)
+        if (typeof document !== 'undefined') {
+          document.body.style.backgroundColor = 'transparent';
+          document.body.style.background = 'transparent';
+          document.documentElement.style.backgroundColor = 'transparent';
+          document.documentElement.style.background = 'transparent';
+        }
       } else {
         // 투명하지 않을 때는 기본 동작
         if (!isAboutPage) {
           headerRef.current.style.backgroundColor = '';
           headerRef.current.style.background = '';
+        }
+        // body와 html은 기본값으로 복원 (필요시)
+        if (typeof document !== 'undefined') {
+          document.body.style.backgroundColor = '';
+          document.body.style.background = '';
+          document.documentElement.style.backgroundColor = '';
+          document.documentElement.style.background = '';
         }
       }
     }
