@@ -122,14 +122,14 @@ export default function AboutPage() {
   const videoOpacity = useTransform(scrollY, [0, (videoHeight || 1000) * 0.5, videoHeight || 1000], [1, 0.5, 0]);
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
       <div
         ref={videoRef}
         data-video-section
         className="sticky w-full overflow-hidden"
         style={{
-          top: `${headerHeight}px`,
-          height: videoHeight ? `${videoHeight - headerHeight}px` : `calc(100vh - ${headerHeight}px)`,
+          top: 0,
+          height: videoHeight ? `${videoHeight}px` : '100vh',
           zIndex: 0,
         }}
       >
