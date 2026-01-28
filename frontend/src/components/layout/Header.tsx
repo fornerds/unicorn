@@ -134,6 +134,15 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
         // bg-white 클래스가 있다면 제거
         headerRef.current.classList.remove('bg-white');
         
+        // 헤더의 모든 자식 요소도 배경을 투명하게 설정
+        const children = headerRef.current.querySelectorAll('*');
+        children.forEach((child) => {
+          if (child instanceof HTMLElement) {
+            child.style.setProperty('background-color', 'transparent', 'important');
+            child.style.setProperty('background', 'transparent', 'important');
+          }
+        });
+        
         // body와 html 배경도 투명하게 설정 (sticky 헤더가 body 배경을 보여줄 수 있음)
         if (typeof document !== 'undefined') {
           document.body.style.setProperty('background-color', 'transparent', 'important');
@@ -147,6 +156,15 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
           headerRef.current.style.removeProperty('background-color');
           headerRef.current.style.removeProperty('background');
           headerRef.current.style.removeProperty('background-image');
+          
+          // 자식 요소의 배경도 제거
+          const children = headerRef.current.querySelectorAll('*');
+          children.forEach((child) => {
+            if (child instanceof HTMLElement) {
+              child.style.removeProperty('background-color');
+              child.style.removeProperty('background');
+            }
+          });
         }
         // body와 html은 기본값으로 복원 (필요시)
         if (typeof document !== 'undefined') {
