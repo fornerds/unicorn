@@ -98,18 +98,19 @@ export default function AboutPage() {
 
   return (
     <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
-      {/* 패럴랙스 비디오 섹션 */}
+      {/* 비디오 섹션 - sticky로 고정, 스크롤해도 같은 위치에 유지 */}
       <div
         ref={videoRef}
         data-video-section
-        className="sticky w-full overflow-hidden z-0"
+        className="sticky w-full overflow-hidden"
         style={{
           top: 0,
           height: videoHeight ? `${videoHeight}px` : '100vh',
+          zIndex: 10,
         }}
       >
-        {/* 비디오 레이어 - 고정 */}
-        <div className="absolute inset-0 w-full h-full z-0">
+        {/* 비디오 레이어 */}
+        <div className="absolute inset-0 w-full h-full">
           <Video
             src="/videos/company.mp4"
             className="w-full h-full object-cover"
@@ -120,7 +121,7 @@ export default function AboutPage() {
           />
         </div>
         
-        {/* 텍스트 레이어 - 고정 */}
+        {/* 텍스트 레이어 - 고정된 위치 */}
         <div className="absolute inset-0 flex flex-col gap-[10px] items-start justify-center px-[20px] md:px-[40px] lg:px-[141px] z-10">
           <h1 className="font-suit font-extralight text-[60px] md:text-[90px] leading-[normal] text-black whitespace-nowrap">
             Company
@@ -131,8 +132,8 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* 컨텐츠 섹션 - 위로 올라오면서 비디오를 가리는 효과 */}
-      <div className="bg-white relative" style={{ minHeight: '200vh', zIndex: 20, position: 'relative' }}>
+      {/* 컨텐츠 섹션 - 위로 올라오면서 비디오를 가리는 효과 (z-index가 더 높아야 함) */}
+      <div className="bg-white relative" style={{ minHeight: '200vh', zIndex: 20 }}>
         <div className="flex flex-col gap-[254px] items-start pb-[200px] pt-[120px] px-[20px] md:px-[40px] lg:px-[142px] w-full max-w-[1920px] mx-auto">
           <motion.div
             ref={valueSectionRef}
