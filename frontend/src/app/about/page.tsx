@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Video } from '@/components/ui/Video';
 import { DownloadIcon, EmailIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
