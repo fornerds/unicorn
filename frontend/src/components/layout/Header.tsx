@@ -61,20 +61,39 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   const isHomePage = normalizedPath === ROUTES.HOME || normalizedPath === '/' || pathname === '/unicorn' || pathname === '/unicorn/';
   const isAboutPage = normalizedPath === ROUTES.ABOUT;
   
-  // 홈페이지와 about 페이지에서 isFirstSection을 사용하여 헤더 투명도 제어
+  // 홈페이지에서만 isFirstSection을 사용 (about 페이지와 분리)
   // mounted 조건 제거: 초기 렌더링 시에도 투명하게 표시
-  const isTransparent = (isHomePage || isAboutPage) && isFirstSection;
+  const isTransparent = isHomePage && isFirstSection;
+  
+  // 디버깅용 로그 (개발 환경에서만)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Header Debug:', {
+        pathname,
+        normalizedPath,
+        isHomePage,
+        isFirstSection,
+        isTransparent,
+        bgColor,
+      });
+    }
+  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent]);
+
+  const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
   
   // bgColor 결정 로직: 홈페이지와 about 페이지를 명확히 분리
   // 투명일 때는 bgColor 클래스를 사용하지 않음 (인라인 스타일로 처리)
-  const bgColor = isTransparent
-    ? ''
-    : isAboutPage
-    ? 'bg-white'
-    : 'bg-white';
-  
-  // about 페이지에서도 투명할 때는 흰색 텍스트
-  const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
+  let bgColor = '';
+  if (isTransparent) {
+    // 투명일 때는 클래스 없음
+    bgColor = '';
+  } else if (isAboutPage) {
+    // about 페이지: 항상 흰색 배경
+    bgColor = 'bg-white';
+  } else {
+    // 기본값: 흰색 배경
+    bgColor = 'bg-white';
+  }
   
   const iconColor = isTransparent ? '#ffffff' : isAboutPage ? '#1f2937' : '#374151';
   
@@ -88,21 +107,20 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
 
   const shouldShowAnimation = showInitialAnimation && isFirstSection;
   
-  // 디버깅용 로그 (개발 환경에서만) - 단일 로그로 통합
+  // 디버깅용 로그 (개발 환경에서만)
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       console.log('Header Debug:', {
         pathname,
         normalizedPath,
         isHomePage,
-        isAboutPage,
         isFirstSection,
         isTransparent,
         bgColor,
         headerStyle,
       });
     }
-  }, [pathname, normalizedPath, isHomePage, isAboutPage, isFirstSection, isTransparent, bgColor, headerStyle]);
+  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent, bgColor, headerStyle]);
 
   // 헤더 요소에 직접 스타일 적용을 위한 ref
   const headerRef = useRef<HTMLElement>(null);
@@ -111,20 +129,15 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   useEffect(() => {
     if (headerRef.current) {
       if (isTransparent) {
-        headerRef.current.style.setProperty('background-color', 'transparent', 'important');
-        headerRef.current.style.setProperty('background', 'transparent', 'important');
-        headerRef.current.style.setProperty('background-image', 'none', 'important');
+        headerRef.current.style.backgroundColor = 'transparent';
+        headerRef.current.style.background = 'transparent';
         // bg-white 클래스가 있다면 제거
         headerRef.current.classList.remove('bg-white');
-        headerRef.current.classList.add('bg-transparent');
       } else {
         // 투명하지 않을 때는 기본 동작
-        headerRef.current.style.removeProperty('background-color');
-        headerRef.current.style.removeProperty('background');
-        headerRef.current.style.removeProperty('background-image');
-        headerRef.current.classList.remove('bg-transparent');
-        if (isAboutPage) {
-          headerRef.current.classList.add('bg-white');
+        if (!isAboutPage) {
+          headerRef.current.style.backgroundColor = '';
+          headerRef.current.style.background = '';
         }
       }
     }

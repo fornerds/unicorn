@@ -7,10 +7,8 @@ import { Video } from '@/components/ui/Video';
 import { DownloadIcon, EmailIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
 import { withBasePath } from '@/utils/assets';
-import { useHeader } from '@/contexts/HeaderContext';
 
 export default function AboutPage() {
-  const { setIsFirstSection } = useHeader();
   const innovationCards = [
     {
       id: 1,
@@ -40,6 +38,7 @@ export default function AboutPage() {
   const videoRef = useRef<HTMLDivElement>(null);
   const valueSectionRef = useRef<HTMLDivElement>(null);
   const innovationSectionRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [videoHeight, setVideoHeight] = useState(0);
 
   useEffect(() => {
@@ -93,25 +92,44 @@ export default function AboutPage() {
     };
   }, [setIsFirstSection]);
 
-  const { scrollY } = useScroll();
-  const videoY = useTransform(scrollY, [0, videoHeight || 1000], [0, -300]);
-  const videoOpacity = useTransform(scrollY, [0, (videoHeight || 1000) * 0.5, videoHeight || 1000], [1, 0.5, 0]);
+  // 패럴랙스 스크롤 효과를 위한 useScroll 및 useTransform
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end start'],
+  });
+
+  // 비디오 패럴랙스 효과: 스크롤에 따라 비디오가 위로 이동
+  const videoY = useTransform(scrollYProgress, [0, 1], ['0%', '-50%']);
+  
+  // 비디오 페이드 아웃 효과
+  const videoOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.7, 0]);
+  
+  // 텍스트 패럴랙스 효과: 비디오보다 느리게 이동
+  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  
+  // 텍스트 페이드 아웃 효과
+  const textOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7], [1, 1, 0]);
 
   return (
-    <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
+    <div ref={containerRef} className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
+      {/* 패럴랙스 비디오 섹션 */}
       <div
         ref={videoRef}
         data-video-section
-        className="sticky w-full overflow-hidden"
+        className="sticky w-full overflow-hidden z-0"
         style={{
           top: 0,
           height: videoHeight ? `${videoHeight}px` : '100vh',
-          zIndex: 0,
         }}
       >
+        {/* 비디오 레이어 - 패럴랙스 효과 */}
         <motion.div
-          style={{ y: videoY, opacity: videoOpacity }}
-          className="absolute inset-0 w-full h-[120%] z-0"
+          style={{ 
+            y: videoY, 
+            opacity: videoOpacity,
+            scale: useTransform(scrollYProgress, [0, 1], [1, 1.2]), // 줌 인 효과
+          }}
+          className="absolute inset-0 w-full h-[150%] z-0"
         >
           <Video
             src="/videos/company.mp4"
@@ -122,14 +140,19 @@ export default function AboutPage() {
             playsInline
           />
         </motion.div>
-        <div className="absolute inset-0 flex flex-col gap-[10px] items-start justify-center px-[20px] md:px-[40px] lg:px-[141px] z-0">
+        
+        {/* 텍스트 레이어 - 패럴랙스 효과 */}
+        <motion.div 
+          style={{ y: textY, opacity: textOpacity }}
+          className="absolute inset-0 flex flex-col gap-[10px] items-start justify-center px-[20px] md:px-[40px] lg:px-[141px] z-10"
+        >
           <h1 className="font-suit font-extralight text-[60px] md:text-[90px] leading-[normal] text-black whitespace-nowrap">
             Company
           </h1>
           <p className="font-suit font-light text-[20px] md:text-[28px] leading-[normal] text-black max-w-[865px]">
             더 나은 내일을 제안하는 AI 로봇 큐레이션 서비스
           </p>
-        </div>
+        </motion.div>
       </div>
 
       <div className="bg-white relative z-10">
