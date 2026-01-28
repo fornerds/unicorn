@@ -113,7 +113,6 @@ export default function AboutPage() {
           top: `${headerHeight}px`,
           height: videoHeight ? `${videoHeight - headerHeight}px` : `calc(100vh - ${headerHeight}px)`,
           zIndex: 1,
-          position: 'sticky',
         }}
       >
         {/* 비디오 레이어 */}
