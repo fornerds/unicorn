@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ProfileIcon, CartIcon } from '@/components/ui/icons';
 import { ROUTES } from '@/utils/constants';
 import { cn } from '@/utils/cn';
@@ -122,9 +122,31 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
     }
   }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent, bgColor, headerStyle]);
 
+  // 헤더 요소에 직접 스타일 적용을 위한 ref
+  const headerRef = useRef<HTMLElement>(null);
+
+  // 투명할 때 DOM에 직접 스타일 적용 (CSS 우선순위 문제 해결)
+  useEffect(() => {
+    if (headerRef.current) {
+      if (isTransparent) {
+        headerRef.current.style.backgroundColor = 'transparent';
+        headerRef.current.style.background = 'transparent';
+        // bg-white 클래스가 있다면 제거
+        headerRef.current.classList.remove('bg-white');
+      } else {
+        // 투명하지 않을 때는 기본 동작
+        if (!isAboutPage) {
+          headerRef.current.style.backgroundColor = '';
+          headerRef.current.style.background = '';
+        }
+      }
+    }
+  }, [isTransparent, isAboutPage]);
+
   return (
     <>
       <header
+        ref={headerRef}
         className={cn(
           'flex items-center justify-between px-[60px] py-[20px] w-full transition-colors duration-300 sticky top-0 z-50',
           bgColor
