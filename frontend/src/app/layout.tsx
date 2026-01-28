@@ -29,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className={cardo.variable}>
-      <body className="font-suit">
+    <html lang="ko" className={cardo.variable} style={{ backgroundColor: 'transparent', background: 'transparent' }}>
+      <body className="font-suit" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
         <Providers>
           <LayoutWrapper>{children}</LayoutWrapper>
         </Providers>
