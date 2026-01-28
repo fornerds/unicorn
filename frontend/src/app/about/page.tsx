@@ -7,8 +7,10 @@ import { Video } from '@/components/ui/Video';
 import { DownloadIcon, EmailIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
 import { withBasePath } from '@/utils/assets';
+import { useHeader } from '@/contexts/HeaderContext';
 
 export default function AboutPage() {
+  const { setIsFirstSection } = useHeader();
   const innovationCards = [
     {
       id: 1,
