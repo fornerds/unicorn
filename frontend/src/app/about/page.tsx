@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Video } from '@/components/ui/Video';
 import { DownloadIcon, EmailIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
@@ -44,7 +44,7 @@ export default function AboutPage() {
   const [headerHeight, setHeaderHeight] = useState(84);
 
   useEffect(() => {
-    const updateHeights = () => {
+    const updateVideoHeight = () => {
       if (videoRef.current) {
         setVideoHeight(window.innerHeight);
       }
@@ -54,64 +54,25 @@ export default function AboutPage() {
       }
     };
 
-    updateHeights();
-    window.addEventListener('resize', updateHeights);
-    return () => window.removeEventListener('resize', updateHeights);
+    updateVideoHeight();
+    window.addEventListener('resize', updateVideoHeight);
+    return () => window.removeEventListener('resize', updateVideoHeight);
   }, []);
 
-  // 첫 번째 섹션(비디오)이 보이는지 확인하여 헤더 투명도 제어
-  useEffect(() => {
-    // 초기 상태 설정: 페이지 로드 시 첫 섹션이 보이는 상태로 시작
-    setIsFirstSection(true);
-
-    const videoSection = videoRef.current;
-    if (!videoSection) return;
-
-    // IntersectionObserver 설정 (메인 페이지와 동일한 방식)
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-            setIsFirstSection(true);
-          } else {
-            setIsFirstSection(false);
-          }
-        });
-      },
-      {
-        threshold: [0, 0.5, 1],
-        rootMargin: '-100px 0px',
-      }
-    );
-
-    // 즉시 한 번 확인하여 초기 상태 설정
-    const rect = videoSection.getBoundingClientRect();
-    const isVisible = rect.top >= -100 && rect.top <= window.innerHeight / 2;
-    if (isVisible) {
-      setIsFirstSection(true);
-    }
-
-    observer.observe(videoSection);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [setIsFirstSection]);
-
-  // 비디오와 텍스트는 고정되어 있고, 컨텐츠가 위로 올라오면서 가리는 효과
-  // 패럴랙스 효과는 제거하고 완전히 고정
+  const { scrollY } = useScroll();
+  const videoY = useTransform(scrollY, [0, videoHeight || 1000], [0, 1000]);
+  const videoOpacity = useTransform(scrollY, [0, (videoHeight || 1000) * 0.5, videoHeight || 1000], [1, 0.5, 0]);
 
   return (
     <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
-      {/* 비디오 섹션 - sticky로 고정, header 아래에 위치 */}
-      {/* sticky가 작동하려면 부모 컨테이너가 스크롤 가능해야 함 */}
+      {/* 비디오 섹션 - sticky로 고정, top: 0으로 설정하여 헤더와 겹치도록 */}
       <div
         ref={videoRef}
         data-video-section
         className="sticky w-full overflow-hidden"
         style={{
-          top: `${headerHeight}px`,
-          height: videoHeight ? `${videoHeight - headerHeight}px` : `calc(100vh - ${headerHeight}px)`,
+          top: 0,
+          height: videoHeight ? `${videoHeight}px` : '100vh',
           zIndex: 1,
         }}
       >
@@ -138,7 +99,7 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* 컨텐츠 섹션 - 위로 올라오면서 비디오를 가리는 효과 (z-index가 더 높아야 함) */}
+      {/* 컨텐츠 섹션 - 위로 올라오면서 비디오를 가리는 효과 */}
       <div className="bg-white relative" style={{ minHeight: '200vh', zIndex: 20 }}>
         <div className="flex flex-col gap-[254px] items-start pb-[200px] pt-[120px] px-[20px] md:px-[40px] lg:px-[142px] w-full max-w-[1920px] mx-auto">
           <motion.div
