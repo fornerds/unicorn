@@ -62,8 +62,9 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   const isAboutPage = normalizedPath === ROUTES.ABOUT;
   
   // 홈페이지에서만 isFirstSection을 사용 (about 페이지와 분리)
-  // mounted 조건 제거: 초기 렌더링 시에도 투명하게 표시
-  const isTransparent = isHomePage && isFirstSection;
+  // 서버 사이드 렌더링에서도 홈페이지인 경우 기본적으로 투명하게 처리 (hydration mismatch 방지)
+  // 클라이언트에서 mounted 후 isFirstSection 상태에 따라 업데이트
+  const isTransparent = isHomePage && (mounted ? isFirstSection : true);
   
   // 디버깅용 로그 (개발 환경에서만)
   useEffect(() => {
