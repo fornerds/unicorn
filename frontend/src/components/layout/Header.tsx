@@ -73,21 +73,6 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
     ? 'bg-white'
     : 'bg-white';
   
-  // 디버깅용 로그 (개발 환경에서만)
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Header Debug:', {
-        pathname,
-        normalizedPath,
-        isHomePage,
-        isAboutPage,
-        isFirstSection,
-        isTransparent,
-        bgColor,
-      });
-    }
-  }, [pathname, normalizedPath, isHomePage, isAboutPage, isFirstSection, isTransparent, bgColor]);
-
   // about 페이지에서도 투명할 때는 흰색 텍스트
   const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
   
@@ -103,20 +88,21 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
 
   const shouldShowAnimation = showInitialAnimation && isFirstSection;
   
-  // 디버깅용 로그 (개발 환경에서만)
+  // 디버깅용 로그 (개발 환경에서만) - 단일 로그로 통합
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       console.log('Header Debug:', {
         pathname,
         normalizedPath,
         isHomePage,
+        isAboutPage,
         isFirstSection,
         isTransparent,
         bgColor,
         headerStyle,
       });
     }
-  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent, bgColor, headerStyle]);
+  }, [pathname, normalizedPath, isHomePage, isAboutPage, isFirstSection, isTransparent, bgColor, headerStyle]);
 
   // 헤더 요소에 직접 스타일 적용을 위한 ref
   const headerRef = useRef<HTMLElement>(null);
