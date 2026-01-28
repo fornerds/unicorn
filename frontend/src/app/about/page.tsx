@@ -95,18 +95,17 @@ export default function AboutPage() {
   }, [setIsFirstSection]);
 
   // 패럴랙스 스크롤 효과를 위한 useScroll 및 useTransform
-  // 컨텐츠 섹션이 비디오 섹션을 덮는 효과를 위해 스크롤 진행률 추적
+  // 비디오 섹션의 스크롤 진행률을 추적하여 패럴랙스 효과 적용
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: videoRef,
     offset: ['start start', 'end start'],
   });
 
-  // 비디오와 텍스트는 고정되어 있고, 컨텐츠가 위로 올라오면서 가리는 효과
-  // 비디오는 약간의 패럴랙스 효과만 (옵션)
-  const videoY = useTransform(scrollYProgress, [0, 1], ['0%', '-20%']);
+  // 비디오는 약간의 패럴랙스 효과 (위로 이동)
+  const videoY = useTransform(scrollYProgress, [0, 1], ['0%', '-30%']);
   
-  // 텍스트는 비디오보다 더 느리게 이동 (옵션)
-  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '10%']);
+  // 텍스트는 비디오보다 더 느리게 이동 (덜 이동)
+  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '15%']);
 
   return (
     <div ref={containerRef} className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
@@ -152,7 +151,7 @@ export default function AboutPage() {
       </div>
 
       {/* 컨텐츠 섹션 - 위로 올라오면서 비디오를 가리는 효과 */}
-      <div className="bg-white relative z-20" style={{ minHeight: '200vh' }}>
+      <div className="bg-white relative" style={{ minHeight: '200vh', zIndex: 20, position: 'relative' }}>
         <div className="flex flex-col gap-[254px] items-start pb-[200px] pt-[120px] px-[20px] md:px-[40px] lg:px-[142px] w-full max-w-[1920px] mx-auto">
           <motion.div
             ref={valueSectionRef}
