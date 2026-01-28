@@ -95,7 +95,8 @@ export default function AboutPage() {
 
   return (
     <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
-      {/* 비디오 섹션 - sticky로 고정, top: 0으로 설정하여 헤더와 겹치도록 */}
+      {/* 비디오 섹션 - sticky로 고정, header와 겹치도록 top: 0 설정 */}
+      {/* sticky가 작동하려면 부모 컨테이너가 스크롤 가능해야 함 */}
       <div
         ref={videoRef}
         data-video-section
@@ -104,6 +105,7 @@ export default function AboutPage() {
           top: 0,
           height: videoHeight ? `${videoHeight}px` : '100vh',
           zIndex: 1,
+          position: 'sticky',
         }}
       >
         {/* 비디오 레이어 */}
