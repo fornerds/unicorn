@@ -93,18 +93,8 @@ export default function AboutPage() {
     };
   }, [setIsFirstSection]);
 
-  // 패럴랙스 스크롤 효과를 위한 useScroll 및 useTransform
-  // 비디오 섹션의 스크롤 진행률을 추적하여 패럴랙스 효과 적용
-  const { scrollYProgress } = useScroll({
-    target: videoRef,
-    offset: ['start start', 'end start'],
-  });
-
-  // 비디오는 약간의 패럴랙스 효과 (위로 이동)
-  const videoY = useTransform(scrollYProgress, [0, 1], ['0%', '-30%']);
-  
-  // 텍스트는 비디오보다 더 느리게 이동 (덜 이동)
-  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '15%']);
+  // 비디오와 텍스트는 고정되어 있고, 컨텐츠가 위로 올라오면서 가리는 효과
+  // 패럴랙스 효과는 제거하고 완전히 고정
 
   return (
     <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
@@ -118,13 +108,8 @@ export default function AboutPage() {
           height: videoHeight ? `${videoHeight}px` : '100vh',
         }}
       >
-        {/* 비디오 레이어 - 약간의 패럴랙스 효과 */}
-        <motion.div
-          style={{ 
-            y: videoY,
-          }}
-          className="absolute inset-0 w-full h-full z-0"
-        >
+        {/* 비디오 레이어 - 고정 */}
+        <div className="absolute inset-0 w-full h-full z-0">
           <Video
             src="/videos/company.mp4"
             className="w-full h-full object-cover"
@@ -133,20 +118,17 @@ export default function AboutPage() {
             muted
             playsInline
           />
-        </motion.div>
+        </div>
         
-        {/* 텍스트 레이어 - 약간의 패럴랙스 효과 */}
-        <motion.div 
-          style={{ y: textY }}
-          className="absolute inset-0 flex flex-col gap-[10px] items-start justify-center px-[20px] md:px-[40px] lg:px-[141px] z-10"
-        >
+        {/* 텍스트 레이어 - 고정 */}
+        <div className="absolute inset-0 flex flex-col gap-[10px] items-start justify-center px-[20px] md:px-[40px] lg:px-[141px] z-10">
           <h1 className="font-suit font-extralight text-[60px] md:text-[90px] leading-[normal] text-black whitespace-nowrap">
             Company
           </h1>
           <p className="font-suit font-light text-[20px] md:text-[28px] leading-[normal] text-black max-w-[865px]">
             더 나은 내일을 제안하는 AI 로봇 큐레이션 서비스
           </p>
-        </motion.div>
+        </div>
       </div>
 
       {/* 컨텐츠 섹션 - 위로 올라오면서 비디오를 가리는 효과 */}
