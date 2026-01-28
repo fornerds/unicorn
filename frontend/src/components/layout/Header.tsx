@@ -97,11 +97,14 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   
   const iconColor = isTransparent ? '#ffffff' : isAboutPage ? '#1f2937' : '#374151';
   
-  // 투명 배경일 때 명시적으로 배경색 설정 (인라인 스타일이 CSS 클래스보다 우선순위가 높음)
+  // 투명 배경일 때 명시적으로 배경색 설정
+  // 주의: React의 style prop에서는 !important를 직접 사용할 수 없으므로
+  // useEffect에서 setProperty로 !important를 적용함
   const headerStyle = isTransparent 
     ? { 
         backgroundColor: 'transparent',
         background: 'transparent',
+        backgroundImage: 'none',
       } 
     : {};
 
@@ -129,31 +132,33 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   useEffect(() => {
     if (headerRef.current) {
       if (isTransparent) {
-        // 헤더 배경 투명
-        headerRef.current.style.backgroundColor = 'transparent';
-        headerRef.current.style.background = 'transparent';
+        // 헤더 배경 투명 - !important를 사용하여 모든 CSS 규칙을 덮어씀
+        headerRef.current.style.setProperty('background-color', 'transparent', 'important');
+        headerRef.current.style.setProperty('background', 'transparent', 'important');
+        headerRef.current.style.setProperty('background-image', 'none', 'important');
         // bg-white 클래스가 있다면 제거
         headerRef.current.classList.remove('bg-white');
         
         // body와 html 배경도 투명하게 설정 (sticky 헤더가 body 배경을 보여줄 수 있음)
         if (typeof document !== 'undefined') {
-          document.body.style.backgroundColor = 'transparent';
-          document.body.style.background = 'transparent';
-          document.documentElement.style.backgroundColor = 'transparent';
-          document.documentElement.style.background = 'transparent';
+          document.body.style.setProperty('background-color', 'transparent', 'important');
+          document.body.style.setProperty('background', 'transparent', 'important');
+          document.documentElement.style.setProperty('background-color', 'transparent', 'important');
+          document.documentElement.style.setProperty('background', 'transparent', 'important');
         }
       } else {
         // 투명하지 않을 때는 기본 동작
         if (!isAboutPage) {
-          headerRef.current.style.backgroundColor = '';
-          headerRef.current.style.background = '';
+          headerRef.current.style.removeProperty('background-color');
+          headerRef.current.style.removeProperty('background');
+          headerRef.current.style.removeProperty('background-image');
         }
         // body와 html은 기본값으로 복원 (필요시)
         if (typeof document !== 'undefined') {
-          document.body.style.backgroundColor = '';
-          document.body.style.background = '';
-          document.documentElement.style.backgroundColor = '';
-          document.documentElement.style.background = '';
+          document.body.style.removeProperty('background-color');
+          document.body.style.removeProperty('background');
+          document.documentElement.style.removeProperty('background-color');
+          document.documentElement.style.removeProperty('background');
         }
       }
     }

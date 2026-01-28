@@ -18,6 +18,14 @@
     background: transparent !important;
   }
 
+  /* 헤더가 투명할 때를 위한 명시적 CSS 규칙 */
+  header[style*="background-color:transparent"],
+  header[style*="background:transparent"] {
+    background-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+  }
+
   /* EliceDXNeolliOTF 폰트 설정 */
   @font-face {
     font-family: 'EliceDXNeolliOTF';
