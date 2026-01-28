@@ -19,11 +19,9 @@ export const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <HeaderProvider>
-      <div style={{ backgroundColor: 'transparent', background: 'transparent' }}>
-        <Header />
-        {children}
-        {!isHomePage && <Footer />}
-      </div>
+      <Header />
+      {children}
+      {!isHomePage && <Footer />}
     </HeaderProvider>
   );
 };

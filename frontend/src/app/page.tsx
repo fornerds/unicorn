@@ -59,12 +59,36 @@ export default function HomePage() {
     };
   }, [setIsFirstSection]);
 
+  // body 스크롤을 막고 스크롤 컨테이너만 스크롤되도록 설정
+  useEffect(() => {
+    // body 스크롤 비활성화
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    
+    return () => {
+      // 컴포넌트 언마운트 시 복원
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
+
   return (
     <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
       <div
         ref={scrollContainerRef}
         className="snap-y snap-mandatory overflow-y-scroll h-screen"
-        style={{ marginTop: 0, backgroundColor: 'transparent', background: 'transparent' }}
+        style={{ 
+          backgroundColor: 'transparent', 
+          background: 'transparent',
+          // 스크롤 컨테이너가 전체 뷰포트를 차지하도록
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100%',
+          height: '100vh',
+        }}
       >
         <MainBannerSection ref={firstSectionRef} />
         <AIChatSection />

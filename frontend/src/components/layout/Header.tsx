@@ -62,19 +62,8 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   const isAboutPage = normalizedPath === ROUTES.ABOUT;
   
   // 홈페이지에서만 isFirstSection을 사용 (about 페이지와 분리)
-  // 서버 사이드 렌더링에서도 홈페이지인 경우 기본적으로 투명하게 처리 (hydration mismatch 방지)
-  // 클라이언트에서 mounted 후 isFirstSection 상태에 따라 업데이트
-  const isTransparent = isHomePage && (mounted ? isFirstSection : true);
-  
-  // bgColor 결정 로직: 홈페이지와 about 페이지를 명확히 분리
-  // 투명일 때는 bgColor 클래스를 사용하지 않음 (인라인 스타일로 처리)
-  const bgColor = isTransparent
-    ? ''
-    : isAboutPage
-    ? 'bg-white'
-    : 'bg-white';
-
-  const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
+  // mounted 조건 제거: 초기 렌더링 시에도 투명하게 표시
+  const isTransparent = isHomePage && isFirstSection;
   
   // 디버깅용 로그 (개발 환경에서만)
   useEffect(() => {
@@ -88,23 +77,37 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
         bgColor,
       });
     }
-  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent, bgColor]);
+  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent]);
+
+  const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
+  
+  // bgColor 결정 로직: 홈페이지와 about 페이지를 명확히 분리
+  // 투명일 때는 bgColor 클래스를 사용하지 않음 (인라인 스타일로 처리)
+  let bgColor = '';
+  if (isTransparent) {
+    // 투명일 때는 클래스 없음
+    bgColor = '';
+  } else if (isAboutPage) {
+    // about 페이지: 항상 흰색 배경
+    bgColor = 'bg-white';
+  } else {
+    // 기본값: 흰색 배경
+    bgColor = 'bg-white';
+  }
   
   const iconColor = isTransparent ? '#ffffff' : isAboutPage ? '#1f2937' : '#374151';
   
-  // 투명 배경일 때 명시적으로 배경색 설정
-  // React의 style prop을 사용하여 직접 스타일 적용
-  const headerStyle: React.CSSProperties = isTransparent 
+  // 투명 배경일 때 명시적으로 배경색 설정 (인라인 스타일이 CSS 클래스보다 우선순위가 높음)
+  const headerStyle = isTransparent 
     ? { 
         backgroundColor: 'transparent',
         background: 'transparent',
-        backgroundImage: 'none',
       } 
     : {};
 
   const shouldShowAnimation = showInitialAnimation && isFirstSection;
   
-  // 디버깅용 로그 (개발 환경에서만) - 중복 제거
+  // 디버깅용 로그 (개발 환경에서만)
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       console.log('Header Debug:', {
@@ -114,20 +117,31 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
         isFirstSection,
         isTransparent,
         bgColor,
+        headerStyle,
       });
     }
-  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent, bgColor]);
+  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent, bgColor, headerStyle]);
 
   // 헤더 요소에 직접 스타일 적용을 위한 ref
   const headerRef = useRef<HTMLElement>(null);
 
-  // 투명할 때만 최소한의 DOM 조작 (React 스타일과 충돌 방지)
+  // 투명할 때 DOM에 직접 스타일 적용 (CSS 우선순위 문제 해결)
   useEffect(() => {
-    if (!headerRef.current || !isTransparent) return;
-    
-    // bg-white 클래스만 제거 (나머지는 CSS와 인라인 스타일로 처리)
-    headerRef.current.classList.remove('bg-white');
-  }, [isTransparent]);
+    if (headerRef.current) {
+      if (isTransparent) {
+        headerRef.current.style.backgroundColor = 'transparent';
+        headerRef.current.style.background = 'transparent';
+        // bg-white 클래스가 있다면 제거
+        headerRef.current.classList.remove('bg-white');
+      } else {
+        // 투명하지 않을 때는 기본 동작
+        if (!isAboutPage) {
+          headerRef.current.style.backgroundColor = '';
+          headerRef.current.style.background = '';
+        }
+      }
+    }
+  }, [isTransparent, isAboutPage]);
 
   return (
     <>
@@ -135,8 +149,7 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
         ref={headerRef}
         className={cn(
           'flex items-center justify-between px-[60px] py-[20px] w-full transition-colors duration-300 sticky top-0 z-50',
-          bgColor,
-          isTransparent && 'bg-transparent'
+          bgColor
         )}
         style={headerStyle}
       >
