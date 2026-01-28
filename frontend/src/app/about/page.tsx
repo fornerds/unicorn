@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Video } from '@/components/ui/Video';
 import { DownloadIcon, EmailIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
@@ -41,16 +41,11 @@ export default function AboutPage() {
   const valueSectionRef = useRef<HTMLDivElement>(null);
   const innovationSectionRef = useRef<HTMLDivElement>(null);
   const [videoHeight, setVideoHeight] = useState(0);
-  const [headerHeight, setHeaderHeight] = useState(84);
 
   useEffect(() => {
     const updateVideoHeight = () => {
       if (videoRef.current) {
         setVideoHeight(window.innerHeight);
-      }
-      const header = document.querySelector('header');
-      if (header) {
-        setHeaderHeight(header.offsetHeight);
       }
     };
 
@@ -58,10 +53,6 @@ export default function AboutPage() {
     window.addEventListener('resize', updateVideoHeight);
     return () => window.removeEventListener('resize', updateVideoHeight);
   }, []);
-
-  const { scrollY } = useScroll();
-  const videoY = useTransform(scrollY, [0, videoHeight || 1000], [0, 1000]);
-  const videoOpacity = useTransform(scrollY, [0, (videoHeight || 1000) * 0.5, videoHeight || 1000], [1, 0.5, 0]);
 
   return (
     <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
