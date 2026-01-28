@@ -35,6 +35,7 @@ export const MainBannerSection = forwardRef<HTMLElement>((props, ref) => {
     <section
       ref={ref}
       className="snap-start h-screen w-full relative flex items-center justify-center bg-black overflow-hidden"
+      style={{ marginTop: 0, paddingTop: 0 }}
     >
       <Video
         src="/videos/main.mp4"

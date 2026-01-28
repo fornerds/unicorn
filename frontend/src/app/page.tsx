@@ -64,6 +64,7 @@ export default function HomePage() {
       <div
         ref={scrollContainerRef}
         className="snap-y snap-mandatory overflow-y-scroll h-screen"
+        style={{ marginTop: 0 }}
       >
         <MainBannerSection ref={firstSectionRef} />
         <AIChatSection />
