@@ -124,15 +124,20 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   useEffect(() => {
     if (headerRef.current) {
       if (isTransparent) {
-        headerRef.current.style.backgroundColor = 'transparent';
-        headerRef.current.style.background = 'transparent';
+        headerRef.current.style.setProperty('background-color', 'transparent', 'important');
+        headerRef.current.style.setProperty('background', 'transparent', 'important');
+        headerRef.current.style.setProperty('background-image', 'none', 'important');
         // bg-white 클래스가 있다면 제거
         headerRef.current.classList.remove('bg-white');
+        headerRef.current.classList.add('bg-transparent');
       } else {
         // 투명하지 않을 때는 기본 동작
-        if (!isAboutPage) {
-          headerRef.current.style.backgroundColor = '';
-          headerRef.current.style.background = '';
+        headerRef.current.style.removeProperty('background-color');
+        headerRef.current.style.removeProperty('background');
+        headerRef.current.style.removeProperty('background-image');
+        headerRef.current.classList.remove('bg-transparent');
+        if (isAboutPage) {
+          headerRef.current.classList.add('bg-white');
         }
       }
     }

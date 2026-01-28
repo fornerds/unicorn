@@ -67,34 +67,52 @@ export default function AboutPage() {
     const videoSection = videoRef.current;
     if (!videoSection) return;
 
-    // IntersectionObserver 설정
+    // 스크롤 이벤트로 헤더 투명도 제어 (about 페이지는 sticky 섹션 사용)
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const videoRect = videoSection.getBoundingClientRect();
+      const header = document.querySelector('header');
+      const headerHeight = header ? header.offsetHeight : 84;
+      
+      // 스크롤 위치가 비디오 섹션 내부에 있으면 헤더 투명
+      // 비디오 섹션이 sticky이고 top이 headerHeight이므로, 스크롤이 headerHeight 이하일 때 투명
+      if (scrollY <= headerHeight) {
+        setIsFirstSection(true);
+      } else {
+        setIsFirstSection(false);
+      }
+    };
+
+    // 초기 상태 확인
+    handleScroll();
+    
+    // 스크롤 이벤트 리스너 추가
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // IntersectionObserver도 함께 사용 (추가 확인용)
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // 비디오 섹션이 뷰포트에 보이면 헤더를 투명하게
-          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-            setIsFirstSection(true);
-          } else {
-            setIsFirstSection(false);
+          // 비디오 섹션이 뷰포트 상단 근처에 있으면 헤더를 투명하게
+          if (entry.isIntersecting) {
+            const rect = entry.boundingClientRect;
+            // 비디오 섹션이 헤더 아래에 있고 보이면 투명
+            if (rect.top <= headerHeight + 50) {
+              setIsFirstSection(true);
+            }
           }
         });
       },
       {
-        threshold: [0, 0.3, 0.5, 1],
-        rootMargin: '-100px 0px',
+        threshold: [0, 0.1, 0.3, 0.5],
+        rootMargin: `-${headerHeight}px 0px 0px 0px`,
       }
     );
-
-    // 즉시 한 번 확인하여 초기 상태 설정
-    const rect = videoSection.getBoundingClientRect();
-    const isVisible = rect.top <= window.innerHeight && rect.bottom >= 0;
-    if (isVisible) {
-      setIsFirstSection(true);
-    }
 
     observer.observe(videoSection);
 
     return () => {
+      window.removeEventListener('scroll', handleScroll);
       observer.disconnect();
     };
   }, [setIsFirstSection]);
@@ -108,10 +126,11 @@ export default function AboutPage() {
       <div
         ref={videoRef}
         data-video-section
-        className="sticky w-full overflow-hidden z-0"
+        className="sticky w-full overflow-hidden"
         style={{
           top: `${headerHeight}px`,
           height: videoHeight ? `${videoHeight - headerHeight}px` : `calc(100vh - ${headerHeight}px)`,
+          zIndex: 0,
         }}
       >
         <motion.div
