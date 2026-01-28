@@ -40,7 +40,6 @@ export default function AboutPage() {
   const videoRef = useRef<HTMLDivElement>(null);
   const valueSectionRef = useRef<HTMLDivElement>(null);
   const innovationSectionRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const [videoHeight, setVideoHeight] = useState(0);
 
   useEffect(() => {
@@ -108,7 +107,7 @@ export default function AboutPage() {
   const textY = useTransform(scrollYProgress, [0, 1], ['0%', '15%']);
 
   return (
-    <div ref={containerRef} className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
+    <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
       {/* 패럴랙스 비디오 섹션 */}
       <div
         ref={videoRef}
