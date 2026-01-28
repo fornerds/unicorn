@@ -12,10 +12,21 @@
   }
 
   /* html, body 배경을 투명하게 설정 (헤더 투명 효과를 위해) */
+  /* Tailwind Preflight 이후에 적용되도록 @layer base 안에 배치 */
   html,
   body {
     background-color: transparent !important;
     background: transparent !important;
+  }
+  
+  /* 모든 요소의 기본 배경도 투명하게 (필요시) */
+  * {
+    background-color: transparent;
+  }
+  
+  /* 단, 명시적으로 배경색이 지정된 요소는 제외 */
+  [class*="bg-"] {
+    background-color: revert;
   }
 
   /* 헤더가 투명할 때를 위한 명시적 CSS 규칙 */
