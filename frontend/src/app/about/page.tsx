@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Video } from '@/components/ui/Video';
 import { DownloadIcon, EmailIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
@@ -41,11 +41,16 @@ export default function AboutPage() {
   const valueSectionRef = useRef<HTMLDivElement>(null);
   const innovationSectionRef = useRef<HTMLDivElement>(null);
   const [videoHeight, setVideoHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(84);
 
   useEffect(() => {
     const updateVideoHeight = () => {
       if (videoRef.current) {
         setVideoHeight(window.innerHeight);
+      }
+      const header = document.querySelector('header');
+      if (header) {
+        setHeaderHeight(header.offsetHeight);
       }
     };
 
@@ -54,62 +59,25 @@ export default function AboutPage() {
     return () => window.removeEventListener('resize', updateVideoHeight);
   }, []);
 
-  // 첫 번째 섹션(비디오)이 보이는지 확인하여 헤더 투명도 제어
-  useEffect(() => {
-    // 초기 상태 설정: 페이지 로드 시 첫 섹션이 보이는 상태로 시작
-    setIsFirstSection(true);
-
-    const videoSection = videoRef.current;
-    if (!videoSection) return;
-
-    // IntersectionObserver 설정 (메인 페이지와 동일한 방식)
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-            setIsFirstSection(true);
-          } else {
-            setIsFirstSection(false);
-          }
-        });
-      },
-      {
-        threshold: [0, 0.5, 1],
-        rootMargin: '-100px 0px',
-      }
-    );
-
-    // 즉시 한 번 확인하여 초기 상태 설정
-    const rect = videoSection.getBoundingClientRect();
-    const isVisible = rect.top >= -100 && rect.top <= window.innerHeight / 2;
-    if (isVisible) {
-      setIsFirstSection(true);
-    }
-
-    observer.observe(videoSection);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [setIsFirstSection]);
+  const { scrollY } = useScroll();
+  const videoY = useTransform(scrollY, [0, videoHeight || 1000], [0, 1000]);
+  const videoOpacity = useTransform(scrollY, [0, (videoHeight || 1000) * 0.5, videoHeight || 1000], [1, 0.5, 0]);
 
   return (
-    <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
-      {/* 비디오 섹션 - sticky로 고정, header와 겹치도록 top: 0 설정 */}
-      {/* sticky가 작동하려면 부모 컨테이너가 스크롤 가능해야 함 */}
+    <div className="bg-white min-h-screen">
       <div
         ref={videoRef}
         data-video-section
-        className="sticky w-full overflow-hidden"
+        className="sticky w-full overflow-hidden z-0"
         style={{
-          top: 0,
-          height: videoHeight ? `${videoHeight}px` : '100vh',
-          zIndex: 1,
-          position: 'sticky',
+          top: `${headerHeight}px`,
+          height: videoHeight ? `${videoHeight - headerHeight}px` : `calc(100vh - ${headerHeight}px)`,
         }}
       >
-        {/* 비디오 레이어 */}
-        <div className="absolute inset-0 w-full h-full">
+        <motion.div
+          style={{ y: videoY, opacity: videoOpacity }}
+          className="absolute inset-0 w-full h-[120%] z-0"
+        >
           <Video
             src="/videos/company.mp4"
             className="w-full h-full object-cover"
@@ -118,10 +86,8 @@ export default function AboutPage() {
             muted
             playsInline
           />
-        </div>
-        
-        {/* 텍스트 레이어 - 고정된 위치 */}
-        <div className="absolute inset-0 flex flex-col gap-[10px] items-start justify-center px-[20px] md:px-[40px] lg:px-[141px] z-10">
+        </motion.div>
+        <div className="absolute inset-0 flex flex-col gap-[10px] items-start justify-center px-[20px] md:px-[40px] lg:px-[141px] z-0">
           <h1 className="font-suit font-extralight text-[60px] md:text-[90px] leading-[normal] text-black whitespace-nowrap">
             Company
           </h1>
@@ -131,8 +97,7 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* 컨텐츠 섹션 - 위로 올라오면서 비디오를 가리는 효과 */}
-      <div className="bg-white relative" style={{ minHeight: '200vh', zIndex: 20 }}>
+      <div className="bg-white relative z-10">
         <div className="flex flex-col gap-[254px] items-start pb-[200px] pt-[120px] px-[20px] md:px-[40px] lg:px-[142px] w-full max-w-[1920px] mx-auto">
           <motion.div
             ref={valueSectionRef}

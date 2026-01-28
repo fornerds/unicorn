@@ -61,9 +61,9 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   const isHomePage = normalizedPath === ROUTES.HOME || normalizedPath === '/' || pathname === '/unicorn' || pathname === '/unicorn/';
   const isAboutPage = normalizedPath === ROUTES.ABOUT;
   
-  // 홈페이지와 about 페이지에서 isFirstSection을 사용하여 헤더 투명도 제어
+  // 홈페이지에서만 isFirstSection을 사용 (about 페이지와 분리)
   // mounted 조건 제거: 초기 렌더링 시에도 투명하게 표시
-  const isTransparent = (isHomePage || isAboutPage) && isFirstSection;
+  const isTransparent = isHomePage && isFirstSection;
   
   // 디버깅용 로그 (개발 환경에서만)
   useEffect(() => {
