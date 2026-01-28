@@ -54,6 +54,45 @@ export default function AboutPage() {
     return () => window.removeEventListener('resize', updateVideoHeight);
   }, []);
 
+  // 첫 번째 섹션(비디오)이 보이는지 확인하여 헤더 투명도 제어
+  useEffect(() => {
+    // 초기 상태 설정: 페이지 로드 시 첫 섹션이 보이는 상태로 시작
+    setIsFirstSection(true);
+
+    const videoSection = videoRef.current;
+    if (!videoSection) return;
+
+    // IntersectionObserver 설정 (메인 페이지와 동일한 방식)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            setIsFirstSection(true);
+          } else {
+            setIsFirstSection(false);
+          }
+        });
+      },
+      {
+        threshold: [0, 0.5, 1],
+        rootMargin: '-100px 0px',
+      }
+    );
+
+    // 즉시 한 번 확인하여 초기 상태 설정
+    const rect = videoSection.getBoundingClientRect();
+    const isVisible = rect.top >= -100 && rect.top <= window.innerHeight / 2;
+    if (isVisible) {
+      setIsFirstSection(true);
+    }
+
+    observer.observe(videoSection);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [setIsFirstSection]);
+
   return (
     <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
       {/* 비디오 섹션 - sticky로 고정, top: 0으로 설정하여 헤더와 겹치도록 */}
