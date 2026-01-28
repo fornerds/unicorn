@@ -6,6 +6,10 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  // Tailwind Preflight가 기본 배경색을 설정하지 않도록 확인
+  corePlugins: {
+    preflight: true, // Preflight는 유지하되, CSS로 오버라이드
+  },
   theme: {
     extend: {
       screens: {
