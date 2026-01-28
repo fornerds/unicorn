@@ -33,6 +33,13 @@
     background: transparent !important;
   }
 
+  /* 헤더와 첫 번째 섹션 사이의 wrapper 요소들도 투명하게 설정 */
+  .relative[style*="background-color:transparent"],
+  .relative[style*="background:transparent"] {
+    background-color: transparent !important;
+    background: transparent !important;
+  }
+
   /* EliceDXNeolliOTF 폰트 설정 */
   @font-face {
     font-family: 'EliceDXNeolliOTF';

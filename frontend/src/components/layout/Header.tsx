@@ -149,6 +149,15 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
           document.body.style.setProperty('background', 'transparent', 'important');
           document.documentElement.style.setProperty('background-color', 'transparent', 'important');
           document.documentElement.style.setProperty('background', 'transparent', 'important');
+          
+          // 헤더와 첫 번째 섹션 사이의 wrapper 요소들도 투명하게 설정
+          const wrappers = document.querySelectorAll('.relative');
+          wrappers.forEach((wrapper) => {
+            if (wrapper instanceof HTMLElement) {
+              wrapper.style.setProperty('background-color', 'transparent', 'important');
+              wrapper.style.setProperty('background', 'transparent', 'important');
+            }
+          });
         }
       } else {
         // 투명하지 않을 때는 기본 동작

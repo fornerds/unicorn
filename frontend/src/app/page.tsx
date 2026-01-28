@@ -60,11 +60,11 @@ export default function HomePage() {
   }, [setIsFirstSection]);
 
   return (
-    <div className="relative">
+    <div className="relative" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
       <div
         ref={scrollContainerRef}
         className="snap-y snap-mandatory overflow-y-scroll h-screen"
-        style={{ marginTop: 0 }}
+        style={{ marginTop: 0, backgroundColor: 'transparent', background: 'transparent' }}
       >
         <MainBannerSection ref={firstSectionRef} />
         <AIChatSection />
