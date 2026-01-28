@@ -65,23 +65,6 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   // mounted 조건 제거: 초기 렌더링 시에도 투명하게 표시
   const isTransparent = (isHomePage || isAboutPage) && isFirstSection;
   
-  // 디버깅용 로그 (개발 환경에서만)
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Header Debug:', {
-        pathname,
-        normalizedPath,
-        isHomePage,
-        isFirstSection,
-        isTransparent,
-        bgColor,
-      });
-    }
-  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent]);
-
-  // about 페이지에서도 투명할 때는 흰색 텍스트
-  const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
-  
   // bgColor 결정 로직: 홈페이지와 about 페이지를 명확히 분리
   // 투명일 때는 bgColor 클래스를 사용하지 않음 (인라인 스타일로 처리)
   const bgColor = isTransparent
@@ -89,6 +72,24 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
     : isAboutPage
     ? 'bg-white'
     : 'bg-white';
+  
+  // 디버깅용 로그 (개발 환경에서만)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Header Debug:', {
+        pathname,
+        normalizedPath,
+        isHomePage,
+        isAboutPage,
+        isFirstSection,
+        isTransparent,
+        bgColor,
+      });
+    }
+  }, [pathname, normalizedPath, isHomePage, isAboutPage, isFirstSection, isTransparent, bgColor]);
+
+  // about 페이지에서도 투명할 때는 흰색 텍스트
+  const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
   
   const iconColor = isTransparent ? '#ffffff' : isAboutPage ? '#1f2937' : '#374151';
   
