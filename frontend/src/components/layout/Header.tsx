@@ -82,13 +82,18 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
   
   // bgColor 결정 로직: 홈페이지와 about 페이지를 명확히 분리
-  // 투명일 때는 bgColor 클래스를 사용하지 않고 인라인 스타일만 사용
-  let bgColor = 'bg-white';
-  if (isAboutPage) {
+  // 투명일 때는 bgColor 클래스를 사용하지 않음 (인라인 스타일로 처리)
+  let bgColor = '';
+  if (isTransparent) {
+    // 투명일 때는 클래스 없음
+    bgColor = '';
+  } else if (isAboutPage) {
     // about 페이지: 항상 흰색 배경
     bgColor = 'bg-white';
+  } else {
+    // 기본값: 흰색 배경
+    bgColor = 'bg-white';
   }
-  // isTransparent일 때는 bgColor를 설정하지 않음 (인라인 스타일로 처리)
   
   const iconColor = isTransparent ? '#ffffff' : isAboutPage ? '#1f2937' : '#374151';
   
