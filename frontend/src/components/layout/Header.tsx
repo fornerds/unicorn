@@ -93,9 +93,8 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   const iconColor = isTransparent ? '#ffffff' : isAboutPage ? '#1f2937' : '#374151';
   
   // 투명 배경일 때 명시적으로 배경색 설정
-  // 주의: React의 style prop에서는 !important를 직접 사용할 수 없으므로
-  // useEffect에서 setProperty로 !important를 적용함
-  const headerStyle = isTransparent 
+  // React의 style prop을 사용하여 직접 스타일 적용
+  const headerStyle: React.CSSProperties = isTransparent 
     ? { 
         backgroundColor: 'transparent',
         background: 'transparent',
@@ -105,7 +104,7 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
 
   const shouldShowAnimation = showInitialAnimation && isFirstSection;
   
-  // 디버깅용 로그 (개발 환경에서만)
+  // 디버깅용 로그 (개발 환경에서만) - 중복 제거
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       console.log('Header Debug:', {
@@ -115,76 +114,20 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
         isFirstSection,
         isTransparent,
         bgColor,
-        headerStyle,
       });
     }
-  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent, bgColor, headerStyle]);
+  }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent, bgColor]);
 
   // 헤더 요소에 직접 스타일 적용을 위한 ref
   const headerRef = useRef<HTMLElement>(null);
 
-  // 투명할 때 DOM에 직접 스타일 적용 (CSS 우선순위 문제 해결)
+  // 투명할 때만 최소한의 DOM 조작 (React 스타일과 충돌 방지)
   useEffect(() => {
-    if (headerRef.current) {
-      if (isTransparent) {
-        // 헤더 배경 투명 - !important를 사용하여 모든 CSS 규칙을 덮어씀
-        headerRef.current.style.setProperty('background-color', 'transparent', 'important');
-        headerRef.current.style.setProperty('background', 'transparent', 'important');
-        headerRef.current.style.setProperty('background-image', 'none', 'important');
-        // bg-white 클래스가 있다면 제거
-        headerRef.current.classList.remove('bg-white');
-        
-        // 헤더의 모든 자식 요소도 배경을 투명하게 설정
-        const children = headerRef.current.querySelectorAll('*');
-        children.forEach((child) => {
-          if (child instanceof HTMLElement) {
-            child.style.setProperty('background-color', 'transparent', 'important');
-            child.style.setProperty('background', 'transparent', 'important');
-          }
-        });
-        
-        // body와 html 배경도 투명하게 설정 (sticky 헤더가 body 배경을 보여줄 수 있음)
-        if (typeof document !== 'undefined') {
-          document.body.style.setProperty('background-color', 'transparent', 'important');
-          document.body.style.setProperty('background', 'transparent', 'important');
-          document.documentElement.style.setProperty('background-color', 'transparent', 'important');
-          document.documentElement.style.setProperty('background', 'transparent', 'important');
-          
-          // 헤더와 첫 번째 섹션 사이의 wrapper 요소들도 투명하게 설정
-          const wrappers = document.querySelectorAll('.relative');
-          wrappers.forEach((wrapper) => {
-            if (wrapper instanceof HTMLElement) {
-              wrapper.style.setProperty('background-color', 'transparent', 'important');
-              wrapper.style.setProperty('background', 'transparent', 'important');
-            }
-          });
-        }
-      } else {
-        // 투명하지 않을 때는 기본 동작
-        if (!isAboutPage) {
-          headerRef.current.style.removeProperty('background-color');
-          headerRef.current.style.removeProperty('background');
-          headerRef.current.style.removeProperty('background-image');
-          
-          // 자식 요소의 배경도 제거
-          const children = headerRef.current.querySelectorAll('*');
-          children.forEach((child) => {
-            if (child instanceof HTMLElement) {
-              child.style.removeProperty('background-color');
-              child.style.removeProperty('background');
-            }
-          });
-        }
-        // body와 html은 기본값으로 복원 (필요시)
-        if (typeof document !== 'undefined') {
-          document.body.style.removeProperty('background-color');
-          document.body.style.removeProperty('background');
-          document.documentElement.style.removeProperty('background-color');
-          document.documentElement.style.removeProperty('background');
-        }
-      }
-    }
-  }, [isTransparent, isAboutPage]);
+    if (!headerRef.current || !isTransparent) return;
+    
+    // bg-white 클래스만 제거 (나머지는 CSS와 인라인 스타일로 처리)
+    headerRef.current.classList.remove('bg-white');
+  }, [isTransparent]);
 
   return (
     <>
@@ -192,7 +135,8 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
         ref={headerRef}
         className={cn(
           'flex items-center justify-between px-[60px] py-[20px] w-full transition-colors duration-300 sticky top-0 z-50',
-          bgColor
+          bgColor,
+          isTransparent && 'bg-transparent'
         )}
         style={headerStyle}
       >

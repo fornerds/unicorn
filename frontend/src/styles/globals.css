@@ -26,16 +26,18 @@
     background-image: none !important;
   }
 
-  /* 헤더의 모든 자식 요소도 투명하게 설정 */
-  header[style*="background-color:transparent"] *,
-  header[style*="background:transparent"] * {
+  /* 헤더가 투명할 때 모든 자식 요소도 투명하게 설정 */
+  header.bg-transparent,
+  header[style*="background-color:transparent"],
+  header[style*="background:transparent"] {
     background-color: transparent !important;
     background: transparent !important;
+    background-image: none !important;
   }
 
-  /* 헤더와 첫 번째 섹션 사이의 wrapper 요소들도 투명하게 설정 */
-  .relative[style*="background-color:transparent"],
-  .relative[style*="background:transparent"] {
+  header.bg-transparent *,
+  header[style*="background-color:transparent"] *,
+  header[style*="background:transparent"] * {
     background-color: transparent !important;
     background: transparent !important;
   }
