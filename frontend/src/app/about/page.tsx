@@ -157,7 +157,8 @@ export default function AboutPage() {
         </motion.div>
       </div>
 
-      <div className="bg-white relative z-10">
+      {/* 컨텐츠 섹션 - 패럴랙스 효과를 위해 충분한 높이 확보 */}
+      <div className="bg-white relative z-10" style={{ minHeight: '200vh' }}>
         <div className="flex flex-col gap-[254px] items-start pb-[200px] pt-[120px] px-[20px] md:px-[40px] lg:px-[142px] w-full max-w-[1920px] mx-auto">
           <motion.div
             ref={valueSectionRef}
