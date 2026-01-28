@@ -106,7 +106,7 @@ export default function AboutPage() {
         style={{
           top: 0,
           height: videoHeight ? `${videoHeight}px` : '100vh',
-          zIndex: 10,
+          zIndex: 1,
         }}
       >
         {/* 비디오 레이어 */}
