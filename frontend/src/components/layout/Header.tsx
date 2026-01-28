@@ -61,9 +61,9 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   const isHomePage = normalizedPath === ROUTES.HOME || normalizedPath === '/' || pathname === '/unicorn' || pathname === '/unicorn/';
   const isAboutPage = normalizedPath === ROUTES.ABOUT;
   
-  // 홈페이지에서만 isFirstSection을 사용 (about 페이지와 분리)
+  // 홈페이지와 about 페이지에서 isFirstSection을 사용하여 헤더 투명도 제어
   // mounted 조건 제거: 초기 렌더링 시에도 투명하게 표시
-  const isTransparent = isHomePage && isFirstSection;
+  const isTransparent = (isHomePage || isAboutPage) && isFirstSection;
   
   // 디버깅용 로그 (개발 환경에서만)
   useEffect(() => {
@@ -79,21 +79,16 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
     }
   }, [pathname, normalizedPath, isHomePage, isFirstSection, isTransparent]);
 
+  // about 페이지에서도 투명할 때는 흰색 텍스트
   const textColor = isTransparent ? 'text-white' : isAboutPage ? 'text-[#1f2937]' : 'text-[#374151]';
   
   // bgColor 결정 로직: 홈페이지와 about 페이지를 명확히 분리
   // 투명일 때는 bgColor 클래스를 사용하지 않음 (인라인 스타일로 처리)
-  let bgColor = '';
-  if (isTransparent) {
-    // 투명일 때는 클래스 없음
-    bgColor = '';
-  } else if (isAboutPage) {
-    // about 페이지: 항상 흰색 배경
-    bgColor = 'bg-white';
-  } else {
-    // 기본값: 흰색 배경
-    bgColor = 'bg-white';
-  }
+  const bgColor = isTransparent
+    ? ''
+    : isAboutPage
+    ? 'bg-white'
+    : 'bg-white';
   
   const iconColor = isTransparent ? '#ffffff' : isAboutPage ? '#1f2937' : '#374151';
   

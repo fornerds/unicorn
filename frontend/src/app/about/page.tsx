@@ -7,8 +7,10 @@ import { Video } from '@/components/ui/Video';
 import { DownloadIcon, EmailIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
 import { withBasePath } from '@/utils/assets';
+import { useHeader } from '@/contexts/HeaderContext';
 
 export default function AboutPage() {
+  const { setIsFirstSection } = useHeader();
   const innovationCards = [
     {
       id: 1,
@@ -56,6 +58,46 @@ export default function AboutPage() {
     window.addEventListener('resize', updateVideoHeight);
     return () => window.removeEventListener('resize', updateVideoHeight);
   }, []);
+
+  // 첫 번째 섹션(비디오)이 보이는지 확인하여 헤더 투명도 제어
+  useEffect(() => {
+    // 초기 상태 설정: 페이지 로드 시 첫 섹션이 보이는 상태로 시작
+    setIsFirstSection(true);
+
+    const videoSection = videoRef.current;
+    if (!videoSection) return;
+
+    // IntersectionObserver 설정
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // 비디오 섹션이 뷰포트에 보이면 헤더를 투명하게
+          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+            setIsFirstSection(true);
+          } else {
+            setIsFirstSection(false);
+          }
+        });
+      },
+      {
+        threshold: [0, 0.3, 0.5, 1],
+        rootMargin: '-100px 0px',
+      }
+    );
+
+    // 즉시 한 번 확인하여 초기 상태 설정
+    const rect = videoSection.getBoundingClientRect();
+    const isVisible = rect.top <= window.innerHeight && rect.bottom >= 0;
+    if (isVisible) {
+      setIsFirstSection(true);
+    }
+
+    observer.observe(videoSection);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [setIsFirstSection]);
 
   const { scrollY } = useScroll();
   const videoY = useTransform(scrollY, [0, videoHeight || 1000], [0, -300]);
