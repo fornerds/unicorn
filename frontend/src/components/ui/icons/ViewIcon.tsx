@@ -12,7 +12,7 @@ export const ViewIcon = ({
   className,
   width = 20,
   height = 20,
-  stroke = 'currentColor',
+  stroke = '#BAC2D0',
   strokeWidth = 1.5,
 }: ViewIconProps) => {
   return (

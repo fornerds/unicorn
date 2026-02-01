@@ -1,18 +1,16 @@
 import { cn } from '@/utils/cn';
 
-interface AtIconProps {
+interface GoogleIconProps {
   className?: string;
   width?: number | string;
   height?: number | string;
-  fill?: string;
 }
 
-export const AtIcon = ({
+export const GoogleIcon = ({
   className,
   width = 17,
   height = 17,
-  fill = 'currentColor',
-}: AtIconProps) => {
+}: GoogleIconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

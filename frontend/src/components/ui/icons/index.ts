@@ -26,3 +26,6 @@ export { BatteryIcon } from './BatteryIcon';
 export { SpeedIcon } from './SpeedIcon';
 export { CheckIcon } from './CheckIcon';
 export { AiIcon } from './AiIcon';
+export { GoogleIcon } from './GoogleIcon';
+export { NaverIcon } from './NaverIcon';
+export { KakaoIcon } from './KakaoIcon';

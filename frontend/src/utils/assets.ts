@@ -4,11 +4,6 @@
 
 // basePath를 가져오는 헬퍼 함수
 const getBasePath = (): string => {
-  // 환경 변수에서 먼저 확인 (빌드 타임에 설정됨)
-  if (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_PATH) {
-    return process.env.NEXT_PUBLIC_BASE_PATH;
-  }
-  
   // 클라이언트 사이드: 현재 경로에서 basePath 추출
   if (typeof window !== 'undefined' && window.location) {
     const path = window.location.pathname;
@@ -17,14 +12,26 @@ const getBasePath = (): string => {
     }
   }
   
+  // 환경 변수에서 확인 (Next.js는 빌드 타임에 NEXT_PUBLIC_ 변수를 인라인 치환)
+  // 클라이언트 컴포넌트에서도 안전하게 작동하도록 try-catch 사용
+  try {
+    // Next.js의 __NEXT_DATA__에서 basePath 확인
+    if (typeof window !== 'undefined' && (window as any).__NEXT_DATA__?.assetPrefix) {
+      return (window as any).__NEXT_DATA__.assetPrefix;
+    }
+  } catch (e) {
+    // 무시
+  }
+  
   // 기본값
   return '';
 };
 
 /**
  * basePath를 포함한 경로 생성 헬퍼
+ * 클라이언트와 서버 모두에서 안전하게 작동
  */
-export const withBasePath = (path: string): string => {
+export function withBasePath(path: string): string {
   try {
     const basePath = getBasePath();
     
@@ -50,7 +57,7 @@ export const withBasePath = (path: string): string => {
     console.warn('withBasePath error:', error);
     return path;
   }
-};
+}
 
 export const ASSETS = {
   images: {
