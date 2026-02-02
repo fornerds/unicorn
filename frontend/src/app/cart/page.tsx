@@ -335,8 +335,7 @@ export default function CartPage() {
                                   <ArrowDownIcon
                                     width={9}
                                     height={5}
-                                    stroke="#6b7280"
-                                    strokeWidth={1.5}
+                                    fill="#6b7280"
                                     className={`transition-transform ${showColorDropdowns[item.id] ? 'rotate-180' : ''}`}
                                   />
                                 </div>
