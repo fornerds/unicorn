@@ -4,6 +4,7 @@ export { PlusIcon } from './PlusIcon';
 export { UploadIcon } from './UploadIcon';
 export { ArrowDiagonalIcon } from './ArrowDiagonalIcon';
 export { ArrowRightIcon } from './ArrowRightIcon';
+export { ArrowRightWhiteIcon } from './ArrowRightWhiteIcon';
 export { ArrowBackIcon } from './ArrowBackIcon';
 export { ArrowDownIcon } from './ArrowDownIcon';
 export { ArrowUpIcon } from './ArrowUpIcon';

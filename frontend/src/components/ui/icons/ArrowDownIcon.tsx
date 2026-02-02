@@ -4,32 +4,27 @@ interface ArrowDownIconProps {
   className?: string;
   width?: number | string;
   height?: number | string;
-  stroke?: string;
-  strokeWidth?: number | string;
+  fill?: string;
 }
 
 export const ArrowDownIcon = ({
   className,
-  width = 17,
-  height = 10,
-  stroke = 'currentColor',
-  strokeWidth = 1.5,
+  width = 11,
+  height = 6,
+  fill = '#4B5563',
 }: ArrowDownIconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={width}
       height={height}
-      viewBox="0 0 17 10"
+      viewBox="0 0 11 6"
       fill="none"
       className={cn(className)}
     >
       <path
-        d="M0.75 0.75L8.25 9.08333L15.75 0.750001"
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M10.6667 0.000650872L5.33333 5.33398L2.33127e-07 0.000650406L10.6667 0.000650872Z"
+        fill={fill}
       />
     </svg>
   );
