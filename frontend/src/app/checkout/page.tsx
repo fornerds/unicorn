@@ -486,8 +486,7 @@ export default function CheckoutPage() {
                         <ArrowDownIcon
                           width={8.333}
                           height={8.333}
-                          stroke="#bac2d0"
-                          strokeWidth={1.5}
+                          fill="#bac2d0"
                           className={cn('transition-transform', showEmailDomainDropdown && 'rotate-180')}
                         />
                       </div>

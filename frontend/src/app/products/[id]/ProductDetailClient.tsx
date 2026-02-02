@@ -191,8 +191,7 @@ export const ProductDetailClient = () => {
                       <ArrowDownIcon
                         width={10.667}
                         height={5.333}
-                        stroke="#374151"
-                        strokeWidth={1.5}
+                        fill="#374151"
                         className={`transition-transform ${showColorDropdown ? 'rotate-180' : ''}`}
                       />
                     </div>

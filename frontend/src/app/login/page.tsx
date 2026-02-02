@@ -73,7 +73,7 @@ export default function LoginPage() {
                       ))}
                     </select>
                     <div className="flex items-center justify-center shrink-0 w-[20px] h-[20px] p-[1.667px]">
-                      <ArrowDownIcon width={15} height={15} stroke="#bac2d0" />
+                      <ArrowDownIcon width={15} height={15} fill="#bac2d0" />
                     </div>
                   </div>
                 </div>

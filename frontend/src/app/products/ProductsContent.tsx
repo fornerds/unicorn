@@ -231,7 +231,7 @@ export const ProductsContent = () => {
                   {selectedSortLabel}
                 </p>
                 <div className={`flex items-center justify-center p-[1.333px] rounded-[5.333px] w-[16px] h-[16px] shrink-0 transition-transform ${showSortMenu ? 'rotate-180' : ''}`}>
-                  <ArrowDownIcon width={10.667} height={5.333} stroke="#374151" strokeWidth={1.5} />
+                  <ArrowDownIcon width={10.667} height={5.333} fill="#374151" />
                 </div>
               </button>
               {showSortMenu && (
