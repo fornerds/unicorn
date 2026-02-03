@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRightIcon, LikeIcon, ArrowRightWhiteIcon } from '@/components/ui/icons';
@@ -48,6 +49,32 @@ const mockLikedProducts = [
 ];
 
 export default function MyPage() {
+  const [basePath, setBasePath] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path.startsWith('/unicorn')) {
+        return '/unicorn';
+      }
+    }
+    return process.env.NEXT_PUBLIC_BASE_PATH || '';
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path.startsWith('/unicorn')) {
+        setBasePath('/unicorn');
+      }
+    }
+  }, []);
+
+  const getImagePath = (path: string) => {
+    if (basePath && path.startsWith('/')) {
+      return `${basePath}${path}`;
+    }
+    return path;
+  };
+
   return (
     <div className="bg-white flex flex-col">
       <div className="flex items-center justify-center pb-[150px] pt-[100px] px-[365px] w-full">
@@ -115,10 +142,11 @@ export default function MyPage() {
                         <div className="bg-[#f9fafb] flex items-center relative rounded-[12px] shrink-0">
                           <div className="relative shrink-0 w-[104px] h-[104px]">
                             <Image
-                              src={order.image}
+                              src={getImagePath(order.image)}
                               alt={order.productName}
                               fill
                               className="object-cover rounded-[12px]"
+                              unoptimized
                             />
                           </div>
                         </div>
@@ -214,10 +242,11 @@ export default function MyPage() {
                     <div className="flex flex-col h-[227px] items-center justify-end w-full">
                       <div className="aspect-square flex-1 relative w-full">
                         <Image
-                          src={product.image}
+                          src={getImagePath(product.image)}
                           alt={product.name}
                           fill
                           className="object-cover"
+                          unoptimized
                         />
                       </div>
                     </div>
@@ -237,10 +266,11 @@ export default function MyPage() {
             <div className="bg-[#f6faff] h-[177px] overflow-clip relative rounded-[20px] w-full">
               <div className="absolute h-[177px] left-0 top-0 w-full">
                 <Image
-                  src="/images/mypageBanner.png"
+                  src={getImagePath('/images/mypageBanner.png')}
                   alt="Life Changing Robots"
                   fill
                   className="object-cover"
+                  unoptimized
                 />
               </div>
               <div className="absolute flex items-end justify-between left-[43px] top-[50px] w-[800px]">

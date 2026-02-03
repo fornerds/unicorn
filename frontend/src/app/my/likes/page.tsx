@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { Pagination } from '@/components/ui/Pagination';
 import { ArrowDownIcon, LikeIcon } from '@/components/ui/icons';
 import { ROUTES } from '@/utils/constants';
-import { withBasePath } from '@/utils/assets';
 
 const mockLikedProducts = [
   {
@@ -195,7 +194,41 @@ export default function MyLikesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+  const [basePath, setBasePath] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path.startsWith('/unicorn')) {
+        return '/unicorn';
+      }
+    }
+    return process.env.NEXT_PUBLIC_BASE_PATH || '';
+  });
   const categoryMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path.startsWith('/unicorn')) {
+        setBasePath('/unicorn');
+      }
+    }
+  }, []);
+
+  const getImagePath = (path: string) => {
+    if (basePath && path.startsWith('/')) {
+      return `${basePath}${path}`;
+    }
+    return path;
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path.startsWith('/unicorn')) {
+        setBasePath('/unicorn');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -329,7 +362,7 @@ export default function MyLikesPage() {
                       <div className="flex flex-col h-[227px] items-center justify-end w-full">
                         <div className="aspect-square flex-1 relative w-full">
                           <Image
-                            src={withBasePath(product.imageUrl)}
+                            src={getImagePath(product.imageUrl)}
                             alt={product.name}
                             fill
                             className="object-cover"

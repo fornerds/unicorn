@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Pagination } from '@/components/ui/Pagination';
 import { ArrowDownIcon } from '@/components/ui/icons';
@@ -114,6 +114,31 @@ const TOTAL_ORDERS = 13;
 export default function MyOrdersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState<'latest' | 'oldest'>('latest');
+  const [basePath, setBasePath] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path.startsWith('/unicorn')) {
+        return '/unicorn';
+      }
+    }
+    return process.env.NEXT_PUBLIC_BASE_PATH || '';
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path.startsWith('/unicorn')) {
+        setBasePath('/unicorn');
+      }
+    }
+  }, []);
+
+  const getImagePath = (path: string) => {
+    if (basePath && path.startsWith('/')) {
+      return `${basePath}${path}`;
+    }
+    return path;
+  };
 
   const totalPages = Math.ceil(TOTAL_ORDERS / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -187,10 +212,11 @@ export default function MyOrdersPage() {
                         <div className="bg-[#f9fafb] flex items-center relative rounded-[12px] shrink-0">
                           <div className="relative shrink-0 w-[104px] h-[104px]">
                             <Image
-                              src={order.image}
+                              src={getImagePath(order.image)}
                               alt={order.productName}
                               fill
                               className="object-cover rounded-[12px]"
+                              unoptimized
                             />
                           </div>
                         </div>
