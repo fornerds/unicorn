@@ -5,6 +5,7 @@ import { ArrowBackIcon } from '@/components/ui/icons/ArrowBackIcon';
 import { NewsCard } from '@/components/features/news/NewsCard';
 import { mockNewsData } from '@/data/mockNews';
 import { ROUTES } from '@/utils/constants';
+import { withBasePath } from '@/utils/assets';
 
 export async function generateStaticParams() {
   return mockNewsData.map((news) => ({
@@ -59,7 +60,7 @@ export default function NewsDetailPage({ params }: { params: { id: string } }) {
             </div>
             <div className="h-[300px] md:h-[500px] lg:h-[799px] relative rounded-[12px] w-full overflow-hidden">
               <Image
-                src={news.imageUrl}
+                src={withBasePath(news.imageUrl)}
                 alt={news.title}
                 fill
                 className="object-cover"
