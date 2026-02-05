@@ -346,7 +346,7 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="absolute bg-gradient-to-r from-[rgba(120,132,160,0)] to-[rgba(69,78,98,0.7)] h-[353px] right-0 top-0 w-[334px] pointer-events-none" />
-          <div className="absolute right-[80px] top-[-12px] w-[530px] h-[377px] hidden lg:block pointer-events-none">
+          <div className="absolute right-[0px] top-[48px] w-[688px] h-[329px] hidden lg:block pointer-events-none">
             <Image
               src={withBasePath('/images/detail.png')}
               alt="Detail"
