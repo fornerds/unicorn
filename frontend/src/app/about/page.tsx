@@ -83,25 +83,26 @@ export default function AboutPage() {
   }, []);
 
   const { scrollY } = useScroll();
-  const videoY = useTransform(scrollY, [0, videoHeight || 1000], [0, 1000]);
-  const videoOpacity = useTransform(scrollY, [0, (videoHeight || 1000) * 0.5, videoHeight || 1000], [1, 0.5, 0]);
+  // 텍스트용 parallax 효과 (기존과 동일하게 유지)
+  const textY = useTransform(scrollY, [0, videoHeight || 1000], [0, 1000]);
+  const textOpacity = useTransform(scrollY, [0, (videoHeight || 1000) * 0.5, videoHeight || 1000], [1, 0.5, 0]);
 
   // 영상 섹션이 보이는지 확인하여 헤더 투명도 제어
-  // 영상 섹션이 position: fixed이므로 스크롤 위치를 직접 확인
   useEffect(() => {
     const checkVisibility = () => {
-      const scrollY = window.scrollY || window.pageYOffset;
-      const currentVideoHeight = videoHeight || window.innerHeight;
-      // 스크롤 위치가 영상 섹션 높이보다 작으면 영상 섹션이 보이는 상태
-      // 약간의 여유를 두기 위해 50px 정도 여유를 둠
-      const isVisible = scrollY < currentVideoHeight - 50;
+      if (!videoRef.current) return;
+      
+      const rect = videoRef.current.getBoundingClientRect();
+      // 영상 섹션이 뷰포트에 보이는지 확인
+      const isVisible = rect.bottom > 0 && rect.top < window.innerHeight;
       setIsFirstSection(isVisible);
       
       // 디버깅용 로그 (개발 환경에서만)
       if (process.env.NODE_ENV === 'development') {
         console.log('About Page Scroll Debug:', {
-          scrollY,
-          currentVideoHeight,
+          rectTop: rect.top,
+          rectBottom: rect.bottom,
+          windowHeight: window.innerHeight,
           isVisible,
         });
       }
@@ -121,30 +122,25 @@ export default function AboutPage() {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
     };
-  }, [setIsFirstSection, videoHeight]);
+  }, [setIsFirstSection]);
 
   return (
     <div className="bg-white min-h-screen" style={{ marginTop: 0, paddingTop: 0 }}>
       <div
         ref={videoRef}
         data-video-section
-        className="fixed w-full overflow-hidden"
+        className="relative w-full overflow-hidden"
         style={{
-          top: '0',
-          left: '0',
-          right: '0',
-          height: '100vh',
-          minHeight: '100vh',
-          maxHeight: '100vh',
+          height: `calc(100vh + ${headerHeight}px)`,
+          minHeight: `calc(100vh + ${headerHeight}px)`,
+          maxHeight: `calc(100vh + ${headerHeight}px)`,
           zIndex: 0,
-          marginTop: 0,
+          marginTop: `-${headerHeight}px`,
           paddingTop: 0,
         }}
       >
-        <motion.div
-          style={{ y: videoY, opacity: videoOpacity }}
-          className="absolute inset-0 w-full h-[120%] z-0"
-        >
+        {/* 영상은 일반 스크롤에 따라 자연스럽게 올라가도록 */}
+        <div className="absolute inset-0 w-full h-[120%] z-0">
           <Video
             src="/videos/company.mp4"
             className="w-full h-full object-cover"
@@ -153,19 +149,20 @@ export default function AboutPage() {
             muted
             playsInline
           />
-        </motion.div>
-        <div className="absolute inset-0 flex flex-col gap-[10px] items-start justify-center px-[20px] md:px-[40px] lg:px-[141px] z-0">
+        </div>
+        {/* 텍스트는 parallax 효과 유지 */}
+        <motion.div
+          style={{ y: textY, opacity: textOpacity }}
+          className="absolute inset-0 flex flex-col gap-[10px] items-start justify-center px-[20px] md:px-[40px] lg:px-[141px] z-10"
+        >
           <h1 className="font-suit font-extralight text-[60px] md:text-[90px] leading-[normal] text-black whitespace-nowrap">
             Company
           </h1>
           <p className="font-suit font-light text-[20px] md:text-[28px] leading-[normal] text-black max-w-[865px]">
             더 나은 내일을 제안하는 AI 로봇 큐레이션 서비스
           </p>
-        </div>
+        </motion.div>
       </div>
-
-      {/* 영상 섹션 높이만큼 스크롤 공간 확보 */}
-      <div style={{ height: '100vh' }} />
 
       <div className="bg-white relative z-10">
         <div className="flex flex-col gap-[254px] items-start pb-[200px] pt-[120px] px-[20px] md:px-[40px] lg:px-[142px] w-full max-w-[1920px] mx-auto">
