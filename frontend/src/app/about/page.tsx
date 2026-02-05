@@ -11,6 +11,12 @@ import { useHeader } from '@/contexts/HeaderContext';
 
 export default function AboutPage() {
   const { setIsFirstSection } = useHeader();
+  
+  // about 페이지 로드 시 즉시 초기 상태를 true로 설정 (영상 섹션이 보이는 상태)
+  useEffect(() => {
+    // 즉시 실행
+    setIsFirstSection(true);
+  }, [setIsFirstSection]);
   const innovationCards = [
     {
       id: 1,
@@ -45,17 +51,34 @@ export default function AboutPage() {
 
   useEffect(() => {
     const updateVideoHeight = () => {
-      if (videoRef.current) {
-        setVideoHeight(window.innerHeight);
-      }
       const header = document.querySelector('header');
       if (header) {
-        setHeaderHeight(header.offsetHeight);
+        const currentHeaderHeight = header.offsetHeight;
+        setHeaderHeight(currentHeaderHeight);
+        // 전체 화면 높이 (헤더 포함) - 영상 섹션이 헤더 아래부터 시작하므로 전체 높이 사용
+        const fullViewportHeight = window.innerHeight;
+        setVideoHeight(fullViewportHeight);
+      } else {
+        const fullViewportHeight = window.innerHeight;
+        setVideoHeight(fullViewportHeight);
       }
     };
 
     updateVideoHeight();
     window.addEventListener('resize', updateVideoHeight);
+    
+    // 헤더 높이 변화 감지를 위한 MutationObserver
+    const header = document.querySelector('header');
+    if (header) {
+      const observer = new MutationObserver(updateVideoHeight);
+      observer.observe(header, { attributes: true, attributeFilter: ['style', 'class'] });
+      
+      return () => {
+        window.removeEventListener('resize', updateVideoHeight);
+        observer.disconnect();
+      };
+    }
+    
     return () => window.removeEventListener('resize', updateVideoHeight);
   }, []);
 
@@ -63,15 +86,59 @@ export default function AboutPage() {
   const videoY = useTransform(scrollY, [0, videoHeight || 1000], [0, 1000]);
   const videoOpacity = useTransform(scrollY, [0, (videoHeight || 1000) * 0.5, videoHeight || 1000], [1, 0.5, 0]);
 
+  // 영상 섹션이 보이는지 확인하여 헤더 투명도 제어
+  // 영상 섹션이 position: fixed이므로 스크롤 위치를 직접 확인
+  useEffect(() => {
+    const checkVisibility = () => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const currentVideoHeight = videoHeight || window.innerHeight;
+      // 스크롤 위치가 영상 섹션 높이보다 작으면 영상 섹션이 보이는 상태
+      // 약간의 여유를 두기 위해 50px 정도 여유를 둠
+      const isVisible = scrollY < currentVideoHeight - 50;
+      setIsFirstSection(isVisible);
+      
+      // 디버깅용 로그 (개발 환경에서만)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('About Page Scroll Debug:', {
+          scrollY,
+          currentVideoHeight,
+          isVisible,
+        });
+      }
+    };
+
+    // 초기 상태 확인
+    checkVisibility();
+
+    // 스크롤 이벤트로 확인
+    const handleScroll = () => {
+      checkVisibility();
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [setIsFirstSection, videoHeight]);
+
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white min-h-screen" style={{ marginTop: 0, paddingTop: 0 }}>
       <div
         ref={videoRef}
         data-video-section
-        className="sticky w-full overflow-hidden z-0"
+        className="fixed w-full overflow-hidden"
         style={{
-          top: `${headerHeight}px`,
-          height: videoHeight ? `${videoHeight - headerHeight}px` : `calc(100vh - ${headerHeight}px)`,
+          top: '0',
+          left: '0',
+          right: '0',
+          height: '100vh',
+          minHeight: '100vh',
+          maxHeight: '100vh',
+          zIndex: 0,
+          marginTop: 0,
+          paddingTop: 0,
         }}
       >
         <motion.div
@@ -96,6 +163,9 @@ export default function AboutPage() {
           </p>
         </div>
       </div>
+
+      {/* 영상 섹션 높이만큼 스크롤 공간 확보 */}
+      <div style={{ height: '100vh' }} />
 
       <div className="bg-white relative z-10">
         <div className="flex flex-col gap-[254px] items-start pb-[200px] pt-[120px] px-[20px] md:px-[40px] lg:px-[142px] w-full max-w-[1920px] mx-auto">

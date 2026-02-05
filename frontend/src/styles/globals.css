@@ -12,12 +12,40 @@
   }
 
   /* html, body 배경을 투명하게 설정 (헤더 투명 효과를 위해) */
-  html,
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     background-color: transparent !important;
     background: transparent !important;
     /* 홈페이지에서 body 스크롤을 막기 위해 (스크롤 컨테이너만 스크롤) */
     overflow-x: hidden;
+  }
+
+  /* 헤더 sticky 작동을 위한 스타일 보장 */
+  /* 모든 부모 요소가 sticky를 방해하지 않도록 */
+  body,
+  body > *,
+  body > * > *,
+  body > * > * > * {
+    overflow: visible !important;
+  }
+
+  /* QueryClientProvider와 같은 래퍼도 overflow를 방해하지 않도록 */
+  [data-reactroot],
+  #__next,
+  #__next > * {
+    overflow: visible !important;
+  }
+
+  /* HeaderProvider는 Context Provider이므로 실제 DOM 요소가 아니지만, 
+     혹시 모를 경우를 대비해 명시적으로 설정 */
+  header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    width: 100% !important;
   }
 
   /* 헤더가 투명할 때를 위한 명시적 CSS 규칙 */

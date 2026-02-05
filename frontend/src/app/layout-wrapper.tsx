@@ -15,13 +15,41 @@ export const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
     setMounted(true);
   }, []);
 
-  const isHomePage = mounted && pathname === ROUTES.HOME;
+  const normalizedPath = pathname.replace(/^\/unicorn\/?/, '') || '/';
+  const isHomePage = mounted && (normalizedPath === ROUTES.HOME || normalizedPath === '/' || pathname === '/unicorn' || pathname === '/unicorn/');
+
+  useEffect(() => {
+    if (mounted) {
+      if (!isHomePage) {
+        // 다른 페이지에서는 body가 스크롤 가능해야 sticky가 작동함
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        document.body.style.overflowY = 'auto';
+        document.documentElement.style.overflowY = 'auto';
+      }
+    }
+  }, [mounted, isHomePage, pathname]);
+
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.overflowY = '';
+      document.documentElement.style.overflowY = '';
+    };
+  }, []);
 
   return (
     <HeaderProvider>
-      <Header />
-      {children}
-      {!isHomePage && <Footer />}
+      <div style={{ display: 'contents' }}>
+        <Header />
+        <div className="flex flex-col min-h-screen" style={{ overflow: 'visible' }}>
+          <main className="flex-1" style={{ overflow: 'visible' }}>
+            {children}
+          </main>
+          {!isHomePage && <Footer />}
+        </div>
+      </div>
     </HeaderProvider>
   );
 };

@@ -37,7 +37,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <div style={{ display: 'contents', overflow: 'visible' }}>
+        {children}
+      </div>
     </QueryClientProvider>
   );
 };
