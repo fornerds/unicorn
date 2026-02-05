@@ -84,25 +84,64 @@ export default function MyProfilePage() {
                       <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                         이름
                       </label>
-                      <span className="font-suit font-bold text-[14px] text-[#b59a79] leading-[1.35]">
-                        *
-                      </span>
                     </div>
                     <div className="flex flex-col gap-[6px] items-start w-full">
                       {isEditing ? (
-                        <div className="flex h-[48px] items-center pt-[16px] pr-[12px] pb-[16px] pl-[4px] border-b border-[#BAC2D0] w-full">
+                        <div 
+                          className="flex h-[48px] items-center gap-[10px] py-[16px] px-[4px] border-b border-[#BAC2D0] w-full self-stretch bg-transparent"
+                          style={{
+                            display: 'flex',
+                            height: '48px',
+                            padding: '16px 4px',
+                            alignItems: 'center',
+                            gap: '10px',
+                            alignSelf: 'stretch',
+                            borderBottom: '1px solid #BAC2D0',
+                            backgroundColor: 'transparent',
+                            background: 'transparent',
+                          }}
+                        >
                           <input
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className={`flex-1 font-suit font-regular text-[16px] leading-[1.35] bg-transparent border-none outline-none ${
-                              name ? 'text-[#161616]' : 'text-[#bac2d0]'
-                            }`}
+                            className="flex-1 font-suit font-medium text-[18px] text-[#4B5563] leading-[1.5] bg-transparent border-none outline-none"
+                            style={{
+                              color: '#4B5563',
+                              fontFamily: 'SUIT',
+                              fontSize: '18px',
+                              fontStyle: 'normal',
+                              fontWeight: 500,
+                              lineHeight: '150%',
+                            }}
                           />
                         </div>
                       ) : (
-                        <div className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full">
-                          <p className="flex-1 font-suit font-regular text-[16px] text-[#bac2d0] leading-[1.35]">
+                        <div 
+                          className="flex h-[48px] items-center gap-[10px] py-[16px] px-[4px] border-b border-[#BAC2D0] w-full self-stretch bg-transparent"
+                          style={{
+                            display: 'flex',
+                            height: '48px',
+                            padding: '16px 4px',
+                            alignItems: 'center',
+                            gap: '10px',
+                            alignSelf: 'stretch',
+                            borderBottom: '1px solid #BAC2D0',
+                            backgroundColor: 'transparent',
+                            background: 'transparent',
+                          }}
+                        >
+                          <p 
+                            className="flex-1 font-suit font-medium text-[18px] text-[#4B5563] leading-[1.5]"
+                            style={{
+                              color: '#4B5563',
+                              fontFamily: 'SUIT',
+                              fontSize: '18px',
+                              fontStyle: 'normal',
+                              fontWeight: 500,
+                              lineHeight: '150%',
+                            }}
+                          >
                             {name}
                           </p>
                         </div>
@@ -116,25 +155,64 @@ export default function MyProfilePage() {
                       <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                         이메일
                       </label>
-                      <span className="font-suit font-bold text-[14px] text-[#b59a79] leading-[1.35]">
-                        *
-                      </span>
                     </div>
                     <div className="flex flex-col gap-[6px] items-start w-full">
                       {isEditing ? (
-                        <div className="flex h-[48px] items-center pt-[16px] pr-[12px] pb-[16px] pl-[4px] border-b border-[#BAC2D0] w-full">
+                        <div 
+                          className="flex h-[48px] items-center gap-[10px] py-[16px] px-[4px] border-b border-[#BAC2D0] w-full self-stretch bg-transparent"
+                          style={{
+                            display: 'flex',
+                            height: '48px',
+                            padding: '16px 4px',
+                            alignItems: 'center',
+                            gap: '10px',
+                            alignSelf: 'stretch',
+                            borderBottom: '1px solid #BAC2D0',
+                            backgroundColor: 'transparent',
+                            background: 'transparent',
+                          }}
+                        >
                           <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className={`flex-1 font-suit font-regular text-[16px] leading-[1.35] bg-transparent border-none outline-none ${
-                              email ? 'text-[#161616]' : 'text-[#bac2d0]'
-                            }`}
+                            className="flex-1 font-suit font-medium text-[18px] text-[#4B5563] leading-[1.5] bg-transparent border-none outline-none"
+                            style={{
+                              color: '#4B5563',
+                              fontFamily: 'SUIT',
+                              fontSize: '18px',
+                              fontStyle: 'normal',
+                              fontWeight: 500,
+                              lineHeight: '150%',
+                            }}
                           />
                         </div>
                       ) : (
-                        <div className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full">
-                          <p className="flex-1 font-suit font-regular text-[16px] text-[#bac2d0] leading-[1.35]">
+                        <div 
+                          className="flex h-[48px] items-center gap-[10px] py-[16px] px-[4px] border-b border-[#BAC2D0] w-full self-stretch bg-transparent"
+                          style={{
+                            display: 'flex',
+                            height: '48px',
+                            padding: '16px 4px',
+                            alignItems: 'center',
+                            gap: '10px',
+                            alignSelf: 'stretch',
+                            borderBottom: '1px solid #BAC2D0',
+                            backgroundColor: 'transparent',
+                            background: 'transparent',
+                          }}
+                        >
+                          <p 
+                            className="flex-1 font-suit font-medium text-[18px] text-[#4B5563] leading-[1.5]"
+                            style={{
+                              color: '#4B5563',
+                              fontFamily: 'SUIT',
+                              fontSize: '18px',
+                              fontStyle: 'normal',
+                              fontWeight: 500,
+                              lineHeight: '150%',
+                            }}
+                          >
                             {email}
                           </p>
                         </div>
@@ -150,25 +228,64 @@ export default function MyProfilePage() {
                     <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                       전화번호
                     </label>
-                    <span className="font-suit font-bold text-[14px] text-[#b59a79] leading-[1.35]">
-                      *
-                    </span>
                   </div>
                   <div className="flex flex-col gap-[6px] items-start w-full">
                     {isEditing ? (
-                      <div className="flex h-[48px] items-center pt-[16px] pr-[12px] pb-[16px] pl-[4px] border-b border-[#BAC2D0] w-full">
+                      <div 
+                        className="flex h-[48px] items-center gap-[10px] py-[16px] px-[4px] border-b border-[#BAC2D0] w-full self-stretch bg-transparent"
+                        style={{
+                          display: 'flex',
+                          height: '48px',
+                          padding: '16px 4px',
+                          alignItems: 'center',
+                          gap: '10px',
+                          alignSelf: 'stretch',
+                          borderBottom: '1px solid #BAC2D0',
+                          backgroundColor: 'transparent',
+                          background: 'transparent',
+                        }}
+                      >
                         <input
                           type="tel"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          className={`flex-1 font-suit font-regular text-[16px] leading-[1.35] bg-transparent border-none outline-none ${
-                            phone ? 'text-[#161616]' : 'text-[#bac2d0]'
-                          }`}
+                          className="flex-1 font-suit font-medium text-[18px] text-[#4B5563] leading-[1.5] bg-transparent border-none outline-none"
+                          style={{
+                            color: '#4B5563',
+                            fontFamily: 'SUIT',
+                            fontSize: '18px',
+                            fontStyle: 'normal',
+                            fontWeight: 500,
+                            lineHeight: '150%',
+                          }}
                         />
                       </div>
                     ) : (
-                      <div className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full">
-                        <p className="flex-1 font-suit font-regular text-[16px] text-[#bac2d0] leading-[1.35]">
+                      <div 
+                        className="flex h-[48px] items-center gap-[10px] py-[16px] px-[4px] border-b border-[#BAC2D0] w-full self-stretch bg-transparent"
+                        style={{
+                          display: 'flex',
+                          height: '48px',
+                          padding: '16px 4px',
+                          alignItems: 'center',
+                          gap: '10px',
+                          alignSelf: 'stretch',
+                          borderBottom: '1px solid #BAC2D0',
+                          backgroundColor: 'transparent',
+                          background: 'transparent',
+                        }}
+                      >
+                        <p 
+                          className="flex-1 font-suit font-medium text-[18px] text-[#4B5563] leading-[1.5]"
+                          style={{
+                            color: '#4B5563',
+                            fontFamily: 'SUIT',
+                            fontSize: '18px',
+                            fontStyle: 'normal',
+                            fontWeight: 500,
+                            lineHeight: '150%',
+                          }}
+                        >
                           {phone}
                         </p>
                       </div>
@@ -181,13 +298,33 @@ export default function MyProfilePage() {
                       <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                         가입일
                       </label>
-                      <span className="font-suit font-bold text-[14px] text-[#b59a79] leading-[1.35]">
-                        *
-                      </span>
                     </div>
                     <div className="flex flex-col gap-[6px] items-start w-full">
-                      <div className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full">
-                        <p className="flex-1 font-suit font-regular text-[16px] text-[#bac2d0] leading-[1.35]">
+                      <div 
+                        className="flex h-[48px] items-center gap-[10px] py-[16px] px-[4px] border-b border-[#BAC2D0] w-full self-stretch bg-transparent"
+                        style={{
+                          display: 'flex',
+                          height: '48px',
+                          padding: '16px 4px',
+                          alignItems: 'center',
+                          gap: '10px',
+                          alignSelf: 'stretch',
+                          borderBottom: '1px solid #BAC2D0',
+                          backgroundColor: 'transparent',
+                          background: 'transparent',
+                        }}
+                      >
+                        <p 
+                          className="flex-1 font-suit font-medium text-[18px] text-[#4B5563] leading-[1.5]"
+                          style={{
+                            color: '#4B5563',
+                            fontFamily: 'SUIT',
+                            fontSize: '18px',
+                            fontStyle: 'normal',
+                            fontWeight: 500,
+                            lineHeight: '150%',
+                          }}
+                        >
                           {joinDate}
                         </p>
                       </div>
