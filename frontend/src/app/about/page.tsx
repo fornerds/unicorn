@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Video } from '@/components/ui/Video';
 import { DownloadIcon, EmailIcon } from '@/components/ui/icons';
 import { cn } from '@/utils/cn';
 import { withBasePath } from '@/utils/assets';
 import { useHeader } from '@/contexts/HeaderContext';
+import { ROUTES } from '@/utils/constants';
 
 export default function AboutPage() {
   const { setIsFirstSection } = useHeader();
@@ -331,12 +333,15 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="flex gap-[11px] items-center">
-              <button className="bg-[#1f2937] flex h-[49px] items-center justify-center gap-[8px] px-[32px] py-[12px] rounded-[8px] hover:opacity-90 transition-opacity">
+              <Link
+                href={ROUTES.CONTACT}
+                className="bg-[#1f2937] flex h-[49px] items-center justify-center gap-[8px] px-[32px] py-[12px] rounded-[8px] hover:opacity-90 transition-opacity"
+              >
                 <EmailIcon width={16} height={16} fill="white" />
                 <p className="font-suit font-medium text-[16px] leading-[24px] text-white text-center whitespace-nowrap">
                   문의하기
                 </p>
-              </button>
+              </Link>
               <button className="bg-white border-[0.5px] border-[#1f2937] flex h-[49px] items-center justify-center gap-[8px] px-[32px] py-[12px] rounded-[8px] hover:opacity-90 transition-opacity">
                 <DownloadIcon width={16} height={16} fill="#1f2937" />
                 <p className="font-suit font-medium text-[16px] leading-[24px] text-[#1f2937] text-center whitespace-nowrap">

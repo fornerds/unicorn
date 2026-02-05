@@ -7,7 +7,7 @@ const footerLinks = [
   { label: 'Home', href: ROUTES.HOME },
   { label: 'Products', href: ROUTES.PRODUCTS },
   { label: 'Company', href: ROUTES.ABOUT },
-  { label: 'Contact', href: '#' },
+  { label: 'Contact', href: ROUTES.CONTACT },
 ];
 
 export const Footer = () => {

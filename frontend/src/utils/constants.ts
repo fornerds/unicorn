@@ -27,6 +27,7 @@ export const ROUTES = {
 
   // Company
   ABOUT: '/about',
+  CONTACT: '/contact',
 
   // AI Chat (state-based, main page)
   AI_CHAT: {
