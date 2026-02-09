@@ -122,7 +122,11 @@ export default function MyPage() {
               </div>
               <div className="flex flex-col gap-[20px] items-start w-full">
                 {mockOrders.map((order) => (
-                  <div key={order.id} className="flex flex-col gap-[4px] items-start w-full">
+                  <Link
+                    key={order.id}
+                    href={ROUTES.MY_ORDER_DETAIL(order.id)}
+                    className="flex flex-col gap-[4px] items-start w-full hover:opacity-90 transition-opacity cursor-pointer"
+                  >
                     <div className="flex items-center justify-between w-full">
                       <div className="flex gap-[10px] items-center text-[14px]">
                         <div className="flex gap-[4px] items-center justify-center leading-[20px] text-[#8e8e93]">
@@ -194,7 +198,7 @@ export default function MyPage() {
                       </div>
                       <div className="h-0 w-full border-t border-[#E5E7EB]" />
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

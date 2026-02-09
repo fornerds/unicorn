@@ -23,6 +23,7 @@ export const ROUTES = {
   MY_PAGE: '/my',
   MY_LIKES: '/my/likes',
   MY_ORDERS: '/my/orders',
+  MY_ORDER_DETAIL: (id: string | number) => `/my/orders/${id}`,
   MY_PROFILE: '/my/profile',
 
   // Company

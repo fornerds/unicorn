@@ -31,6 +31,7 @@ const inquiryTypes = [
   { value: 'product', label: '제품 문의' },
   { value: 'technical', label: '기술 문의' },
   { value: 'partnership', label: '파트너십 문의' },
+  { value: 'cancel', label: '취소/환불' },
 ];
 
 export default function ContactPage() {
