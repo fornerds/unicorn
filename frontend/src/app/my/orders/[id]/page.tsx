@@ -1,11 +1,12 @@
-'use client';
-
-import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BoxIcon, ShippingIcon, CheckIcon, DomesticArrivalIcon, CustomsIcon, DeliveryTruckIcon, StepDotIcon } from '@/components/ui/icons';
 import { ROUTES } from '@/utils/constants';
 import { withBasePath } from '@/utils/assets';
+
+export function generateStaticParams() {
+  return [];
+}
 
 const ORDER_STEPS = [
   { id: 1, label: '결제 완료', icon: BoxIcon, active: true },
