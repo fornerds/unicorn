@@ -25,18 +25,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </div>
         )}
         <div className="flex flex-col gap-[6px] items-start w-full">
-          <div className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full">
-            <input
-              ref={ref}
-              className={cn(
+            <div className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full">
+              <input
+                ref={ref}
+                className={cn(
                 'flex-1 font-suit font-semibold text-[16px] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#ABB0BA]',
-                className
-              )}
+                  className
+                )}
               style={{
                 color: props.value && String(props.value).trim() !== '' ? '#121212' : '#ABB0BA',
               }}
-              {...props}
-            />
+                {...props}
+              />
           </div>
         </div>
         {error && (

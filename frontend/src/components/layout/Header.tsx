@@ -143,7 +143,7 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
     if (!headerRef.current) return;
     
     const updateHeader = () => {
-      const header = headerRef.current;
+    const header = headerRef.current;
       if (!header) return;
       
       // 실제 계산된 shouldBeTransparent 값 (effectiveFirstSection 사용)
@@ -167,9 +167,9 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
       
       if (actualShouldBeTransparent) {
         // 투명하게 설정
-        // 인라인 스타일로 투명 배경 설정 (클래스보다 우선순위 높음)
-        header.style.setProperty('background-color', 'transparent', 'important');
-        header.style.setProperty('background', 'transparent', 'important');
+      // 인라인 스타일로 투명 배경 설정 (클래스보다 우선순위 높음)
+      header.style.setProperty('background-color', 'transparent', 'important');
+      header.style.setProperty('background', 'transparent', 'important');
         // bg-white 클래스가 다시 추가되지 않도록 강제 제거
         header.classList.remove('bg-white');
       } else {
@@ -179,7 +179,7 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
         header.style.setProperty('background', 'white', 'important');
         // bg-white 클래스는 사용하지 않음 (인라인 스타일로만 관리)
         header.classList.remove('bg-white');
-      }
+        }
     };
 
     // 즉시 실행

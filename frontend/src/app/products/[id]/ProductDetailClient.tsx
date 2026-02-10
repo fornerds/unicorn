@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { LikeIcon, LikeIconFilled } from '@/components/ui/icons';
 import { MinusIcon, PlusIcon } from '@/components/ui/icons';
 import { WeightIcon, HeightIcon, TimeIcon, BatteryIcon, SpeedIcon } from '@/components/ui/icons';
-import { ArrowDownIcon } from '@/components/ui/icons';
 import { withBasePath } from '@/utils/assets';
 
 const mockProduct = {
@@ -73,32 +72,28 @@ export const ProductDetailClient = () => {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="flex flex-col gap-[113px] items-start pb-[150px] pt-[20px] px-[20px] md:px-[40px] lg:px-[60px] w-full max-w-[1800px] mx-auto">
-        <div className="flex flex-col lg:flex-row flex-wrap gap-[30px] items-start w-full">
-          <div className="flex flex-col gap-[8px] items-start w-full lg:w-[calc(66.11%-15px)] lg:max-w-[1190px]">
-            <div className="aspect-[3665/2062] relative rounded-[12px] w-full overflow-hidden">
+      <div className="flex flex-col gap-[84px] items-start pb-[150px] pt-[60px] px-[20px] md:px-[32px] lg:px-[45px] w-full max-w-[1440px] mx-auto">
+        <div className="flex flex-col lg:flex-row flex-wrap gap-[22.5px] items-start w-full max-w-[1350px]">
+          <div className="flex flex-col gap-[6px] items-start w-full lg:w-[892.5px]">
+            <div className="aspect-[3665/2062] relative rounded-[9px] w-full overflow-hidden">
               <Image
                 src={withBasePath(mockProduct.images[selectedImageIndex])}
                 alt={mockProduct.name}
                 fill
                 unoptimized
-                className="object-cover rounded-[12px]"
+                className="object-cover rounded-[9px]"
               />
             </div>
-            <div className="flex items-center justify-start w-full gap-[10px] overflow-x-auto">
+            <div className="flex items-center justify-start w-full gap-[9px] overflow-x-auto">
               {mockProduct.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImageIndex(index)}
-                  className={`relative rounded-[8px] overflow-hidden shrink-0 ${
+                  className={`relative rounded-[6px] overflow-hidden shrink-0 w-[122.25px] h-[105.75px] ${
                     index === selectedImageIndex
-                      ? 'border-2 border-[#1f2937]'
+                      ? 'border-[1.5px] border-[#1f2937]'
                       : 'border border-[#eaeaea]'
                   }`}
-                  style={{ 
-                    width: 'clamp(120px, 13.7vw, 163px)', 
-                    height: index % 2 === 0 ? 'clamp(100px, 12.2vw, 139px)' : 'clamp(102px, 12.4vw, 141px)' 
-                  }}
                 >
                   <Image
                     src={withBasePath(image)}
@@ -112,88 +107,102 @@ export const ProductDetailClient = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-[40px] lg:gap-[327px] items-start w-full lg:w-[calc(33.89%-15px)] lg:max-w-[580px]">
-            <div className="flex flex-col gap-[40px] lg:gap-[62px] items-start w-full">
-              <div className="flex flex-col gap-[20px] items-start w-full">
+          <div className="flex flex-col gap-[46.5px] lg:gap-[245.25px] items-start w-full lg:w-[435px]">
+            <div className="flex flex-col gap-[30px] lg:gap-[46.5px] items-start w-full">
+              <div className="flex flex-col gap-[15px] items-start w-full">
                 <div className="flex items-center justify-between w-full">
                   <div className="flex flex-1 gap-[2px] items-center min-w-0">
-                    <p className="font-suit font-normal text-[22px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+                    <p className="font-suit font-light text-[16px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
                       {mockProduct.category}
                     </p>
-                    <div className="w-[16px] h-[16px] relative shrink-0">
+                    <div className="w-[12px] h-[12px] relative shrink-0">
                       <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M5 4L10 8L5 12"
+                          d="M4 3L8 6L4 9"
                           stroke="#959ba9"
-                          strokeWidth="1.5"
+                          strokeWidth="1.2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         />
                       </svg>
                     </div>
-                    <p className="font-suit font-normal text-[22px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+                    <p className="font-suit font-light text-[16px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
                       {mockProduct.subCategory}
                     </p>
                   </div>
                   <div className="flex items-center justify-center px-[8px] py-[2px] rounded-[99px] shrink-0">
-                    <p className="font-suit font-extrabold text-[20px] leading-[1.5] text-[#4b5563] whitespace-nowrap">
+                    <p className="font-suit font-bold text-[15px] leading-[1.5] text-[#4b5563] whitespace-nowrap">
                       {mockProduct.companyName}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between w-full">
-                  <h1 className="flex flex-1 flex-col font-suit font-medium justify-center max-h-[144px] min-w-0 overflow-hidden text-[32px] text-[#1f2937] text-ellipsis">
+                  <h1 className="flex flex-1 flex-col font-suit font-normal justify-center max-h-[108px] min-w-0 overflow-hidden text-[24px] text-[#1f2937] text-ellipsis">
                     <span className="leading-[1.5] whitespace-pre-wrap">{mockProduct.name}</span>
                   </h1>
                   <button
                     onClick={() => setIsLiked(!isLiked)}
-                    className="flex items-center justify-center rounded-[10.667px] w-[32px] h-[32px] hover:opacity-80 transition-opacity"
+                    className="flex items-center justify-center rounded-[10.667px] w-[24px] h-[24px] hover:opacity-80 transition-opacity"
                     aria-label={isLiked ? '좋아요 취소' : '좋아요'}
                   >
                     {isLiked ? (
-                      <LikeIconFilled width={29} height={25} fill="#1F2937" stroke="#1F2937" />
+                      <LikeIconFilled width={21} height={18} fill="#1F2937" stroke="#1F2937" />
                     ) : (
-                      <LikeIcon width={29} height={25} stroke="#1F2937" strokeWidth={0.6875} />
+                      <LikeIcon width={21} height={18} stroke="#1F2937" strokeWidth={0.6875} />
                     )}
                   </button>
                 </div>
               </div>
               <div className="flex flex-col gap-[10px] items-start w-full">
                 <div className="flex items-center py-[6px] w-full">
-                  <p className="font-suit font-medium text-[20px] leading-[1.5] text-[#6b7280] whitespace-nowrap">
+                  <p className="font-suit font-normal text-[15px] leading-[1.5] text-[#6b7280] whitespace-nowrap">
                     COLOR(3)
                   </p>
                 </div>
                 <div className="relative w-full" ref={colorDropdownRef}>
                   <button
                     onClick={() => setShowColorDropdown(!showColorDropdown)}
-                    className="bg-[#f9fafb] border border-[#e5e7eb] flex items-center justify-between px-[20px] py-[14px] rounded-[10px] w-full hover:opacity-80 transition-opacity"
+                    className="bg-[#f9fafb] border border-[#e5e7eb] flex items-center px-[15px] py-[10.5px] rounded-[10px] w-full hover:opacity-80 transition-opacity"
                   >
-                    <div className="flex gap-[16px] items-center min-w-0 flex-1">
+                    <div className="flex gap-[12px] items-center min-w-0 flex-1">
                       <div
-                        className="rounded-full shrink-0 w-[33px] h-[33px] border"
+                        className="rounded-full shrink-0 w-[24.75px] h-[24.75px] border"
                         style={{
                           backgroundColor: selectedColorData?.value,
                           borderColor: selectedColorData?.borderColor,
                         }}
                       />
-                      <p className="flex-1 font-suit font-medium text-[20px] leading-[1.35] text-[#374151] text-ellipsis overflow-hidden whitespace-pre-wrap max-h-[54px]">
+                      <p className="flex-1 font-suit font-normal text-[15px] leading-[1.35] text-[#374151] text-left text-ellipsis overflow-hidden whitespace-pre-wrap max-h-[40.5px]">
                         {selectedColorData?.name}
                       </p>
                     </div>
-                    <div className="flex items-center justify-center p-[1.333px] rounded-[5.333px] w-[16px] h-[16px] shrink-0">
-                      <ArrowDownIcon
-                        width={10.667}
-                        height={5.333}
-                        fill="#374151"
-                        className={`transition-transform ${showColorDropdown ? 'rotate-180' : ''}`}
-                      />
+                    <div
+                      className={`ml-[12px] flex items-center justify-center p-[1.333px] rounded-[5.333px] w-[16px] h-[16px] shrink-0 transition-transform ${
+                        showColorDropdown ? 'rotate-180' : ''
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="10"
+                        height="6"
+                        viewBox="0 0 10 6"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M0.4375 0.4375L4.9375 5.4375L9.4375 0.4375"
+                          stroke="#4B5563"
+                          strokeWidth="0.875"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </div>
                   </button>
                   {showColorDropdown && (
@@ -205,17 +214,17 @@ export const ProductDetailClient = () => {
                             setSelectedColor(color.id);
                             setShowColorDropdown(false);
                           }}
-                          className="w-full bg-[#f9fafb] border-b border-[#e5e7eb] last:border-b-0 flex items-center justify-between px-[20px] py-[14px] hover:bg-[#f3f4f6] transition-colors first:rounded-t-[10px] last:rounded-b-[10px]"
+                          className="w-full bg-[#f9fafb] border-b border-[#e5e7eb] last:border-b-0 flex items-center justify-between px-[15px] py-[10.5px] hover:bg-[#f3f4f6] transition-colors first:rounded-t-[10px] last:rounded-b-[10px]"
                         >
-                          <div className="flex gap-[16px] items-center min-w-0 flex-1">
+                          <div className="flex gap-[12px] items-center min-w-0 flex-1">
                             <div
-                              className="rounded-full shrink-0 w-[33px] h-[33px] border"
+                              className="rounded-full shrink-0 w-[24.75px] h-[24.75px] border"
                               style={{
                                 backgroundColor: color.value,
                                 borderColor: color.borderColor,
                               }}
                             />
-                            <p className="flex-1 font-suit font-medium text-[20px] leading-[1.35] text-[#374151] text-ellipsis overflow-hidden whitespace-pre-wrap">
+                            <p className="flex-1 font-suit font-normal text-[15px] leading-[1.35] text-[#374151] text-ellipsis overflow-hidden whitespace-pre-wrap">
                               {color.name}
                             </p>
                           </div>
@@ -228,50 +237,50 @@ export const ProductDetailClient = () => {
             </div>
 
             <div className="flex flex-col gap-[40px] items-end w-full">
-              <div className="flex gap-[6px] h-[40px] items-center justify-end w-full text-[#111827]">
-                <p className="flex flex-1 flex-col font-suit font-extrabold justify-center min-w-0 text-[38px] text-right">
-                  <span className="leading-[40px] whitespace-pre-wrap">{formattedPrice}</span>
+              <div className="flex gap-[4.5px] h-[30px] items-center justify-end w-full text-[#111827]">
+                <p className="flex flex-1 flex-col font-suit font-bold justify-center min-w-0 text-[28.5px] text-right">
+                  <span className="leading-[30px] whitespace-pre-wrap">{formattedPrice}</span>
                 </p>
-                <p className="flex flex-col font-suit font-medium justify-center shrink-0 text-[32px] whitespace-nowrap">
-                  <span className="leading-[40px]">₩</span>
+                <p className="flex flex-col font-suit font-normal justify-center shrink-0 text-[24px] whitespace-nowrap">
+                  <span className="leading-[30px]">₩</span>
                 </p>
               </div>
               <div className="flex flex-col gap-[21px] items-end w-full">
                 <div className="flex flex-col sm:flex-row gap-[12px] items-stretch sm:items-center w-full">
-                  <div className="bg-[#f9fafb] border border-[#e5e7eb] flex gap-[13.542px] h-[65px] items-center justify-center px-[18.958px] py-[10.833px] rounded-[10.833px] shrink-0 self-center sm:self-auto">
+                  <div className="bg-[#f9fafb] border border-[#e5e7eb] flex gap-[10.156px] h-[48.75px] items-center justify-center px-[14.219px] py-[8.125px] rounded-[8.125px] shrink-0 self-center sm:self-auto">
                     <button
                       onClick={() => handleQuantityChange(-1)}
-                      className="flex items-center justify-center w-[21.667px] h-[21.667px] shrink-0 hover:opacity-80 transition-opacity"
+                      className="flex items-center justify-center w-[16.25px] h-[16.25px] shrink-0 hover:opacity-80 transition-opacity"
                     >
                       <MinusIcon width={12} height={1} stroke="#6b7280" strokeWidth={1} />
                     </button>
-                    <p className="font-suit font-semibold text-[21.67px] leading-[1.35] text-[#6b7280] text-center shrink-0">
+                    <p className="font-suit font-medium text-[16.25px] leading-[1.35] text-[#6b7280] text-center shrink-0">
                       {quantity}
                     </p>
                     <button
                       onClick={() => handleQuantityChange(1)}
-                      className="flex items-center justify-center w-[21.667px] h-[21.667px] shrink-0 hover:opacity-80 transition-opacity"
+                      className="flex items-center justify-center w-[16.25px] h-[16.25px] shrink-0 hover:opacity-80 transition-opacity"
                     >
                       <PlusIcon width={15} height={15} stroke="#6b7280" strokeWidth={1.5} />
                     </button>
                   </div>
-                  <button className="flex flex-1 h-[65px] items-center justify-center px-[20px] sm:px-[32px] py-[12px] bg-[#f9fafb] border-[0.5px] border-[#e5e7eb] rounded-[10px] hover:opacity-80 transition-opacity">
-                    <p className="font-suit font-medium text-[18px] sm:text-[20px] leading-[1.3] text-[#6c6c6c] text-center whitespace-nowrap">
+                  <button className="flex flex-1 h-[48.75px] items-center justify-center px-[24px] sm:px-[24px] py-[9px] bg-[#f9fafb] border-[0.5px] border-[#e5e7eb] rounded-[7.5px] hover:opacity-80 transition-opacity">
+                    <p className="font-suit font-normal text-[15px] leading-[1.3] text-[#6c6c6c] text-center whitespace-nowrap">
                       장바구니
                     </p>
                   </button>
-                  <button className="flex flex-1 h-[65px] items-center justify-center px-[20px] sm:px-[32px] py-[12px] bg-black rounded-[10px] hover:opacity-90 transition-opacity">
-                    <p className="font-suit font-bold text-[18px] sm:text-[20px] leading-[1.3] text-white text-center whitespace-nowrap">
+                  <button className="flex flex-1 h-[48.75px] items-center justify-center px-[24px] sm:px-[24px] py-[9px] bg-black rounded-[7.5px] hover:opacity-90 transition-opacity">
+                    <p className="font-suit font-semibold text-[15px] leading-[1.3] text-white text-center whitespace-nowrap">
                       구매하기
                     </p>
                   </button>
                 </div>
-                <div className="flex flex-col md:flex-row font-suit font-normal items-start md:items-end justify-between px-[4px] w-full text-[18px] text-[#959ba9] gap-[10px] md:gap-0">
-                  <div className="flex flex-col gap-[5px] items-start w-full md:w-[298px]">
+                <div className="flex flex-col md:flex-row font-suit font-light items-start md:items-end justify-between px-[3px] w-full text-[13.5px] text-[#959ba9] gap-[10px] md:gap-0">
+                  <div className="flex flex-col gap-[3.75px] items-start w-full md:w-[223.5px]">
                     <p className="leading-[normal] whitespace-pre-wrap">부가세가 포함된 가격입니다.</p>
                     <p className="leading-[normal] whitespace-pre-wrap">추후 배송 관련 안내사항 들어갈 부분</p>
                   </div>
-                  <button className="font-suit font-normal text-[20px] text-[#374151] underline hover:opacity-80 transition-opacity whitespace-nowrap shrink-0">
+                  <button className="font-suit font-light text-[15px] text-[#374151] underline hover:opacity-80 transition-opacity whitespace-nowrap shrink-0">
                     문의하기
                   </button>
                 </div>
@@ -281,19 +290,19 @@ export const ProductDetailClient = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row items-start justify-between px-[2px] w-full gap-[20px] lg:gap-0">
-          <h2 className="flex flex-col font-suit font-medium justify-center text-[32px] text-[#1f2937] w-full lg:w-[98px] shrink-0">
+          <h2 className="flex flex-col font-suit font-normal justify-center text-[24px] text-[#1f2937] w-full lg:w-[73.5px] shrink-0">
             <span className="leading-[normal] whitespace-pre-wrap">Details</span>
           </h2>
-          <div className="flex flex-wrap gap-[20px] md:gap-[40px] lg:gap-[54px] items-center px-[12px] py-[10px] w-full lg:w-[calc(100%-98px-54px)]">
+          <div className="flex flex-wrap gap-[20px] md:gap-[40px] lg:gap-[40.5px] items-center px-[9px] py-[7.5px] w-full lg:w-[1041px]">
             <div className="flex gap-[20px] md:gap-[40px] items-center shrink-0 min-w-0">
-              <div className="overflow-clip shrink-0 w-[56px] h-[56px]">
-                <WeightIcon width={56} height={56} stroke="#959BA9" strokeWidth={2} fill="#959BA9" />
+              <div className="overflow-clip shrink-0 w-[42px] h-[42px]">
+                <WeightIcon width={42} height={42} stroke="#959BA9" strokeWidth={2} fill="#959BA9" />
               </div>
-              <div className="flex flex-col gap-[10px] items-start min-w-0 flex-1 lg:w-[260px]">
-                <p className="font-suit font-semibold text-[20px] leading-[1.2] text-[#959ba9] w-full">
+              <div className="flex flex-col gap-[7.5px] items-start min-w-0 flex-1 lg:w-[195px]">
+                <p className="font-suit font-medium text-[15px] leading-[1.2] text-[#959ba9] w-full">
                   무게
                 </p>
-                <p className="font-suit font-bold text-[24px] leading-[1.5] text-[#374151] w-full">
+                <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] w-full">
                   {mockProduct.details.weight}
                 </p>
               </div>
@@ -304,14 +313,14 @@ export const ProductDetailClient = () => {
               </div>
             </div>
             <div className="flex gap-[20px] md:gap-[40px] items-center shrink-0 min-w-0">
-              <div className="overflow-clip shrink-0 w-[56px] h-[56px] flex items-center justify-center">
-                <HeightIcon width={18} height={47} stroke="#959BA9" strokeWidth={2} />
+              <div className="overflow-clip shrink-0 w-[42px] h-[42px] flex items-center justify-center">
+                <HeightIcon width={18} height={36} stroke="#959BA9" strokeWidth={2} />
               </div>
-              <div className="flex flex-col gap-[10px] items-start min-w-0 flex-1 lg:w-[260px]">
-                <p className="font-suit font-semibold text-[20px] leading-[1.2] text-[#959ba9] w-full">
+              <div className="flex flex-col gap-[7.5px] items-start min-w-0 flex-1 lg:w-[195px]">
+                <p className="font-suit font-medium text-[15px] leading-[1.2] text-[#959ba9] w-full">
                   높이
                 </p>
-                <p className="font-suit font-bold text-[24px] leading-[1.5] text-[#374151] w-full">
+                <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] w-full">
                   {mockProduct.details.height}
                 </p>
               </div>
@@ -322,27 +331,27 @@ export const ProductDetailClient = () => {
               </div>
             </div>
             <div className="flex gap-[20px] md:gap-[40px] items-center shrink-0 min-w-0">
-              <div className="overflow-clip shrink-0 w-[56px] h-[56px]">
-                <TimeIcon width={56} height={56} stroke="#959BA9" strokeWidth={2} />
+              <div className="overflow-clip shrink-0 w-[42px] h-[42px]">
+                <TimeIcon width={42} height={42} stroke="#959BA9" strokeWidth={2} />
               </div>
-              <div className="flex flex-col gap-[10px] items-start min-w-0 flex-1 lg:w-[260px]">
-                <p className="font-suit font-semibold text-[20px] leading-[1.2] text-[#959ba9] w-full">
+              <div className="flex flex-col gap-[7.5px] items-start min-w-0 flex-1 lg:w-[195px]">
+                <p className="font-suit font-medium text-[15px] leading-[1.2] text-[#959ba9] w-full">
                   작동 시간
                 </p>
-                <p className="font-suit font-bold text-[24px] leading-[1.5] text-[#374151] w-full">
+                <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] w-full">
                   {mockProduct.details.workingTime}
                 </p>
               </div>
             </div>
             <div className="flex gap-[20px] md:gap-[40px] items-center shrink-0 min-w-0">
-              <div className="overflow-clip shrink-0 w-[56px] h-[56px]">
-                <BatteryIcon width={56} height={56} stroke="#959BA9" strokeWidth={2} fill="#959BA9" />
+              <div className="overflow-clip shrink-0 w-[42px] h-[42px]">
+                <BatteryIcon width={42} height={42} stroke="#959BA9" strokeWidth={2} fill="#959BA9" />
               </div>
-              <div className="flex flex-col gap-[10px] items-start min-w-0 flex-1 lg:w-[260px]">
-                <p className="font-suit font-semibold text-[20px] leading-[1.2] text-[#959ba9] w-full">
+              <div className="flex flex-col gap-[7.5px] items-start min-w-0 flex-1 lg:w-[195px]">
+                <p className="font-suit font-medium text-[15px] leading-[1.2] text-[#959ba9] w-full">
                   배터리
                 </p>
-                <p className="font-suit font-bold text-[24px] leading-[1.5] text-[#374151] w-full">
+                <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] w-full">
                   {mockProduct.details.battery}
                 </p>
               </div>
@@ -353,14 +362,14 @@ export const ProductDetailClient = () => {
               </div>
             </div>
             <div className="flex gap-[20px] md:gap-[40px] items-center shrink-0 min-w-0">
-              <div className="overflow-clip shrink-0 w-[56px] h-[56px]">
-                <SpeedIcon width={56} height={56} stroke="#959BA9" strokeWidth={2} fill="#959BA9" />
+              <div className="overflow-clip shrink-0 w-[42px] h-[42px]">
+                <SpeedIcon width={42} height={42} stroke="#959BA9" strokeWidth={2} fill="#959BA9" />
               </div>
-              <div className="flex flex-col gap-[10px] items-start min-w-0 flex-1 lg:w-[260px]">
-                <p className="font-suit font-semibold text-[20px] leading-[1.2] text-[#959ba9] w-full">
+              <div className="flex flex-col gap-[7.5px] items-start min-w-0 flex-1 lg:w-[195px]">
+                <p className="font-suit font-medium text-[15px] leading-[1.2] text-[#959ba9] w-full">
                   속도
                 </p>
-                <p className="font-suit font-bold text-[24px] leading-[1.5] text-[#374151] w-full">
+                <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] w-full">
                   {mockProduct.details.speed}
                 </p>
               </div>
@@ -369,10 +378,10 @@ export const ProductDetailClient = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row items-start justify-between px-[6px] w-full text-[#1f2937] gap-[20px] lg:gap-0">
-          <h2 className="flex flex-col font-suit font-medium justify-center text-[32px] whitespace-nowrap shrink-0">
+          <h2 className="flex flex-col font-suit font-normal justify-center text-[24px] whitespace-nowrap shrink-0">
             <span className="leading-[normal]">About</span>
           </h2>
-          <p className="font-suit font-extralight leading-[1.5] text-[18px] md:text-[20px] lg:text-[22px] tracking-[-0.66px] w-full lg:w-[calc(100%-98px-20px)] whitespace-pre-wrap">
+          <p className="font-suit font-thin leading-[1.5] text-[16.5px] tracking-[-0.495px] w-full lg:w-[1036.5px] whitespace-pre-wrap">
             {mockProduct.description}
           </p>
         </div>
@@ -392,7 +401,7 @@ export const ProductDetailClient = () => {
             />
           </div>
           <div className="flex items-center justify-center p-[10px] w-full">
-            <p className="font-suit font-normal text-[20px] leading-[1.5] text-[#959ba9] text-center whitespace-nowrap">
+            <p className="font-suit font-light text-[20px] leading-[1.5] text-[#959ba9] text-center whitespace-nowrap">
               {mockProduct.videoTitle}
             </p>
           </div>

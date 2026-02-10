@@ -41,10 +41,10 @@ export const ProductCard = ({
   const getCategoryDisplayName = (category: string) => {
     const categoryMap: Record<string, string> = {
       HOME: 'Home',
-      FIREFIGHTING: 'FIREFIGHTING',
-      INDUSTRIAL: 'INDUSTRIAL',
-      MEDICAL: 'MEDICAL',
-      LOGISTICS: 'LOGISTICS',
+      FIREFIGHTING: 'Firefighting',
+      INDUSTRIAL: 'Industrial',
+      MEDICAL: 'Medical',
+      LOGISTICS: 'Logistics',
     };
     return categoryMap[category] || category;
   };
@@ -52,12 +52,12 @@ export const ProductCard = ({
   return (
     <Link
       href={ROUTES.PRODUCT_DETAIL(id)}
-      className="bg-[#f9fafb] flex flex-col items-center overflow-hidden pb-[36px] pt-[16px] px-[24px] rounded-[8px] shrink-0 w-[490px] hover:opacity-95 transition-opacity"
+      className="bg-[#f9fafb] flex flex-col items-center overflow-hidden pb-[36px] pt-[16px] px-[24px] rounded-[8px] shrink-0 w-[367px] hover:opacity-95 transition-opacity"
     >
       <div className="flex flex-col gap-[20px] items-start w-full">
         <div className="flex items-start justify-between w-full">
           <div className="flex flex-1 gap-[2px] items-center min-w-0">
-            <p className="font-suit font-medium text-[16px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+            <p className="font-suit font-medium text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
               {getCategoryDisplayName(category)}
             </p>
             <div className="w-[8px] h-[8px] relative shrink-0">
@@ -77,17 +77,17 @@ export const ProductCard = ({
                 />
               </svg>
             </div>
-            <p className="font-suit font-medium text-[16px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+            <p className="font-suit font-medium text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
               {subCategory}
             </p>
           </div>
           <div className="flex items-center justify-center px-[8px] py-[2px] rounded-[99px] shrink-0">
-            <p className="font-suit font-extrabold text-[16px] leading-[1.5] text-[#4b5563] whitespace-nowrap">
+            <p className="font-suit font-extrabold text-[14px] leading-[1.5] text-[#4b5563] whitespace-nowrap">
               {companyName}
             </p>
           </div>
         </div>
-        <div className="flex items-center justify-end px-[10px] w-[442px]">
+        <div className="flex items-center justify-end px-[10px] w-full">
           <button
             onClick={handleLikeClick}
             className="flex items-center justify-center rounded-[10.667px] w-[32px] h-[32px] hover:opacity-80 transition-opacity"
@@ -101,8 +101,8 @@ export const ProductCard = ({
           </button>
         </div>
       </div>
-      <div className="flex h-[390px] items-center justify-center w-full">
-        <div className="h-[390px] relative w-[442px]">
+      <div className="flex items-center justify-center w-full">
+        <div className="relative w-full max-w-[320px] aspect-[442/390]">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute h-[77.14%] left-[15.99%] top-[11.4%] w-[68.06%]">
               <Image

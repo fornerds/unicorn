@@ -37,23 +37,25 @@ export const NewsSortDropdown = ({ value, onChange }: NewsSortDropdownProps) => 
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-white border border-[#959ba9] flex gap-[6px] items-center overflow-hidden pl-[20px] pr-[16px] py-[6px] rounded-[99px]"
+        className="bg-white border-[0.75px] border-[#959ba9] flex gap-[4.5px] items-center overflow-hidden pl-[15px] pr-[12px] py-[4.5px] rounded-[74.25px]"
       >
-        <span className="font-suit font-normal leading-[22px] text-[14px] text-[rgba(0,0,0,0.85)]">
+        <span className="font-suit font-medium leading-[1.35] text-[15px] text-[#6b7280]">
           {selectedLabel}
         </span>
-        <div className="flex items-center justify-center p-[1.333px] rounded-[5.333px] w-[12px] h-[12px]">
+        <div className="flex items-center justify-center p-[1.333px] rounded-[5.333px] w-[9px] h-[9px]">
           <svg
-            width="8"
-            height="8"
-            viewBox="0 0 8 8"
+            width="9"
+            height="9"
+            viewBox="0 0 9 9"
             fill="none"
             className={cn('transition-transform', isOpen && 'rotate-180')}
           >
             <path
-              d="M4 6L1 3H7L4 6Z"
-              fill="currentColor"
-              className="text-[rgba(0,0,0,0.85)]"
+              d="M1.5 3.5L4.5 6.5L7.5 3.5"
+              stroke="#6b7280"
+              strokeWidth="0.875"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </div>
@@ -76,7 +78,7 @@ export const NewsSortDropdown = ({ value, onChange }: NewsSortDropdownProps) => 
             >
               <span
                 className={cn(
-                  'font-suit font-medium leading-[1.35] text-[20px] text-center text-ellipsis whitespace-nowrap w-full',
+                  'font-suit font-medium leading-[1.35] text-[15px] text-center text-ellipsis whitespace-nowrap w-full',
                   value === option.value ? 'text-[#4b5563]' : 'text-[#6b7280]'
                 )}
               >

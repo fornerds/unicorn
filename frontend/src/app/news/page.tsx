@@ -81,9 +81,10 @@ export default function NewsPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="flex flex-col gap-[160px] items-center pb-[150px] pt-[100px] px-[20px] md:px-[40px] lg:px-[182px]">
-        <div className="flex flex-col gap-[60px] items-center w-full">
-          <div className="flex flex-col gap-[30px] items-center">
+      <div className="flex flex-col gap-[120px] items-center pb-[75px] pt-[100px] w-full max-w-[1167px] mx-auto">
+        {/* 상단 타이틀 + 검색 + 태그 */}
+        <div className="flex flex-col gap-[60px] items-center w-full max-w-[1167px]">
+          <div className="flex flex-col gap-[30px] items-center w-full max-w-[569px]">
             <div className="flex flex-col items-center">
               <div className="flex gap-[2px] items-center">
                 <h1 className="font-cardo font-medium text-[32px] leading-[normal] text-[#1f2937] whitespace-nowrap">
@@ -97,38 +98,53 @@ export default function NewsPage() {
                 최신 뉴스와 소식을 확인해 보세요!
               </h2>
             </div>
-            <NewsSearchBar value={searchQuery} onChange={setSearchQuery} />
-            <NewsTagFilter
-              tags={allTags}
-              selectedTag={selectedTag}
-              onTagSelect={setSelectedTag}
-            />
-          </div>
+            <div className="w-full max-w-[344px]">
+              <NewsSearchBar value={searchQuery} onChange={setSearchQuery} />
             </div>
+            <div className="flex flex-wrap gap-[12px_8px] items-center justify-center w-full max-w-[569px]">
+              <NewsTagFilter
+                tags={allTags}
+                selectedTag={selectedTag}
+                onTagSelect={setSelectedTag}
+              />
+            </div>
+          </div>
 
-            {!searchQuery && (
-              <div className="flex flex-col gap-[20px] items-start justify-center w-full">
-                <h3 className="font-suit font-semibold text-[24px] leading-[1.5] text-[#374151]">
-                  최신 인기글
-                </h3>
-                <div className="flex flex-wrap gap-[30px_14px] items-center w-full">
-                  {isLoading ? (
-                    <>
+          {!searchQuery && (
+            <div className="flex flex-col gap-[15px] items-start w-full">
+              <h3 className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151]">
+                최신 인기글
+              </h3>
+              <div className="flex flex-wrap gap-[30px_10.5px] items-center w-full">
+                {isLoading ? (
+                  <>
+                    <div className="w-[283px]">
                       <NewsCardSkeleton />
+                    </div>
+                    <div className="w-[283px]">
                       <NewsCardSkeleton />
+                    </div>
+                    <div className="w-[283px]">
                       <NewsCardSkeleton />
-                    </>
-                  ) : (
-                    popularNews.map((news) => <NewsCard key={news.id} news={news} />)
-                  )}
-                </div>
+                    </div>
+                  </>
+                ) : (
+                  popularNews.map((news) => (
+                    <div key={news.id} className="w-[283px]">
+                      <NewsCard news={news} />
+                    </div>
+                  ))
+                )}
               </div>
-            )}
+            </div>
+          )}
+        </div>
 
-        <div className="flex flex-col items-start w-full">
-          <div className="flex flex-col gap-[10px] items-start w-full">
-            <div className="flex h-[51px] items-center justify-between px-[4px] py-[6px] w-full">
-              <p className="font-suit font-medium text-[20px] leading-[1.5] text-[#6b7280]">
+        {/* 전체 리스트 + 정렬 + 페이지네이션 */}
+        <div className="flex flex-col items-start w-full max-w-[1167px]">
+          <div className="flex flex-col gap-[8px] items-start w-full">
+            <div className="flex items-center justify-between px-[3px] py-[4.5px] w-full">
+              <p className="font-suit font-medium text-[15px] leading-[1.5] text-[#6b7280]">
                 총 {filteredNews.length}개의 글
               </p>
               <NewsSortDropdown value={sortOption} onChange={setSortOption} />
@@ -140,13 +156,19 @@ export default function NewsPage() {
                 </p>
               </div>
             ) : (
-              <div className="flex flex-wrap gap-[30px_14px] items-start w-full">
+              <div className="flex flex-wrap gap-[30px_11px] items-start w-full">
                 {isLoading ? (
                   Array.from({ length: 12 }).map((_, index) => (
-                    <NewsCardSkeleton key={`skeleton-${index}`} />
+                    <div key={`skeleton-${index}`} className="w-[283px]">
+                      <NewsCardSkeleton />
+                    </div>
                   ))
                 ) : (
-                  paginatedNews.map((news) => <NewsCard key={news.id} news={news} />)
+                  paginatedNews.map((news) => (
+                    <div key={news.id} className="w-[283px]">
+                      <NewsCard news={news} />
+                    </div>
+                  ))
                 )}
               </div>
             )}
@@ -154,11 +176,13 @@ export default function NewsPage() {
         </div>
 
         {totalPages > 1 && (
-          <NewsPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+          <div className="flex items-center justify-center w-full max-w-[1167px]">
+            <NewsPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         )}
       </div>
     </div>

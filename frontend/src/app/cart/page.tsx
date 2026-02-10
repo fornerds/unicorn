@@ -383,7 +383,7 @@ export default function CartPage() {
 
           <div className="flex flex-col gap-[26px] items-start rounded-[16px] shrink-0 w-full lg:w-[457px]">
             <h2 className="font-suit font-semibold text-[24px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
-              Order Summary
+              Order Summery
             </h2>
             <div className="h-[1px] w-full bg-[#e5e7eb]" />
             <div className="flex flex-col gap-[16px] items-end w-full">

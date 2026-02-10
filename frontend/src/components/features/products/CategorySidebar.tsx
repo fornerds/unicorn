@@ -11,10 +11,10 @@ interface CategoryItem {
 
 const categories: CategoryItem[] = [
   { id: 'home', label: 'Home', value: 'HOME' },
-  { id: 'firefighting', label: 'FIREFIGHTING', value: 'FIREFIGHTING' },
-  { id: 'industrial', label: 'INDUSTRIAL', value: 'INDUSTRIAL' },
-  { id: 'medical', label: 'MEDICAL', value: 'MEDICAL' },
-  { id: 'logistics', label: 'LOGISTICS', value: 'LOGISTICS' },
+  { id: 'firefighting', label: 'Firefighting', value: 'FIREFIGHTING' },
+  { id: 'industrial', label: 'Industrial', value: 'INDUSTRIAL' },
+  { id: 'medical', label: 'Medical', value: 'MEDICAL' },
+  { id: 'logistics', label: 'Logistics', value: 'LOGISTICS' },
 ];
 
 const subCategories: CategoryItem[] = [
