@@ -101,7 +101,7 @@ export default function NewsPage() {
             <div className="w-full max-w-[344px]">
               <NewsSearchBar value={searchQuery} onChange={setSearchQuery} />
             </div>
-            <div className="flex flex-wrap gap-[12px_8px] items-center justify-center w-full max-w-[569px]">
+            <div className="flex flex-wrap gap-[12px_8px] items-center justify-center w-full max-w-[569px] max-h-[94px] overflow-hidden">
               <NewsTagFilter
                 tags={allTags}
                 selectedTag={selectedTag}
