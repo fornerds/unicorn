@@ -41,7 +41,7 @@ const mockProduct = {
 export const ProductDetailClient = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(mockProduct.colors[0].id);
-  const [quantity, setQuantity] = useState(100);
+  const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(mockProduct.isLiked);
   const [showColorDropdown, setShowColorDropdown] = useState(false);
   const colorDropdownRef = useRef<HTMLDivElement>(null);
@@ -66,6 +66,29 @@ export const ProductDetailClient = () => {
 
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => Math.max(1, prev + delta));
+  };
+
+  const handleQuantityInput = (value: string) => {
+    // 숫자만 허용
+    const numericValue = value.replace(/[^0-9]/g, '');
+    if (numericValue === '') {
+      setQuantity(0);
+    } else {
+      const numValue = parseInt(numericValue, 10);
+      if (!isNaN(numValue) && numValue >= 1) {
+        setQuantity(numValue);
+      }
+    }
+  };
+
+  const handleQuantityBlur = () => {
+    if (quantity < 1 || quantity === 0) {
+      setQuantity(1);
+    }
+  };
+
+  const handleQuantityFocus = () => {
+    setQuantity(0);
   };
 
   const formattedPrice = new Intl.NumberFormat('ko-KR').format(mockProduct.price);
@@ -254,9 +277,15 @@ export const ProductDetailClient = () => {
                     >
                       <MinusIcon width={12} height={1} stroke="#6b7280" strokeWidth={1} />
                     </button>
-                    <p className="font-suit font-medium text-[16.25px] leading-[1.35] text-[#6b7280] text-center shrink-0">
-                      {quantity}
-                    </p>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={quantity === 0 ? '' : quantity}
+                      onChange={(e) => handleQuantityInput(e.target.value)}
+                      onFocus={handleQuantityFocus}
+                      onBlur={handleQuantityBlur}
+                      className="font-suit font-medium text-[16.25px] leading-[1.35] text-[#6b7280] text-center bg-transparent border-none outline-none w-[60px] shrink-0"
+                    />
                     <button
                       onClick={() => handleQuantityChange(1)}
                       className="flex items-center justify-center w-[16.25px] h-[16.25px] shrink-0 hover:opacity-80 transition-opacity"

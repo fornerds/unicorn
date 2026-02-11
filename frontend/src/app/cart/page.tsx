@@ -143,6 +143,43 @@ export default function CartPage() {
     );
   };
 
+  const handleQuantityInput = (id: string, value: string) => {
+    // 숫자만 허용
+    const numericValue = value.replace(/[^0-9]/g, '');
+    setCartItems((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          if (numericValue === '') {
+            return { ...item, quantity: 0 };
+          } else {
+            const numValue = parseInt(numericValue, 10);
+            if (!isNaN(numValue) && numValue >= 1) {
+              return { ...item, quantity: numValue };
+            }
+          }
+        }
+        return item;
+      })
+    );
+  };
+
+  const handleQuantityBlur = (id: string) => {
+    setCartItems((prev) =>
+      prev.map((item) => {
+        if (item.id === id && (item.quantity < 1 || item.quantity === 0)) {
+          return { ...item, quantity: 1 };
+        }
+        return item;
+      })
+    );
+  };
+
+  const handleQuantityFocus = (id: string) => {
+    setCartItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, quantity: 0 } : item))
+    );
+  };
+
   const handleColorChange = (id: string, color: typeof availableColors[0]) => {
     setCartItems((prev) =>
       prev.map((item) =>
@@ -306,9 +343,15 @@ export default function CartPage() {
                               >
                                 <MinusIcon width={12} height={1} stroke="#6b7280" strokeWidth={1} />
                               </button>
-                              <p className="font-suit font-semibold text-[16px] leading-[1.35] text-[#6b7280] text-center shrink-0">
-                                {item.quantity}
-                              </p>
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                value={item.quantity === 0 ? '' : item.quantity}
+                                onChange={(e) => handleQuantityInput(item.id, e.target.value)}
+                                onFocus={() => handleQuantityFocus(item.id)}
+                                onBlur={() => handleQuantityBlur(item.id)}
+                                className="font-suit font-semibold text-[16px] leading-[1.35] text-[#6b7280] text-center bg-transparent border-none outline-none w-[50px] shrink-0"
+                              />
                               <button
                                 onClick={() => handleQuantityChange(item.id, 1)}
                                 className="flex items-center justify-center w-[16px] h-[16px] shrink-0 hover:opacity-80 transition-opacity"
