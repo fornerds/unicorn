@@ -16,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
-
 @Tag(name = "관리자 - 회원", description = "관리자 회원 목록·상세·수정·삭제")
 @RestController
 @RequestMapping("/admin/users")
@@ -43,20 +41,20 @@ public class AdminUserController {
 
     @Operation(summary = "회원 상세 조회")
     @GetMapping("/{id}")
-    public ApiResponse<AdminUserDetailResponse> getUser(@PathVariable UUID id) {
+    public ApiResponse<AdminUserDetailResponse> getUser(@PathVariable Long id) {
         return ApiResponse.success(adminUserService.getUser(id));
     }
 
     @Operation(summary = "회원 수정")
     @PatchMapping("/{id}")
-    public ApiResponse<AdminUserDetailResponse> updateUser(@PathVariable UUID id, @Valid @RequestBody AdminUpdateUserRequest request) {
+    public ApiResponse<AdminUserDetailResponse> updateUser(@PathVariable Long id, @Valid @RequestBody AdminUpdateUserRequest request) {
         return ApiResponse.success(adminUserService.updateUser(id, request));
     }
 
     @Operation(summary = "회원 삭제")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ApiResponse<Void> deleteUser(@PathVariable UUID id) {
+    public ApiResponse<Void> deleteUser(@PathVariable Long id) {
         adminUserService.deleteUser(id);
         return ApiResponse.noContent();
     }

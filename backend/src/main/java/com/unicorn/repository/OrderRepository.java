@@ -9,13 +9,11 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
+public interface OrderRepository extends JpaRepository<Order, Long> {
 
-public interface OrderRepository extends JpaRepository<Order, UUID> {
+    Page<Order> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
-    Page<Order> findByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
-
-    Page<Order> findByUserIdAndStatusOrderByCreatedAtDesc(UUID userId, String status, Pageable pageable);
+    Page<Order> findByUserIdAndStatusOrderByCreatedAtDesc(Long userId, String status, Pageable pageable);
 
     @Query("SELECT o FROM Order o WHERE (:status IS NULL OR :status = '' OR o.status = :status) " +
             "AND (:startDate IS NULL OR o.createdAt >= :startDate) AND (:endDate IS NULL OR o.createdAt <= :endDate)")

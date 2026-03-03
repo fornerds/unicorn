@@ -6,15 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
-import java.util.UUID;
+public interface UserProductLikeRepository extends JpaRepository<UserProductLike, Long> {
 
-public interface UserProductLikeRepository extends JpaRepository<UserProductLike, UUID> {
+    Optional<UserProductLike> findByUserIdAndProductId(Long userId, Long productId);
 
-    Optional<UserProductLike> findByUserIdAndProductId(UUID userId, UUID productId);
+    boolean existsByUserIdAndProductId(Long userId, Long productId);
 
-    boolean existsByUserIdAndProductId(UUID userId, UUID productId);
+    Page<UserProductLike> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
-    Page<UserProductLike> findByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
-
-    long countByProductId(UUID productId);
+    long countByProductId(Long productId);
 }

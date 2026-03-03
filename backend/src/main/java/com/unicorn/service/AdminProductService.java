@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,13 +24,13 @@ public class AdminProductService {
     private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public Page<AdminProductResponse> getProducts(UUID categoryId, String keyword, int page, int limit) {
+    public Page<AdminProductResponse> getProducts(Long categoryId, String keyword, int page, int limit) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), Math.min(100, Math.max(1, limit)));
         return productRepository.findByCategoryAndKeyword(categoryId, keyword, pageable).map(this::toResponse);
     }
 
     @Transactional(readOnly = true)
-    public AdminProductResponse getProduct(UUID id) {
+    public AdminProductResponse getProduct(Long id) {
         Product p = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다."));
         return toResponse(p);
     }
@@ -54,7 +53,7 @@ public class AdminProductService {
     }
 
     @Transactional
-    public AdminProductResponse update(UUID id, AdminProductPatchRequest request) {
+    public AdminProductResponse update(Long id, AdminProductPatchRequest request) {
         Product p = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다."));
         if (request.getName() != null) p.setName(request.getName());
         if (request.getDescription() != null) p.setDescription(request.getDescription());
@@ -69,7 +68,7 @@ public class AdminProductService {
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void delete(Long id) {
         if (!productRepository.existsById(id)) {
             throw new IllegalArgumentException("제품을 찾을 수 없습니다.");
         }

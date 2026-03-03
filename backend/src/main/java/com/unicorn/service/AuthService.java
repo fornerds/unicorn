@@ -97,7 +97,7 @@ public class AuthService {
         if (!jwtUtil.validateRefreshToken(refreshTokenValue)) {
             throw new IllegalArgumentException("유효하지 않은 refresh 토큰입니다.");
         }
-        UUID subjectId = jwtUtil.extractSubjectIdFromRefresh(refreshTokenValue);
+        Long subjectId = jwtUtil.extractSubjectIdFromRefresh(refreshTokenValue);
         String subjectType = jwtUtil.extractSubjectTypeFromRefresh(refreshTokenValue);
         if (!JwtUtil.SUBJECT_TYPE_USER.equals(subjectType)) {
             throw new IllegalArgumentException("유효하지 않은 refresh 토큰입니다.");
@@ -240,7 +240,7 @@ public class AuthService {
         return PasswordFindEmailResponse.builder().success(true).build();
     }
 
-    private void saveUserRefreshToken(UUID userId, String refreshTokenValue) {
+    private void saveUserRefreshToken(Long userId, String refreshTokenValue) {
         String hash = TokenHashUtil.hash(refreshTokenValue);
         Instant expiresAt = Instant.now().plusMillis(jwtUtil.getRefreshExpirationMs());
         RefreshToken rt = RefreshToken.builder()

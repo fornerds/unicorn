@@ -5,16 +5,14 @@ import lombok.Data;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
-
 @Data
 @Builder
 public class AdminCategoryResponse {
 
-    private UUID id;
+    private Long id;
     private String name;
     private String slug;
-    private UUID parentId;
+    private Long parentId;
     private Integer sortOrder;
     private Instant createdAt;
     private List<AdminCategoryResponse> children;

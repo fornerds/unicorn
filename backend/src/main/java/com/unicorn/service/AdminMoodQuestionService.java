@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +43,7 @@ public class AdminMoodQuestionService {
     }
 
     @Transactional
-    public MoodQuestionResponse update(UUID id, AdminMoodQuestionRequest request) {
+    public MoodQuestionResponse update(Long id, AdminMoodQuestionRequest request) {
         MoodQuestion m = moodQuestionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("기분 질문을 찾을 수 없습니다."));
         m.setQuestion(request.getQuestion());
         m.setSortOrder(request.getSortOrder());
@@ -53,7 +52,7 @@ public class AdminMoodQuestionService {
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void delete(Long id) {
         if (!moodQuestionRepository.existsById(id)) {
             throw new IllegalArgumentException("기분 질문을 찾을 수 없습니다.");
         }

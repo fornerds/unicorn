@@ -19,8 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -38,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && jwtUtil.validateAccessToken(token)) {
             try {
-                UUID subjectId = jwtUtil.extractSubjectId(token);
+                Long subjectId = jwtUtil.extractSubjectId(token);
                 String subjectType = jwtUtil.extractSubjectType(token);
                 String role = jwtUtil.extractRole(token);
                 if (subjectId != null && subjectType != null && role != null && !role.isBlank()) {

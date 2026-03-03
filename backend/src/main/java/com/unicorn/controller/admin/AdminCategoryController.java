@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
-
 @Tag(name = "관리자 - 카테고리", description = "관리자 카테고리 CRUD")
 @RestController
 @RequestMapping("/admin/categories")
@@ -24,7 +22,7 @@ public class AdminCategoryController {
 
     @Operation(summary = "카테고리 목록 조회")
     @GetMapping
-    public ApiResponse<List<AdminCategoryResponse>> getCategories(@RequestParam(required = false) UUID parentId) {
+    public ApiResponse<List<AdminCategoryResponse>> getCategories(@RequestParam(required = false) Long parentId) {
         return ApiResponse.success(adminCategoryService.getCategories(parentId));
     }
 
@@ -37,14 +35,14 @@ public class AdminCategoryController {
 
     @Operation(summary = "카테고리 수정")
     @PatchMapping("/{id}")
-    public ApiResponse<AdminCategoryResponse> update(@PathVariable UUID id, @Valid @RequestBody AdminCategoryRequest request) {
+    public ApiResponse<AdminCategoryResponse> update(@PathVariable Long id, @Valid @RequestBody AdminCategoryRequest request) {
         return ApiResponse.success(adminCategoryService.update(id, request));
     }
 
     @Operation(summary = "카테고리 삭제")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ApiResponse<Void> delete(@PathVariable UUID id) {
+    public ApiResponse<Void> delete(@PathVariable Long id) {
         adminCategoryService.delete(id);
         return ApiResponse.noContent();
     }

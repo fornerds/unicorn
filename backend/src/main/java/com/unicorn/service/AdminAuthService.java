@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +58,7 @@ public class AdminAuthService {
         if (!jwtUtil.validateRefreshToken(refreshTokenValue)) {
             throw new IllegalArgumentException("유효하지 않은 refresh 토큰입니다.");
         }
-        UUID subjectId = jwtUtil.extractSubjectIdFromRefresh(refreshTokenValue);
+        Long subjectId = jwtUtil.extractSubjectIdFromRefresh(refreshTokenValue);
         String subjectType = jwtUtil.extractSubjectTypeFromRefresh(refreshTokenValue);
         if (!JwtUtil.SUBJECT_TYPE_ADMIN.equals(subjectType)) {
             throw new IllegalArgumentException("유효하지 않은 refresh 토큰입니다.");
@@ -87,7 +86,7 @@ public class AdminAuthService {
                 .build();
     }
 
-    private void saveRefreshToken(UUID userId, String refreshTokenValue) {
+    private void saveRefreshToken(Long userId, String refreshTokenValue) {
         String hash = TokenHashUtil.hash(refreshTokenValue);
         Instant expiresAt = Instant.now().plusMillis(jwtUtil.getRefreshExpirationMs());
         RefreshToken rt = RefreshToken.builder()

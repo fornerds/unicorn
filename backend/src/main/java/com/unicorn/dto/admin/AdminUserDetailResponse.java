@@ -4,13 +4,11 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
-import java.util.UUID;
-
 @Data
 @Builder
 public class AdminUserDetailResponse {
 
-    private UUID id;
+    private Long id;
     private String email;
     private String name;
     private String avatar;

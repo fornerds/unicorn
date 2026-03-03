@@ -12,8 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class AdminUserService {
@@ -28,13 +26,13 @@ public class AdminUserService {
     }
 
     @Transactional(readOnly = true)
-    public AdminUserDetailResponse getUser(UUID id) {
+    public AdminUserDetailResponse getUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         return toDetailResponse(user);
     }
 
     @Transactional
-    public AdminUserDetailResponse updateUser(UUID id, AdminUpdateUserRequest request) {
+    public AdminUserDetailResponse updateUser(Long id, AdminUpdateUserRequest request) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         if (request.getStatus() != null) user.setStatus(request.getStatus());
         if (request.getMemo() != null) user.setMemo(request.getMemo());
@@ -43,7 +41,7 @@ public class AdminUserService {
     }
 
     @Transactional
-    public void deleteUser(UUID id) {
+    public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
         }

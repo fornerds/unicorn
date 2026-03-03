@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
-
 @Tag(name = "카테고리", description = "제품 카테고리 목록·계층 조회")
 @RestController
 @RequestMapping("/categories")
@@ -21,7 +19,7 @@ public class CategoryController {
 
     @Operation(summary = "카테고리 목록 조회", description = "parentId 미지정 시 최상위, 지정 시 하위 카테고리")
     @GetMapping
-    public ApiResponse<List<CategoryResponse>> getCategories(@RequestParam(required = false) UUID parentId) {
+    public ApiResponse<List<CategoryResponse>> getCategories(@RequestParam(required = false) Long parentId) {
         List<CategoryResponse> data = categoryService.getCategories(parentId);
         return ApiResponse.success(data);
     }

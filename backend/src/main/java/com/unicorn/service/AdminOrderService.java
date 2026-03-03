@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,13 +35,13 @@ public class AdminOrderService {
     }
 
     @Transactional(readOnly = true)
-    public AdminOrderDetailResponse getOrder(UUID id) {
+    public AdminOrderDetailResponse getOrder(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
         return toDetailResponse(order);
     }
 
     @Transactional
-    public AdminOrderDetailResponse updateOrder(UUID id, AdminOrderPatchRequest request) {
+    public AdminOrderDetailResponse updateOrder(Long id, AdminOrderPatchRequest request) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
         if (request.getStatus() != null) order.setStatus(request.getStatus());
         order = orderRepository.save(order);

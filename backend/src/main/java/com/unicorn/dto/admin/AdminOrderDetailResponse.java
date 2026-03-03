@@ -6,14 +6,12 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
-
 @Data
 @Builder
 public class AdminOrderDetailResponse {
 
-    private UUID id;
-    private UUID userId;
+    private Long id;
+    private Long userId;
     private List<OrderItemDto> items;
     private BigDecimal totalAmount;
     private String status;
@@ -24,7 +22,7 @@ public class AdminOrderDetailResponse {
     @Data
     @Builder
     public static class OrderItemDto {
-        private UUID productId;
+        private Long productId;
         private Integer quantity;
         private BigDecimal price;
     }

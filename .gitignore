@@ -26,4 +26,7 @@ Thumbs.db
 .env.local
 .env*.local
 
+# MySQL data (bind mount 시 사용)
+data/
+
 docs/*.md

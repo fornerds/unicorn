@@ -15,8 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
-
 @Tag(name = "제품", description = "제품 목록·상세 조회 (카테고리·키워드·정렬·찜 여부)")
 @RestController
 @RequestMapping("/products")
@@ -28,14 +26,14 @@ public class ProductController {
     @Operation(summary = "제품 목록 조회")
     @GetMapping
     public ApiResponse<ListResponse<ProductListResponse>> getProducts(
-            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String order,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int limit,
             @AuthenticationPrincipal JwtPrincipal principal) {
-        UUID userId = principal != null ? principal.subjectId() : null;
+        Long userId = principal != null ? principal.subjectId() : null;
         Page<ProductListResponse> result = productService.getProducts(categoryId, keyword, sort, order, page, limit, userId);
         PaginationDto pag = PaginationDto.builder()
                 .page(result.getNumber() + 1)
@@ -48,8 +46,8 @@ public class ProductController {
 
     @Operation(summary = "제품 상세 조회")
     @GetMapping("/{id}")
-    public ApiResponse<ProductDetailResponse> getProduct(@PathVariable UUID id, @AuthenticationPrincipal JwtPrincipal principal) {
-        UUID userId = principal != null ? principal.subjectId() : null;
+    public ApiResponse<ProductDetailResponse> getProduct(@PathVariable Long id, @AuthenticationPrincipal JwtPrincipal principal) {
+        Long userId = principal != null ? principal.subjectId() : null;
         ProductDetailResponse data = productService.getProduct(id, userId);
         return ApiResponse.success(data);
     }

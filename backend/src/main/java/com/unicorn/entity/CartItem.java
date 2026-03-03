@@ -3,8 +3,6 @@ package com.unicorn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "cart_items", indexes = {
         @Index(name = "idx_cart_items_user_id", columnList = "user_id"),
@@ -18,8 +16,8 @@ import java.util.UUID;
 public class CartItem extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,7 +15,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public List<CategoryResponse> getCategories(UUID parentId) {
+    public List<CategoryResponse> getCategories(Long parentId) {
         List<Category> categories = parentId == null
                 ? categoryRepository.findByParentIsNullOrderBySortOrderAsc()
                 : categoryRepository.findByParent_IdOrderBySortOrderAsc(parentId);

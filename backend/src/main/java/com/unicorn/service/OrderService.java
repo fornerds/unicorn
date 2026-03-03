@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +27,7 @@ public class OrderService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CreateOrderResponse createFromCart(UUID userId, CreateOrderRequest request) {
+    public CreateOrderResponse createFromCart(Long userId, CreateOrderRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         List<CartItem> cartItems = request.getCartItemIds() == null || request.getCartItemIds().isEmpty()
                 ? cartItemRepository.findByUserIdOrderByCreatedAtDesc(userId)
@@ -86,7 +85,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public OrderDetailResponse getOrder(UUID userId, UUID orderId) {
+    public OrderDetailResponse getOrder(Long userId, Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
         if (!order.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("권한이 없습니다.");
@@ -95,7 +94,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OrderListResponse> getMyOrders(UUID userId, String status, int page, int limit) {
+    public Page<OrderListResponse> getMyOrders(Long userId, String status, int page, int limit) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), Math.min(100, Math.max(1, limit)));
         Page<Order> orders = status != null && !status.isBlank()
                 ? orderRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, status, pageable)

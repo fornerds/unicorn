@@ -17,8 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @Tag(name = "주문", description = "장바구니 기반 주문 생성, 주문 상세 조회")
 @RestController
 @RequestMapping("/orders")
@@ -41,7 +39,7 @@ public class OrderController {
     @GetMapping("/{id}")
     public ApiResponse<OrderDetailResponse> getOrder(
             @AuthenticationPrincipal JwtPrincipal principal,
-            @PathVariable UUID id) {
+            @PathVariable Long id) {
         OrderDetailResponse data = orderService.getOrder(principal.subjectId(), id);
         return ApiResponse.success(data);
     }

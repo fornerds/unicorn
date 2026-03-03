@@ -4,8 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 public class AdminCategoryRequest {
 
@@ -15,7 +13,7 @@ public class AdminCategoryRequest {
     @NotBlank
     private String slug;
 
-    private UUID parentId;
+    private Long parentId;
 
     @NotNull
     private Integer sortOrder;

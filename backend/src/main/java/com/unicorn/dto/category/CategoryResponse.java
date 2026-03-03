@@ -5,14 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryResponse {
 
-    private UUID id;
+    private Long id;
     private String name;
     private String slug;
     private String imageUrl;

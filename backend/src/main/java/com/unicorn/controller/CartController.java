@@ -14,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @Tag(name = "장바구니", description = "장바구니 조회·담기·수량 수정·삭제")
 @RestController
 @RequestMapping("/cart")
@@ -45,7 +43,7 @@ public class CartController {
     @PatchMapping("/items/{id}")
     public ApiResponse<CartResponse.CartItemDto> updateItem(
             @AuthenticationPrincipal JwtPrincipal principal,
-            @PathVariable UUID id,
+            @PathVariable Long id,
             @Valid @RequestBody UpdateCartItemRequest request) {
         CartResponse.CartItemDto data = cartService.updateItem(principal.subjectId(), id, request);
         return ApiResponse.success(data);
@@ -56,7 +54,7 @@ public class CartController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ApiResponse<Void> deleteItem(
             @AuthenticationPrincipal JwtPrincipal principal,
-            @PathVariable UUID id) {
+            @PathVariable Long id) {
         cartService.deleteItem(principal.subjectId(), id);
         return ApiResponse.noContent();
     }

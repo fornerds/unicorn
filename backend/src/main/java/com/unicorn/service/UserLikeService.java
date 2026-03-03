@@ -14,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class UserLikeService {
@@ -25,7 +23,7 @@ public class UserLikeService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Page<ProductListResponse> getLikes(UUID userId, int page, int limit) {
+    public Page<ProductListResponse> getLikes(Long userId, int page, int limit) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), Math.min(100, Math.max(1, limit)));
         Page<UserProductLike> likes = userProductLikeRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
         return likes.map(like -> {
@@ -47,7 +45,7 @@ public class UserLikeService {
     }
 
     @Transactional
-    public LikeToggleResponse toggleLike(UUID userId, UUID productId) {
+    public LikeToggleResponse toggleLike(Long userId, Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다."));
         var existing = userProductLikeRepository.findByUserIdAndProductId(userId, productId);

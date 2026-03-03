@@ -5,14 +5,12 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
-
 @Data
 @Builder
 public class AdminOrderListResponse {
 
-    private UUID id;
-    private UUID userId;
+    private Long id;
+    private Long userId;
     private BigDecimal totalAmount;
     private String status;
     private Instant createdAt;

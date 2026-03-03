@@ -3,8 +3,6 @@ package com.unicorn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "sns_accounts", indexes = {
         @Index(name = "uk_sns_accounts_provider_user", columnList = "provider, provider_user_id", unique = true),
@@ -18,8 +16,8 @@ import java.util.UUID;
 public class SnsAccount extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

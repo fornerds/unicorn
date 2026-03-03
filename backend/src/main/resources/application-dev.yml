@@ -11,6 +11,8 @@ spring:
           starttls:
             enable: true
   jpa:
+    hibernate:
+      ddl-auto: validate
     show-sql: true
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:unicorn}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&createDatabaseIfNotExist=true

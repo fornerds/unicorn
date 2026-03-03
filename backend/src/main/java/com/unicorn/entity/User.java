@@ -3,8 +3,6 @@ package com.unicorn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "users", indexes = {
         @Index(name = "idx_users_email", columnList = "email", unique = true),
@@ -19,8 +17,8 @@ import java.util.UUID;
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, unique = true, length = 255)
     private String email;

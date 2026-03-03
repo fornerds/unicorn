@@ -8,7 +8,6 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 public class AdminProductRequest {
@@ -23,7 +22,7 @@ public class AdminProductRequest {
     private BigDecimal price;
 
     @NotNull
-    private UUID categoryId;
+    private Long categoryId;
 
     @NotNull
     @Min(0)

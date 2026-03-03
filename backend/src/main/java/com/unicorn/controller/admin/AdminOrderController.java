@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
 @Tag(name = "관리자 - 주문", description = "관리자 주문 목록·상세·상태 수정")
 @RestController
 @RequestMapping("/admin/orders")
@@ -46,13 +44,13 @@ public class AdminOrderController {
 
     @Operation(summary = "주문 상세 조회")
     @GetMapping("/{id}")
-    public ApiResponse<AdminOrderDetailResponse> getOrder(@PathVariable UUID id) {
+    public ApiResponse<AdminOrderDetailResponse> getOrder(@PathVariable Long id) {
         return ApiResponse.success(adminOrderService.getOrder(id));
     }
 
     @Operation(summary = "주문 상태 수정")
     @PatchMapping("/{id}")
-    public ApiResponse<AdminOrderDetailResponse> updateOrder(@PathVariable UUID id, @Valid @RequestBody AdminOrderPatchRequest request) {
+    public ApiResponse<AdminOrderDetailResponse> updateOrder(@PathVariable Long id, @Valid @RequestBody AdminOrderPatchRequest request) {
         AdminOrderDetailResponse data = adminOrderService.updateOrder(id, request);
         return ApiResponse.success(data);
     }

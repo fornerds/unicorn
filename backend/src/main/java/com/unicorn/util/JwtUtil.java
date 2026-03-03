@@ -12,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -41,20 +40,20 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(UUID subjectId, String subjectType, String email, String role) {
+    public String generateAccessToken(Long subjectId, String subjectType, String email, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_SUBJECT_TYPE, subjectType);
-        claims.put(CLAIM_SUBJECT_ID, subjectId.toString());
+        claims.put(CLAIM_SUBJECT_ID, subjectId != null ? subjectId.toString() : null);
         claims.put(CLAIM_EMAIL, email != null ? email : "");
         claims.put(CLAIM_ROLE, role != null ? role : "USER");
         return buildToken(claims, jwtProperties.getAccessExpirationMs(), getAccessSigningKey());
     }
 
-    public String generateRefreshToken(UUID subjectId, String subjectType) {
+    public String generateRefreshToken(Long subjectId, String subjectType) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_TYPE, TYPE_REFRESH);
         claims.put(CLAIM_SUBJECT_TYPE, subjectType);
-        claims.put(CLAIM_SUBJECT_ID, subjectId.toString());
+        claims.put(CLAIM_SUBJECT_ID, subjectId != null ? subjectId.toString() : null);
         return buildToken(claims, jwtProperties.getRefreshExpirationMs(), getRefreshSigningKey());
     }
 
@@ -95,9 +94,9 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    public UUID extractSubjectId(String accessToken) {
+    public Long extractSubjectId(String accessToken) {
         String id = extractClaim(accessToken, getAccessSigningKey(), claims -> (String) claims.get(CLAIM_SUBJECT_ID));
-        return id != null ? UUID.fromString(id) : null;
+        return id != null ? Long.valueOf(id) : null;
     }
 
     public String extractSubjectType(String accessToken) {
@@ -112,9 +111,9 @@ public class JwtUtil {
         return extractClaim(accessToken, getAccessSigningKey(), claims -> (String) claims.get(CLAIM_ROLE));
     }
 
-    public UUID extractSubjectIdFromRefresh(String refreshToken) {
+    public Long extractSubjectIdFromRefresh(String refreshToken) {
         String id = extractClaim(refreshToken, getRefreshSigningKey(), claims -> (String) claims.get(CLAIM_SUBJECT_ID));
-        return id != null ? UUID.fromString(id) : null;
+        return id != null ? Long.valueOf(id) : null;
     }
 
     public String extractSubjectTypeFromRefresh(String refreshToken) {

@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +25,7 @@ public class CartService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public CartResponse getCart(UUID userId) {
+    public CartResponse getCart(Long userId) {
         List<CartItem> items = cartItemRepository.findByUserIdOrderByCreatedAtDesc(userId);
         BigDecimal total = items.stream()
                 .map(ci -> ci.getProduct().getPrice().multiply(BigDecimal.valueOf(ci.getQuantity())))
@@ -38,7 +37,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartResponse.CartItemDto addItem(UUID userId, AddCartItemRequest request) {
+    public CartResponse.CartItemDto addItem(Long userId, AddCartItemRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다."));
         if (product.getStock() < request.getQuantity()) {
@@ -73,7 +72,7 @@ public class CartService {
     }
 
     @Transactional
-    public CartResponse.CartItemDto updateItem(UUID userId, UUID itemId, UpdateCartItemRequest request) {
+    public CartResponse.CartItemDto updateItem(Long userId, Long itemId, UpdateCartItemRequest request) {
         CartItem item = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("장바구니 항목을 찾을 수 없습니다."));
         if (!item.getUser().getId().equals(userId)) {
@@ -88,7 +87,7 @@ public class CartService {
     }
 
     @Transactional
-    public void deleteItem(UUID userId, UUID itemId) {
+    public void deleteItem(Long userId, Long itemId) {
         CartItem item = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("장바구니 항목을 찾을 수 없습니다."));
         if (!item.getUser().getId().equals(userId)) {

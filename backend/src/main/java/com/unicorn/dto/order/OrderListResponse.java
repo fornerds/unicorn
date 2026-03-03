@@ -6,13 +6,11 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
-
 @Data
 @Builder
 public class OrderListResponse {
 
-    private UUID id;
+    private Long id;
     private List<OrderDetailResponse.OrderItemDto> items;
     private BigDecimal totalAmount;
     private String status;

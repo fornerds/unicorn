@@ -3,8 +3,6 @@ package com.unicorn.dto.auth;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 @Builder
 public class AdminLoginResponse {
@@ -17,7 +15,7 @@ public class AdminLoginResponse {
     @Data
     @Builder
     public static class AdminInfo {
-        private UUID id;
+        private Long id;
         private String email;
         private String name;
         private String role;

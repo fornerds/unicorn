@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
 @Tag(name = "사용자 - 프로필/찜/주문", description = "내 정보 조회·수정, 찜 목록, 내 주문 목록")
 @RestController
 @RequestMapping("/users/me")
@@ -56,7 +54,7 @@ public class UserMeController {
     @PostMapping("/likes/{productId}")
     public ApiResponse<LikeToggleResponse> toggleLike(
             @AuthenticationPrincipal JwtPrincipal principal,
-            @PathVariable UUID productId) {
+            @PathVariable Long productId) {
         LikeToggleResponse data = userLikeService.toggleLike(principal.subjectId(), productId);
         return ApiResponse.success(data);
     }

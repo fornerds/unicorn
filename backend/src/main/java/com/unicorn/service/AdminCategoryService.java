@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,7 +18,7 @@ public class AdminCategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public List<AdminCategoryResponse> getCategories(UUID parentId) {
+    public List<AdminCategoryResponse> getCategories(Long parentId) {
         List<Category> list = parentId == null
                 ? categoryRepository.findByParentIsNullOrderBySortOrderAsc()
                 : categoryRepository.findByParent_IdOrderBySortOrderAsc(parentId);
@@ -40,7 +39,7 @@ public class AdminCategoryService {
     }
 
     @Transactional
-    public AdminCategoryResponse update(UUID id, AdminCategoryRequest request) {
+    public AdminCategoryResponse update(Long id, AdminCategoryRequest request) {
         Category c = categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
         c.setName(request.getName());
         c.setSlug(request.getSlug());
@@ -55,7 +54,7 @@ public class AdminCategoryService {
     }
 
     @Transactional
-    public void delete(UUID id) {
+    public void delete(Long id) {
         if (!categoryRepository.existsById(id)) {
             throw new IllegalArgumentException("카테고리를 찾을 수 없습니다.");
         }
