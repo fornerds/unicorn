@@ -1,0 +1,13 @@
+spring:
+  jpa:
+    show-sql: true
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:unicorn}?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=Asia/Seoul&createDatabaseIfNotExist=true
+    username: ${MYSQL_USER:unicorn}
+    password: ${MYSQL_PASSWORD:unicorn}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+logging:
+  level:
+    com.unicorn: DEBUG
+    org.hibernate.SQL: DEBUG

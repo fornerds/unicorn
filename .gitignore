@@ -19,7 +19,11 @@ Thumbs.db
 *.swp
 *.swo
 
-# Environment files
+# Environment files (secrets)
 .env
+.env.dev
+.env.prod
 .env.local
 .env*.local
+
+docs/*.md
