@@ -24,8 +24,16 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /** 비로그인 조회 허용: 카테고리, 제품 목록/상세, 기분 질문 목록 */
+    private static final String[] PUBLIC_GET_PATHS = {
+            "/categories", "/categories/**",
+            "/products", "/products/**",
+            "/ai/mood-questions"
+    };
+
     private static final String[] PUBLIC_PATHS = {
             "/auth/**",
+            "/admin/auth/**",
             "/swagger-ui/**", "/swagger-ui.html", "/api-docs", "/api-docs/**",
             "/actuator/health", "/actuator/info",
             "/error"
@@ -52,6 +60,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, PUBLIC_GET_PATHS).permitAll()
                         .requestMatchers(PUBLIC_PATHS).permitAll()
                         .requestMatchers(ADMIN_PATHS).hasRole("ADMIN")
                         .anyRequest().authenticated())

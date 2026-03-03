@@ -40,6 +40,12 @@ public class AuthService {
     @Value("${app.password-reset.token-validity-minutes:60}")
     private int tokenValidityMinutes;
 
+    @Value("${app.oauth.callback-base-url:http://localhost:18080/api/v1}")
+    private String oauthCallbackBaseUrl;
+
+    @Value("${app.oauth.frontend-redirect-url:http://localhost:3000}")
+    private String oauthFrontendRedirectUrl;
+
     @Transactional
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
@@ -138,6 +144,44 @@ public class AuthService {
     public LoginResponse loginWithGoogle(String accessToken, String requestName, String requestEmail) {
         OAuthUserInfo info = oAuthProviderService.getGoogleUserInfo(accessToken);
         return findOrCreateUserAndIssueToken("google", info, requestName, requestEmail);
+    }
+
+    private static final String OAUTH_CALLBACK_PATH = "/auth/callback";
+
+    @Transactional
+    public LoginResponse loginWithOAuthCallback(String code, String state) {
+        String platform = parsePlatformFromState(state);
+        String redirectUri = oauthCallbackBaseUrl + OAUTH_CALLBACK_PATH;
+        switch (platform) {
+            case "naver" -> {
+                String accessToken = oAuthProviderService.exchangeCodeForNaverToken(code, state, redirectUri);
+                return loginWithNaver(accessToken, null, null);
+            }
+            case "kakao" -> {
+                String accessToken = oAuthProviderService.exchangeCodeForKakaoToken(code, redirectUri);
+                return loginWithKakao(accessToken, null, null);
+            }
+            case "google" -> {
+                String accessToken = oAuthProviderService.exchangeCodeForGoogleToken(code, redirectUri);
+                return loginWithGoogle(accessToken, null, null);
+            }
+            default -> throw new IllegalArgumentException("지원하지 않는 OAuth 플랫폼입니다: " + platform);
+        }
+    }
+
+    private static String parsePlatformFromState(String state) {
+        if (state == null || state.isBlank() || !state.contains(":")) {
+            throw new IllegalArgumentException("state에서 플랫폼을 확인할 수 없습니다.");
+        }
+        String platform = state.split(":")[0].trim().toLowerCase();
+        if (!platform.matches("naver|kakao|google")) {
+            throw new IllegalArgumentException("지원하지 않는 OAuth 플랫폼입니다: " + platform);
+        }
+        return platform;
+    }
+
+    public String getOauthFrontendRedirectUrl() {
+        return oauthFrontendRedirectUrl;
     }
 
     private LoginResponse findOrCreateUserAndIssueToken(String provider, OAuthUserInfo info, String requestName, String requestEmail) {

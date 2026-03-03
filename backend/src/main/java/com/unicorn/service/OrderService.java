@@ -7,6 +7,7 @@ import com.unicorn.dto.order.OrderListResponse;
 import com.unicorn.entity.*;
 import com.unicorn.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,9 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
+
+    @Value("${app.payment.redirect-url-base:https://pg.example.com/redirect}")
+    private String paymentRedirectUrlBase;
 
     @Transactional
     public CreateOrderResponse createFromCart(Long userId, CreateOrderRequest request) {
@@ -79,7 +83,7 @@ public class OrderService {
         return CreateOrderResponse.builder()
                 .orderId(order.getId())
                 .totalAmount(totalAmount)
-                .paymentRedirectUrl("https://pg.example.com/redirect?orderId=" + order.getId())
+                .paymentRedirectUrl(paymentRedirectUrlBase + "?orderId=" + order.getId())
                 .paymentId("pg-txn-" + order.getId())
                 .build();
     }

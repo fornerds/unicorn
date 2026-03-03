@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserProductLikeRepository userProductLikeRepository;
 
+    @Transactional(readOnly = true)
     public Page<ProductListResponse> getProducts(Long categoryId, String keyword, String sort, String order, int page, int limit, Long userId) {
         Sort s = "desc".equalsIgnoreCase(order) ? Sort.by(sort).descending() : Sort.by(sort).ascending();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), Math.min(100, Math.max(1, limit)), s);
@@ -28,6 +30,7 @@ public class ProductService {
         return pageResult.map(p -> toListResponse(p, userId));
     }
 
+    @Transactional(readOnly = true)
     public ProductDetailResponse getProduct(Long id, Long userId) {
         Product p = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다."));
         long likesCount = userProductLikeRepository.countByProductId(p.getId());

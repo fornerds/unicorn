@@ -6,6 +6,7 @@ import com.unicorn.dto.auth.TokenResponse;
 import com.unicorn.entity.RefreshToken;
 import com.unicorn.entity.User;
 import com.unicorn.repository.RefreshTokenRepository;
+import com.unicorn.util.TokenHashUtil;
 import com.unicorn.repository.UserRepository;
 import com.unicorn.util.JwtUtil;
 import com.unicorn.util.TokenHashUtil;

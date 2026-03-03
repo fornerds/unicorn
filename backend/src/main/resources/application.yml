@@ -46,15 +46,31 @@ app:
     api-key: ${OPENAI_API_KEY:}
     model: ${OPENAI_MODEL:gpt-4.1-mini}
   s3:
-    bucket: ${AWS_S3_BUCKET:unicorn-uploads}
+    bucket: ${AWS_S3_BUCKET_NAME:unicorn-uploads}
     region: ${AWS_REGION:ap-northeast-2}
     key-prefix: ${AWS_S3_KEY_PREFIX:uploads}
   settings:
     site-name: ${SITE_NAME:Unicorn}
     payment-provider: ${PAYMENT_PROVIDER:paypal}
     domestic-pg-enabled: ${DOMESTIC_PG_ENABLED:true}
+  payment:
+    redirect-url-base: ${PAYMENT_REDIRECT_URL_BASE:https://pg.example.com/redirect}
+  oauth:
+    callback-base-url: ${OAUTH_CALLBACK_BASE_URL:http://localhost:18080/api/v1}
+    frontend-redirect-url: ${OAUTH_FRONTEND_REDIRECT_URL:http://localhost:3000}
+    naver:
+      client-id: ${NAVER_CLIENT_ID:}
+      client-secret: ${NAVER_CLIENT_SECRET:}
+    kakao:
+      client-id: ${KAKAO_CLIENT_ID:}
+      client-secret: ${KAKAO_CLIENT_SECRET:}
+    google:
+      client-id: ${GOOGLE_CLIENT_ID:}
+      client-secret: ${GOOGLE_CLIENT_SECRET:}
   jwt:
     access-token-cookie-name: ${JWT_ACCESS_TOKEN_COOKIE_NAME:access_token}
+    refresh-token-cookie-name: ${JWT_REFRESH_TOKEN_COOKIE_NAME:refresh_token}
+    cookie-secure: ${JWT_COOKIE_SECURE:false}
     access-secret: ${JWT_ACCESS_SECRET:dev-access-secret-min-256-bits-for-hmac-sha256}
     refresh-secret: ${JWT_REFRESH_SECRET:dev-refresh-secret-min-256-bits-for-hmac-sha256}
     access-expiration-ms: ${JWT_ACCESS_EXPIRE_MS:3600000}
