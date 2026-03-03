@@ -1,8 +1,19 @@
 spring:
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   jpa:
     show-sql: true
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:unicorn}?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=Asia/Seoul&createDatabaseIfNotExist=true
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:unicorn}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&createDatabaseIfNotExist=true
     username: ${MYSQL_USER:unicorn}
     password: ${MYSQL_PASSWORD:unicorn}
     driver-class-name: com.mysql.cj.jdbc.Driver

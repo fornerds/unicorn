@@ -18,5 +18,25 @@ services:
       timeout: 5s
       retries: 10
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: unicorn-backend
+    env_file:
+      - ${ENV_FILE:-.env.dev}
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-unicorn}
+      MYSQL_USER: ${MYSQL_USER:-unicorn}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-unicorn}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
 volumes:
   mysql_data:
