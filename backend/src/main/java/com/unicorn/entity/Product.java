@@ -3,6 +3,8 @@ package com.unicorn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
@@ -13,6 +15,8 @@ import java.util.List;
         @Index(name = "idx_products_category_id", columnList = "category_id"),
         @Index(name = "idx_products_name", columnList = "name")
 })
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE products SET deleted_at = CURRENT_TIMESTAMP(6) WHERE id = ?")
 @Getter
 @Setter
 @NoArgsConstructor

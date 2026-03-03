@@ -1,6 +1,8 @@
 -- dev 전용 더미 데이터 (MySQL 데이터 디렉터리가 비어 있을 때만 실행됨)
 -- 비밀번호: password (BCrypt)
 
+SET NAMES utf8mb4;
+
 INSERT IGNORE INTO users (id, email, password_hash, name, status, role, created_at, updated_at) VALUES
 (1, 'admin@unicorn.dev', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', '개발관리자', 'active', 'ADMIN', NOW(), NOW()),
 (2, 'user1@unicorn.dev', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', '테스트유저1', 'active', 'USER', NOW(), NOW()),

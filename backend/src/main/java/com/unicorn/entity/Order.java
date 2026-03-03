@@ -2,6 +2,8 @@ package com.unicorn.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -14,6 +16,8 @@ import java.util.List;
         @Index(name = "idx_orders_status", columnList = "status"),
         @Index(name = "idx_orders_created_at", columnList = "created_at")
 })
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE orders SET deleted_at = CURRENT_TIMESTAMP(6) WHERE id = ?")
 @Getter
 @Setter
 @NoArgsConstructor

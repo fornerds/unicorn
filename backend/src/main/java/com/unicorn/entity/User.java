@@ -2,6 +2,8 @@ package com.unicorn.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -9,6 +11,8 @@ import lombok.*;
         @Index(name = "idx_users_status", columnList = "status"),
         @Index(name = "idx_users_role", columnList = "role")
 })
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP(6) WHERE id = ?")
 @Getter
 @Setter
 @NoArgsConstructor

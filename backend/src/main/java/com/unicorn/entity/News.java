@@ -2,11 +2,15 @@ package com.unicorn.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
 
 @Entity
 @Table(name = "news")
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE news SET deleted_at = CURRENT_TIMESTAMP(6) WHERE id = ?")
 @Getter
 @Setter
 @NoArgsConstructor

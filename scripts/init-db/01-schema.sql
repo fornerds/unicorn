@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
   role VARCHAR(30) NOT NULL DEFAULT 'USER',
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL,
   INDEX idx_users_email (email),
   INDEX idx_users_status (status),
   INDEX idx_users_role (role)
@@ -30,6 +31,7 @@ CREATE TABLE IF NOT EXISTS categories (
   sort_order INT NOT NULL,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL,
   INDEX idx_categories_parent_id (parent_id),
   INDEX idx_categories_slug (slug),
   FOREIGN KEY (parent_id) REFERENCES categories(id)
@@ -46,6 +48,7 @@ CREATE TABLE IF NOT EXISTS products (
   stock INT NOT NULL,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL,
   INDEX idx_products_category_id (category_id),
   INDEX idx_products_name (name),
   FOREIGN KEY (category_id) REFERENCES categories(id)
@@ -57,6 +60,7 @@ CREATE TABLE IF NOT EXISTS mood_questions (
   sort_order INT NOT NULL,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL,
   INDEX idx_mood_questions_sort_order (sort_order)
 );
 
@@ -74,6 +78,7 @@ CREATE TABLE IF NOT EXISTS orders (
   paid_at DATETIME(6),
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL,
   INDEX idx_orders_user_id (user_id),
   INDEX idx_orders_status (status),
   INDEX idx_orders_created_at (created_at),
@@ -100,6 +105,7 @@ CREATE TABLE IF NOT EXISTS cart_items (
   quantity INT NOT NULL,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL,
   UNIQUE KEY uk_cart_items_user_product (user_id, product_id),
   INDEX idx_cart_items_user_id (user_id),
   FOREIGN KEY (user_id) REFERENCES users(id),
@@ -136,6 +142,7 @@ CREATE TABLE IF NOT EXISTS sns_accounts (
   provider_user_id VARCHAR(100) NOT NULL,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL,
   UNIQUE KEY uk_sns_accounts_provider_user (provider, provider_user_id),
   INDEX idx_sns_accounts_user_id (user_id),
   FOREIGN KEY (user_id) REFERENCES users(id)
@@ -146,6 +153,7 @@ CREATE TABLE IF NOT EXISTS user_product_likes (
   user_id BIGINT NOT NULL,
   product_id BIGINT NOT NULL,
   created_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL,
   UNIQUE KEY uk_user_product_likes (user_id, product_id),
   INDEX idx_user_product_likes_product_id (product_id),
   FOREIGN KEY (user_id) REFERENCES users(id),
@@ -159,5 +167,6 @@ CREATE TABLE IF NOT EXISTS news (
   image_url VARCHAR(512),
   published_at DATETIME(6),
   created_at DATETIME(6) NOT NULL,
-  updated_at DATETIME(6) NOT NULL
+  updated_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL
 );
