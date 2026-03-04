@@ -336,27 +336,29 @@ export default function CartPage() {
                         </div>
                         <div className="flex items-end justify-between w-full">
                           <div className="flex flex-1 gap-[10px] items-center min-w-0">
-                            <div className="bg-[#f9fafb] border border-[#e5e7eb] flex gap-[10px] h-[36px] items-center justify-center px-[10px] py-[8px] rounded-[8px] shrink-0">
+                            <div className="border border-[#e5e7eb] flex h-[36px] items-center justify-between rounded-[8px] overflow-hidden w-[100px] shrink-0">
                               <button
                                 onClick={() => handleQuantityChange(item.id, -1)}
-                                className="flex items-center justify-center w-[16px] h-[16px] shrink-0 hover:opacity-80 transition-opacity"
+                                className="flex items-center justify-center w-[28px] h-full bg-[#f9fafb] shrink-0 hover:opacity-80 transition-opacity"
                               >
-                                <MinusIcon width={12} height={1} stroke="#6b7280" strokeWidth={1} />
+                                <MinusIcon width={12} height={1} stroke="#6b7280" strokeWidth={1.3} />
                               </button>
-                              <input
-                                type="text"
-                                inputMode="numeric"
-                                value={item.quantity === 0 ? '' : item.quantity}
-                                onChange={(e) => handleQuantityInput(item.id, e.target.value)}
-                                onFocus={() => handleQuantityFocus(item.id)}
-                                onBlur={() => handleQuantityBlur(item.id)}
-                                className="font-suit font-semibold text-[16px] leading-[1.35] text-[#6b7280] text-center bg-transparent border-none outline-none w-[50px] shrink-0"
-                              />
+                              <div className="flex-1 h-full bg-white border-x border-[#e5e7eb] flex items-center justify-center">
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  value={item.quantity === 0 ? '' : item.quantity}
+                                  onChange={(e) => handleQuantityInput(item.id, e.target.value)}
+                                  onFocus={() => handleQuantityFocus(item.id)}
+                                  onBlur={() => handleQuantityBlur(item.id)}
+                                  className="font-suit font-semibold text-[16px] leading-[1.35] text-[#6b7280] text-center bg-transparent border-none outline-none w-full"
+                                />
+                              </div>
                               <button
                                 onClick={() => handleQuantityChange(item.id, 1)}
-                                className="flex items-center justify-center w-[16px] h-[16px] shrink-0 hover:opacity-80 transition-opacity"
+                                className="flex items-center justify-center w-[28px] h-full bg-[#f9fafb] shrink-0 hover:opacity-80 transition-opacity"
                               >
-                                <PlusIcon width={15} height={15} stroke="#6b7280" strokeWidth={1.5} />
+                                <PlusIcon width={15} height={15} stroke="#6b7280" strokeWidth={1.3} />
                               </button>
                             </div>
                             <div className="relative" ref={(el) => { colorDropdownRefs.current[item.id] = el; }}>

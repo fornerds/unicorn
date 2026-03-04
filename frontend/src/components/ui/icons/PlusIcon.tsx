@@ -18,17 +18,18 @@ export const PlusIcon = ({
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="15"
-      height="15"
+      width={width}
+      height={height}
       viewBox="0 0 15 15"
       fill="none"
+      className={cn(className)}
     >
       <path
         d="M7.41667 0.75V14.0833M0.75 7.41667H14.0833"
-        stroke="#959BA9"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
