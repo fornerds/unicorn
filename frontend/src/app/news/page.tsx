@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useMemo, useEffect } from 'react';
-import { NewsCard } from '@/components/features/news/NewsCard';
-import { NewsCardSkeleton } from '@/components/features/news/NewsCardSkeleton';
-import { NewsSearchBar } from '@/components/features/news/NewsSearchBar';
-import { NewsTagFilter } from '@/components/features/news/NewsTagFilter';
-import { NewsSortDropdown } from '@/components/features/news/NewsSortDropdown';
-import { NewsPagination } from '@/components/features/news/NewsPagination';
-import { mockNewsData } from '@/data/mockNews';
+import { useState, useMemo, useEffect } from "react";
+import { NewsCard } from "@/components/features/news/NewsCard";
+import { NewsCardSkeleton } from "@/components/features/news/NewsCardSkeleton";
+import { NewsSearchBar } from "@/components/features/news/NewsSearchBar";
+import { NewsTagFilter } from "@/components/features/news/NewsTagFilter";
+import { NewsSortDropdown } from "@/components/features/news/NewsSortDropdown";
+import { NewsPagination } from "@/components/features/news/NewsPagination";
+import { mockNewsData } from "@/data/mockNews";
 
-type SortOption = 'latest' | 'popular' | 'recommended';
+type SortOption = "latest" | "popular" | "recommended";
 
 export default function NewsPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTag, setSelectedTag] = useState('전체');
-  const [sortOption, setSortOption] = useState<SortOption>('latest');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTag, setSelectedTag] = useState("전체");
+  const [sortOption, setSortOption] = useState<SortOption>("latest");
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,24 +27,26 @@ export default function NewsPage() {
       filtered = filtered.filter(
         (news) =>
           news.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          news.description.toLowerCase().includes(searchQuery.toLowerCase())
+          news.description.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
-    if (selectedTag !== '전체') {
+    if (selectedTag !== "전체") {
       filtered = filtered.filter((news) => news.tags.includes(selectedTag));
     }
 
     switch (sortOption) {
-      case 'popular':
+      case "popular":
         filtered.sort((a, b) => b.views - a.views);
         break;
-      case 'recommended':
+      case "recommended":
         filtered.sort((a, b) => b.likes - a.likes);
         break;
-      case 'latest':
+      case "latest":
       default:
-        filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        filtered.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
         break;
     }
 
@@ -58,13 +60,11 @@ export default function NewsPage() {
   }, [filteredNews, currentPage, itemsPerPage]);
 
   const popularNews = useMemo(() => {
-    return [...mockNewsData]
-      .sort((a, b) => b.views - a.views)
-      .slice(0, 3);
+    return [...mockNewsData].sort((a, b) => b.views - a.views).slice(0, 3);
   }, []);
 
   const allTags = useMemo(() => {
-    const tags = new Set<string>(['전체']);
+    const tags = new Set<string>(["전체"]);
     mockNewsData.forEach((news) => {
       news.tags.forEach((tag) => tags.add(tag));
     });
@@ -84,24 +84,24 @@ export default function NewsPage() {
       <div className="flex flex-col gap-[120px] items-center pb-[75px] pt-[100px] w-full max-w-[1167px] mx-auto">
         {/* 상단 타이틀 + 검색 + 태그 */}
         <div className="flex flex-col gap-[60px] items-center w-full max-w-[1167px]">
-          <div className="flex flex-col gap-[30px] items-center w-full max-w-[569px]">
+          <div className="flex flex-col gap-[30px] items-center w-full">
             <div className="flex flex-col items-center">
               <div className="flex gap-[2px] items-center">
-                <h1 className="font-cardo font-medium text-[32px] leading-[normal] text-[#1f2937] whitespace-nowrap">
+                <h1 className="font-cardo font-medium text-[26px] leading-[normal] text-[#1f2937] whitespace-nowrap">
                   UNICORN
                 </h1>
-                <span className="font-suit font-normal text-[32px] leading-[1.5] text-[#1f2937]">
+                <span className="font-suit font-normal text-[26px] leading-[1.5] text-[#1f2937]">
                   의
                 </span>
               </div>
-              <h2 className="font-suit font-normal text-[32px] leading-[1.5] text-[#1f2937] text-center whitespace-nowrap">
+              <h2 className="font-suit font-normal text-[26px] leading-[1.5] text-[#1f2937] text-center whitespace-nowrap">
                 최신 뉴스와 소식을 확인해 보세요!
               </h2>
             </div>
             <div className="w-full max-w-[344px]">
               <NewsSearchBar value={searchQuery} onChange={setSearchQuery} />
             </div>
-            <div className="flex flex-wrap gap-[12px_8px] items-center justify-center w-full max-w-[569px] max-h-[94px] overflow-hidden">
+            <div className="flex items-center justify-center w-full">
               <NewsTagFilter
                 tags={allTags}
                 selectedTag={selectedTag}
@@ -157,19 +157,17 @@ export default function NewsPage() {
               </div>
             ) : (
               <div className="flex flex-wrap gap-[30px_11px] items-start w-full">
-                {isLoading ? (
-                  Array.from({ length: 12 }).map((_, index) => (
-                    <div key={`skeleton-${index}`} className="w-[283px]">
-                      <NewsCardSkeleton />
-                    </div>
-                  ))
-                ) : (
-                  paginatedNews.map((news) => (
-                    <div key={news.id} className="w-[283px]">
-                      <NewsCard news={news} />
-                    </div>
-                  ))
-                )}
+                {isLoading
+                  ? Array.from({ length: 12 }).map((_, index) => (
+                      <div key={`skeleton-${index}`} className="w-[283px]">
+                        <NewsCardSkeleton />
+                      </div>
+                    ))
+                  : paginatedNews.map((news) => (
+                      <div key={news.id} className="w-[283px]">
+                        <NewsCard news={news} />
+                      </div>
+                    ))}
               </div>
             )}
           </div>
