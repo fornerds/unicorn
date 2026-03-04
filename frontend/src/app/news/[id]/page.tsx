@@ -1,10 +1,10 @@
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { NewsCard } from '@/components/features/news/NewsCard';
-import { mockNewsData } from '@/data/mockNews';
-import { ROUTES } from '@/utils/constants';
-import { withBasePath } from '@/utils/assets';
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { NewsCard } from "@/components/features/news/NewsCard";
+import { mockNewsData } from "@/data/mockNews";
+import { ROUTES } from "@/utils/constants";
+import { withBasePath } from "@/utils/assets";
 
 export async function generateStaticParams() {
   return mockNewsData.map((news) => ({
@@ -37,7 +37,7 @@ export default function NewsDetailPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="flex flex-col gap-[188px] items-center pb-[75px] pt-[100px] w-full max-w-[1167px] mx-auto">
+      <div className="flex flex-col gap-[188px] items-center pb-[75px] pt-[8px] w-full max-w-[1167px] mx-auto">
         <div className="flex flex-col gap-[45px] items-start w-full max-w-[1167px]">
           <div className="flex flex-col gap-[15px] items-start w-full">
             <div className="flex items-center w-full">
@@ -47,20 +47,19 @@ export default function NewsDetailPage({ params }: { params: { id: string } }) {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
+                  width="29"
+                  height="29"
+                  viewBox="0 0 29 29"
                   fill="none"
-                  aria-hidden="true"
                 >
                   <path
-                    d="M19 11.9998L5 11.9998M5 11.9998L10.125 17.25M5 11.9998L10.125 6.75"
+                    d="M22.9585 14.4997L6.04183 14.4997M6.04183 14.4997L12.2345 20.8438M6.04183 14.4997L12.2345 8.15625"
                     stroke="#374151"
-                    strokeWidth="1.125"
-                    strokeLinejoin="round"
+                    stroke-width="1.4"
+                    stroke-linejoin="round"
                   />
                 </svg>
-                <p className="font-suit font-medium ml-[6px] text-[15px] leading-[1.45] text-[#1f2937] whitespace-nowrap">
+                <p className="font-suit font-medium ml-[6px] text-[20px] leading-[1.45] text-[#1f2937] whitespace-nowrap">
                   뉴스 목록으로
                 </p>
               </Link>
@@ -79,7 +78,7 @@ export default function NewsDetailPage({ params }: { params: { id: string } }) {
           <div className="flex items-start justify-between px-[3px] w-full">
             <div className="flex flex-col gap-[15px] items-start shrink-0">
               <div className="flex flex-col font-suit font-semibold leading-[1.5] text-[24px] text-[#1f2937]">
-                {news.title.split('\n').map((line, index) => (
+                {news.title.split("\n").map((line, index) => (
                   <p key={index} className="mb-0">
                     {line}
                   </p>
@@ -87,21 +86,26 @@ export default function NewsDetailPage({ params }: { params: { id: string } }) {
               </div>
               <div className="flex font-suit font-medium gap-[19.5px] items-center leading-[1.5] text-[15px] text-[#6b7280] w-full">
                 <p className="leading-[1.5] whitespace-nowrap">{news.date}</p>
-                <p className="leading-[1.5] whitespace-nowrap">조회수 {news.views}</p>
+                <p className="leading-[1.5] whitespace-nowrap">
+                  조회수 {news.views}
+                </p>
               </div>
             </div>
 
             <div className="flex flex-col gap-[58.5px] items-start text-[18px] w-[772.5px]">
               <div className="font-suit font-normal leading-[1.7] min-w-full text-[#374151] whitespace-pre-wrap">
-                {content.split('\n').map((paragraph, index) => (
-                  <p key={index} className={paragraph.trim() === '' ? 'mb-0' : 'mb-0'}>
-                    {paragraph || '\u00A0'}
+                {content.split("\n").map((paragraph, index) => (
+                  <p
+                    key={index}
+                    className={paragraph.trim() === "" ? "mb-0" : "mb-0"}
+                  >
+                    {paragraph || "\u00A0"}
                   </p>
                 ))}
               </div>
               <div className="flex flex-col font-suit font-medium leading-[1.5] text-[18px] text-[#b5b8c0]">
                 <p className="leading-[1.5] break-words">
-                  {news.tags.map((tag) => `#${tag}`).join('  ')}
+                  {news.tags.map((tag) => `#${tag}`).join("  ")}
                 </p>
               </div>
             </div>
