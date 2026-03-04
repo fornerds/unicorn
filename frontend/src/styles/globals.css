@@ -99,24 +99,3 @@
   /* 커스텀 유틸리티 클래스 */
 }
 
-@keyframes moveToHeader {
-  from {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  to {
-    top: 20px;
-    left: 70px;
-    transform: translate(0, 0);
-  }
-}
-
-@keyframes shrinkToHeader {
-  from {
-    font-size: 128px;
-  }
-  to {
-    font-size: 32px;
-  }
-}

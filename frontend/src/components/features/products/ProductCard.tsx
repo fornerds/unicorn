@@ -13,7 +13,6 @@ interface ProductCardProps {
   price: number;
   imageUrl: string;
   category: string;
-  subCategory: string;
   companyName: string;
   isLiked?: boolean;
 }
@@ -24,7 +23,6 @@ export const ProductCard = ({
   price,
   imageUrl,
   category,
-  subCategory,
   companyName,
   isLiked: initialIsLiked = false,
 }: ProductCardProps) => {
@@ -59,26 +57,6 @@ export const ProductCard = ({
           <div className="flex flex-1 gap-[2px] items-center min-w-0">
             <p className="font-suit font-medium text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
               {getCategoryDisplayName(category)}
-            </p>
-            <div className="w-[8px] h-[8px] relative shrink-0">
-              <svg
-                width="8"
-                height="8"
-                viewBox="0 0 8 8"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M2.5 0.5L5.5 4L2.5 7.5"
-                  stroke="#959ba9"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <p className="font-suit font-medium text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
-              {subCategory}
             </p>
           </div>
           <div className="flex items-center justify-center px-[8px] py-[2px] rounded-[99px] shrink-0">
