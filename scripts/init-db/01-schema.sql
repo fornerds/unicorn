@@ -47,12 +47,32 @@ CREATE TABLE IF NOT EXISTS products (
   image_url VARCHAR(512),
   images JSON,
   stock INT NOT NULL,
+  colors JSON,
+  weight VARCHAR(100),
+  total_height VARCHAR(100),
+  operating_time VARCHAR(100),
+  battery VARCHAR(100),
+  speed VARCHAR(100),
+  short_description VARCHAR(500),
+  content TEXT,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
   deleted_at DATETIME(6) NULL,
   INDEX idx_products_category_id (category_id),
   INDEX idx_products_name (name),
   FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE IF NOT EXISTS product_color_stock (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  product_id BIGINT NOT NULL,
+  color VARCHAR(100) NOT NULL,
+  stock INT NOT NULL,
+  created_at DATETIME(6) NOT NULL,
+  updated_at DATETIME(6) NOT NULL,
+  UNIQUE KEY uk_product_color_stock_product_color (product_id, color),
+  INDEX idx_product_color_stock_product_id (product_id),
+  FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
 CREATE TABLE IF NOT EXISTS mood_questions (

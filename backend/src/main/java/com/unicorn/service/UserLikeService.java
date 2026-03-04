@@ -28,18 +28,21 @@ public class UserLikeService {
         Page<UserProductLike> likes = userProductLikeRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
         return likes.map(like -> {
             Product p = like.getProduct();
-            long count = userProductLikeRepository.countByProductId(p.getId());
+            var cat = p.getCategory();
+            var parent = cat.getParent();
             return ProductListResponse.builder()
                     .id(p.getId())
                     .name(p.getName())
-                    .description(p.getDescription())
                     .price(p.getPrice())
-                    .imageUrl(p.getImageUrl())
-                    .stock(p.getStock())
-                    .likesCount(count)
                     .isLiked(true)
-                    .createdAt(p.getCreatedAt())
-                    .updatedAt(p.getUpdatedAt())
+                    .parentCategory(parent != null ? ProductListResponse.CategorySummary.builder()
+                            .id(parent.getId())
+                            .name(parent.getName())
+                            .build() : null)
+                    .category(ProductListResponse.CategorySummary.builder()
+                            .id(cat.getId())
+                            .name(cat.getName())
+                            .build())
                     .build();
         });
     }

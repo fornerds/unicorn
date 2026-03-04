@@ -76,6 +76,8 @@ public class AdminProductService {
     }
 
     private AdminProductResponse toResponse(Product p) {
+        var cat = p.getCategory();
+        var parent = cat.getParent();
         return AdminProductResponse.builder()
                 .id(p.getId())
                 .name(p.getName())
@@ -83,7 +85,10 @@ public class AdminProductService {
                 .price(p.getPrice())
                 .imageUrl(p.getImageUrl())
                 .stock(p.getStock())
-                .categoryId(p.getCategory().getId())
+                .categoryId(cat.getId())
+                .categoryName(cat.getName())
+                .parentCategoryId(parent != null ? parent.getId() : null)
+                .parentCategoryName(parent != null ? parent.getName() : null)
                 .images(p.getImages())
                 .createdAt(p.getCreatedAt())
                 .updatedAt(p.getUpdatedAt())

@@ -17,6 +17,9 @@ public class AdminProductResponse {
     private String imageUrl;
     private Integer stock;
     private Long categoryId;
+    private String categoryName;
+    private Long parentCategoryId;
+    private String parentCategoryName;
     private List<String> images;
     private Instant createdAt;
     private Instant updatedAt;

@@ -8,6 +8,7 @@ import com.unicorn.dto.product.ProductListResponse;
 import com.unicorn.security.JwtPrincipal;
 import com.unicorn.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,9 @@ public class ProductController {
     public ApiResponse<ListResponse<ProductListResponse>> getProducts(
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String keyword,
+            @Parameter(description = "정렬 기준. 가능 값: id, name, price, stock, createdAt, updatedAt", example = "createdAt")
             @RequestParam(defaultValue = "createdAt") String sort,
+            @Parameter(description = "정렬 방향. 가능 값: asc(오름차순), desc(내림차순)", example = "desc")
             @RequestParam(defaultValue = "desc") String order,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int limit,

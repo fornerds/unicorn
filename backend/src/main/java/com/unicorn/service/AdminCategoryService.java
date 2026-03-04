@@ -22,7 +22,7 @@ public class AdminCategoryService {
         List<Category> list = parentId == null
                 ? categoryRepository.findByParentIsNullOrderBySortOrderAsc()
                 : categoryRepository.findByParent_IdOrderBySortOrderAsc(parentId);
-        return list.stream().map(this::toResponse).collect(Collectors.toList());
+        return list.stream().map(c -> toResponse(c, true)).collect(Collectors.toList());
     }
 
     @Transactional
@@ -35,7 +35,7 @@ public class AdminCategoryService {
                 .sortOrder(request.getSortOrder())
                 .build();
         c = categoryRepository.save(c);
-        return toResponse(c);
+        return toResponse(c, false);
     }
 
     @Transactional
@@ -50,7 +50,7 @@ public class AdminCategoryService {
             c.setParent(null);
         }
         c = categoryRepository.save(c);
-        return toResponse(c);
+        return toResponse(c, false);
     }
 
     @Transactional
@@ -61,7 +61,12 @@ public class AdminCategoryService {
         categoryRepository.deleteById(id);
     }
 
-    private AdminCategoryResponse toResponse(Category c) {
+    private AdminCategoryResponse toResponse(Category c, boolean withChildren) {
+        List<AdminCategoryResponse> children = List.of();
+        if (withChildren) {
+            List<Category> childList = categoryRepository.findByParent_IdOrderBySortOrderAsc(c.getId());
+            children = childList.stream().map(child -> toResponse(child, false)).collect(Collectors.toList());
+        }
         return AdminCategoryResponse.builder()
                 .id(c.getId())
                 .name(c.getName())
@@ -69,7 +74,7 @@ public class AdminCategoryService {
                 .parentId(c.getParent() != null ? c.getParent().getId() : null)
                 .sortOrder(c.getSortOrder())
                 .createdAt(c.getCreatedAt())
-                .children(List.of())
+                .children(children)
                 .build();
     }
 }

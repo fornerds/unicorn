@@ -50,4 +50,29 @@ public class Product extends BaseEntity {
 
     @Column(nullable = false)
     private Integer stock;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "json")
+    private List<String> colors;
+
+    @Column(name = "weight", length = 100)
+    private String weight;
+
+    @Column(name = "total_height", length = 100)
+    private String totalHeight;
+
+    @Column(name = "operating_time", length = 100)
+    private String operatingTime;
+
+    @Column(length = 100)
+    private String battery;
+
+    @Column(length = 100)
+    private String speed;
+
+    @Column(name = "short_description", length = 500)
+    private String shortDescription;
+
+    @Column(columnDefinition = "TEXT")
+    private String content;
 }

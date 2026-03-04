@@ -9,24 +9,46 @@ import java.util.List;
 
 @Data
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class ProductDetailResponse {
 
     private Long id;
     private String name;
-    private String description;
-    private BigDecimal price;
     private String imageUrl;
-    private Integer stock;
-    private Long likesCount;
-    private Boolean isLiked;
-    private CategoryInfo category;
     private List<String> images;
+    private CategoryInfo parentCategory;
+    private CategoryInfo category;
+    private Boolean isLiked;
+    private List<String> colors;
+    private List<ColorStock> colorStocks;
+    private BigDecimal price;
+    private ProductDetail detail;
+    private String shortDescription;
+    private String content;
+
+    @Data
+    @Builder
+    public static class ColorStock {
+        private String color;
+        private Integer stock;
+    }
 
     @Data
     @Builder
     public static class CategoryInfo {
         private Long id;
         private String name;
+        private String slug;
+    }
+
+    @Data
+    @Builder
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    public static class ProductDetail {
+        private String weight;
+        private String totalHeight;
+        private String operatingTime;
+        private String battery;
+        private String speed;
     }
 }

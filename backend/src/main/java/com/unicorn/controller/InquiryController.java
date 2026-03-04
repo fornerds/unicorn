@@ -25,6 +25,6 @@ public class InquiryController {
     @PostMapping
     public ApiResponse<InquiryCreateResponse> create(@Valid @RequestBody InquiryCreateRequest request) {
         InquiryCreateResponse data = inquiryService.create(request);
-        return ApiResponse.created(data);
+        return ApiResponse.created(data, "문의가 등록되었습니다.");
     }
 }
