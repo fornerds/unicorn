@@ -65,30 +65,7 @@
     background: transparent !important;
   }
 
-  /* EliceDXNeolliOTF 폰트 설정 */
-  @font-face {
-    font-family: 'EliceDXNeolliOTF';
-    src: url('/fonts/EliceDXNeolliOTF-Light.otf') format('opentype');
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-  }
-
-  @font-face {
-    font-family: 'EliceDXNeolliOTF';
-    src: url('/fonts/EliceDXNeolliOTF-Medium.otf') format('opentype');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-  }
-
-  @font-face {
-    font-family: 'EliceDXNeolliOTF';
-    src: url('/fonts/EliceDXNeolliOTF-Bold.otf') format('opentype');
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
-  }
+  /* EliceDXNeolliOTF 폰트는 next/font/local로 로드 (layout.tsx) */
 }
 
 @layer components {
