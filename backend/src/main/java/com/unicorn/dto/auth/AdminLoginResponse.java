@@ -1,5 +1,6 @@
 package com.unicorn.dto.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,6 +9,8 @@ import lombok.Data;
 public class AdminLoginResponse {
 
     private String accessToken;
+
+    @JsonIgnore
     private String refreshToken;
     private long expiresIn;
     private AdminInfo admin;

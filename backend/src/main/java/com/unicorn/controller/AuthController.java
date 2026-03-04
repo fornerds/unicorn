@@ -99,7 +99,7 @@ public class AuthController {
         LoginResponse data = authService.loginWithOAuthCallback(code, state);
         authCookieHelper.addAuthCookies(response, data.getAccessToken(), data.getRefreshToken());
         String base = authService.getOauthFrontendRedirectUrl();
-        String url = base + "?accessToken=" + data.getAccessToken() + "&refreshToken=" + data.getRefreshToken() + "&expiresIn=" + data.getExpiresIn();
+        String url = base + "?accessToken=" + data.getAccessToken() + "&expiresIn=" + data.getExpiresIn();
         return new RedirectView(url);
     }
 
