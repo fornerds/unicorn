@@ -31,9 +31,11 @@ public class SecurityConfig {
             "/ai/mood-questions"
     };
 
+    /** 비로그인도 허용. POST /ai/chat 포함(추후 비로그인 사용자 횟수 제한 시 서비스/필터에서 처리). */
     private static final String[] PUBLIC_PATHS = {
             "/auth/**",
             "/admin/auth/**",
+            "/ai/chat",
             "/swagger-ui/**", "/swagger-ui.html", "/api-docs", "/api-docs/**",
             "/actuator/health", "/actuator/info",
             "/error"

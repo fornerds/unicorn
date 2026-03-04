@@ -22,10 +22,9 @@ public class AuthCookieHelper {
     private static final String COOKIE_PATH = "/";
     private static final String SAME_SITE_LAX = "Lax";
 
+    /** refresh_token 쿠키만 설정. access_token은 쿠키에 저장하지 않음(응답 JSON으로만 전달). */
     public void addAuthCookies(HttpServletResponse response, String accessToken, String refreshToken) {
-        int accessMaxAge = (int) (jwtProperties.getAccessExpirationMs() / 1000);
         int refreshMaxAge = (int) (jwtProperties.getRefreshExpirationMs() / 1000);
-        addCookie(response, jwtProperties.getAccessTokenCookieName(), accessToken, accessMaxAge);
         addCookie(response, jwtProperties.getRefreshTokenCookieName(), refreshToken, refreshMaxAge);
     }
 
@@ -54,8 +53,8 @@ public class AuthCookieHelper {
                 .orElse(null);
     }
 
+    /** 로그아웃 시 refresh_token 쿠키만 제거. (access_token은 쿠키에 저장하지 않으므로 제거할 것 없음) */
     public void clearAuthCookies(HttpServletResponse response) {
-        addCookie(response, jwtProperties.getAccessTokenCookieName(), "", 0);
         addCookie(response, jwtProperties.getRefreshTokenCookieName(), "", 0);
     }
 }

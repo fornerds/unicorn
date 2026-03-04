@@ -29,6 +29,7 @@ public class UserMeService {
         if (request.getName() != null) user.setName(request.getName());
         if (request.getPhone() != null) user.setPhone(request.getPhone());
         if (request.getAvatar() != null) user.setAvatar(request.getAvatar());
+        if (request.getMarketingAgreed() != null) user.setMarketingAgreed(request.getMarketingAgreed());
         user = userRepository.save(user);
         return toResponse(user);
     }
@@ -45,13 +46,11 @@ public class UserMeService {
 
     private UserMeResponse toResponse(User user) {
         return UserMeResponse.builder()
-                .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .avatar(user.getAvatar())
                 .phone(user.getPhone())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
+                .marketingAgreed(user.getMarketingAgreed())
                 .build();
     }
 }

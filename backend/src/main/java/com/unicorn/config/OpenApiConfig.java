@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,5 +73,17 @@ public class OpenApiConfig {
                                         .scheme("bearer")
                                         .bearerFormat("JWT")
                                         .description("Authorization Bearer 또는 access_token 쿠키")));
+    }
+
+    /**
+     * 사용자용 API만 노출하는 그룹. Swagger UI에서 "user" 선택 시 관리자 API(/admin/**)가 조회되지 않음.
+     * 기본 노출 그룹은 application-dev.yml의 springdoc.swagger-ui.defaultGroup=user 로 설정 가능.
+     */
+    @Bean
+    public GroupedOpenApi userApi() {
+        return GroupedOpenApi.builder()
+                .group("user")
+                .pathsToExclude("/admin/**")
+                .build();
     }
 }

@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(100) NOT NULL,
   avatar VARCHAR(512),
   phone VARCHAR(20),
+  marketing_agreed TINYINT(1) NOT NULL DEFAULT 0,
   status VARCHAR(20) NOT NULL DEFAULT 'active',
   memo TEXT,
   role VARCHAR(30) NOT NULL DEFAULT 'USER',

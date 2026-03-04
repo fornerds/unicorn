@@ -66,10 +66,11 @@ public class AdminAuthService {
         }
 
         String hash = TokenHashUtil.hash(refreshTokenValue);
-        RefreshToken stored = refreshTokenRepository.findByTokenHashAndExpiresAtAfter(hash, Instant.now())
+        RefreshToken stored = refreshTokenRepository.findFirstByTokenHashAndExpiresAtAfterOrderByIdDesc(hash, Instant.now())
                 .orElseThrow(() -> new IllegalArgumentException("이미 사용된 refresh 토큰이거나 만료되었습니다."));
 
-        refreshTokenRepository.delete(stored);
+        stored.setExpiresAt(Instant.now());
+        refreshTokenRepository.save(stored);
 
         User user = userRepository.findById(subjectId).orElseThrow(() -> new IllegalArgumentException("관리자를 찾을 수 없습니다."));
         if (!ADMIN_ROLE.equals(user.getRole())) {
@@ -85,6 +86,19 @@ public class AdminAuthService {
                 .refreshToken(newRefresh)
                 .expiresIn(jwtUtil.getAccessExpirationMs() / 1000)
                 .build();
+    }
+
+    /** 로그아웃 시 해당 refresh 토큰 즉시 만료. */
+    @Transactional
+    public void invalidateRefreshToken(String refreshTokenValue) {
+        if (refreshTokenValue == null || refreshTokenValue.isBlank()) {
+            return;
+        }
+        String hash = TokenHashUtil.hash(refreshTokenValue);
+        refreshTokenRepository.findByTokenHash(hash).ifPresent(rt -> {
+            rt.setExpiresAt(Instant.now());
+            refreshTokenRepository.save(rt);
+        });
     }
 
     private void saveRefreshToken(Long userId, String refreshTokenValue) {

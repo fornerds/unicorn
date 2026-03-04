@@ -36,30 +36,33 @@ public class AuthController {
         return ApiResponse.success(data);
     }
 
-    @Operation(summary = "회원가입", description = "가입 후 로그인 처리. Set-Cookie(access_token, refresh_token) 설정.")
+    @Operation(summary = "회원가입", description = "가입만 수행. 토큰·유저 데이터는 주지 않으며, 로그인은 POST /auth/login으로 별도 진행.")
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<LoginResponse> signup(@Valid @RequestBody SignupRequest request, HttpServletResponse response) {
-        LoginResponse data = authService.signup(request);
-        authCookieHelper.addAuthCookies(response, data.getAccessToken(), data.getRefreshToken());
-        return ApiResponse.created(data);
+    public ApiResponse<Void> signup(@Valid @RequestBody SignupRequest request) {
+        authService.signup(request);
+        return ApiResponse.<Void>builder()
+                .code(201)
+                .data(null)
+                .message("회원가입에 성공했습니다.")
+                .build();
     }
 
-    @Operation(summary = "로그아웃", description = "클라이언트 쿠키(access_token, refresh_token)만 제거. DB의 refresh 토큰은 삭제하지 않음(로그인 이력 보관).")
+    @Operation(summary = "로그아웃", description = "쿠키의 refresh_token으로 DB에서 해당 토큰 만료(expires_at=현재). 쿠키 제거. 탈취된 토큰도 재사용 불가.")
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(HttpServletResponse response) {
+    public ApiResponse<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = authCookieHelper.getRefreshTokenFromCookie(request);
+        authService.invalidateRefreshToken(refreshToken);
         authCookieHelper.clearAuthCookies(response);
         return ApiResponse.success(null, "로그아웃되었습니다.");
     }
 
-    @Operation(summary = "토큰 재발급", description = "Body의 refreshToken 또는 쿠키 refresh_token으로 Access/Refresh 재발급. 새 토큰은 Set-Cookie로 설정.")
+    @Operation(summary = "토큰 재발급", description = "쿠키 refresh_token으로만 재발급. Body 없이 POST만 하면 됨. 새 accessToken은 JSON, 새 refresh_token은 Set-Cookie.")
     @PostMapping("/refresh")
-    public ApiResponse<TokenResponse> refresh(@RequestBody RefreshRequest request, HttpServletRequest httpRequest, HttpServletResponse response) {
-        String refreshToken = StringUtils.hasText(request.getRefreshToken())
-                ? request.getRefreshToken()
-                : authCookieHelper.getRefreshTokenFromCookie(httpRequest);
+    public ApiResponse<TokenResponse> refresh(HttpServletRequest httpRequest, HttpServletResponse response) {
+        String refreshToken = authCookieHelper.getRefreshTokenFromCookie(httpRequest);
         if (!StringUtils.hasText(refreshToken)) {
-            throw new IllegalArgumentException("refreshToken이 필요합니다. Body 또는 refresh_token 쿠키를 보내주세요.");
+            throw new IllegalArgumentException("refresh_token 쿠키가 필요합니다. 로그인 후 쿠키가 설정되어 있어야 합니다.");
         }
         TokenResponse data = authService.refreshUser(refreshToken);
         authCookieHelper.addAuthCookies(response, data.getAccessToken(), data.getRefreshToken());

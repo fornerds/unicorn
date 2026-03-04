@@ -39,6 +39,10 @@ public class User extends BaseEntity {
     @Column(length = 20)
     private String phone;
 
+    @Column(name = "marketing_agreed", nullable = false)
+    @Builder.Default
+    private Boolean marketingAgreed = false;
+
     @Column(nullable = false, length = 20)
     @Builder.Default
     private String status = "active";

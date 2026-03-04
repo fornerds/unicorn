@@ -28,6 +28,8 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: method
     tagsSorter: alpha
+    # 사용자 API만 기본 노출. 관리자 API는 그룹에서 "default" 선택 시 표시.
+    urlsPrimaryName: ${SPRINGDOC_SWAGGER_UI_DEFAULT_GROUP:user}
 
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}

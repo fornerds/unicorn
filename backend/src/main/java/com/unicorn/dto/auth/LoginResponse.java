@@ -15,12 +15,10 @@ public class LoginResponse {
     @Data
     @Builder
     public static class UserInfo {
-        private Long id;
         private String email;
         private String name;
         private String avatar;
         private String phone;
-        private String createdAt;
-        private String updatedAt;
+        private Boolean marketingAgreed;
     }
 }

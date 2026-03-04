@@ -22,4 +22,7 @@ public class SignupRequest {
 
     @Size(max = 20)
     private String phone;
+
+    /** 마케팅 수신 동의 여부. true면 동의, false/미전송이면 비동의 */
+    private Boolean marketingAgreed;
 }

@@ -73,7 +73,7 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResponse signup(SignupRequest request) {
+    public void signup(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
@@ -82,20 +82,10 @@ public class AuthService {
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
                 .phone(request.getPhone())
+                .marketingAgreed(Boolean.TRUE.equals(request.getMarketingAgreed()))
                 .status("active")
                 .build();
-        user = userRepository.save(user);
-
-        String accessToken = jwtUtil.generateAccessToken(user.getId(), JwtUtil.SUBJECT_TYPE_USER, user.getEmail(), "USER");
-        String refreshTokenValue = jwtUtil.generateRefreshToken(user.getId(), JwtUtil.SUBJECT_TYPE_USER);
-        saveUserRefreshToken(user.getId(), refreshTokenValue);
-
-        return LoginResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshTokenValue)
-                .expiresIn(jwtUtil.getAccessExpirationMs() / 1000)
-                .user(toUserInfo(user))
-                .build();
+        userRepository.save(user);
     }
 
     @Transactional
@@ -110,10 +100,11 @@ public class AuthService {
         }
 
         String hash = TokenHashUtil.hash(refreshTokenValue);
-        RefreshToken stored = refreshTokenRepository.findByTokenHashAndExpiresAtAfter(hash, Instant.now())
+        RefreshToken stored = refreshTokenRepository.findFirstByTokenHashAndExpiresAtAfterOrderByIdDesc(hash, Instant.now())
                 .orElseThrow(() -> new IllegalArgumentException("이미 사용된 refresh 토큰이거나 만료되었습니다."));
 
-        refreshTokenRepository.delete(stored);
+        stored.setExpiresAt(Instant.now());
+        refreshTokenRepository.save(stored);
 
         User user = userRepository.findById(subjectId).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         String role = user.getRole() != null && !user.getRole().isBlank() ? user.getRole() : "USER";
@@ -182,6 +173,19 @@ public class AuthService {
 
     public String getOauthFrontendRedirectUrl() {
         return oauthFrontendRedirectUrl;
+    }
+
+    /** 로그아웃 시 해당 refresh 토큰을 즉시 만료. 탈취되어도 재사용 불가. */
+    @Transactional
+    public void invalidateRefreshToken(String refreshTokenValue) {
+        if (refreshTokenValue == null || refreshTokenValue.isBlank()) {
+            return;
+        }
+        String hash = TokenHashUtil.hash(refreshTokenValue);
+        refreshTokenRepository.findByTokenHash(hash).ifPresent(rt -> {
+            rt.setExpiresAt(Instant.now());
+            refreshTokenRepository.save(rt);
+        });
     }
 
     private LoginResponse findOrCreateUserAndIssueToken(String provider, OAuthUserInfo info, String requestName, String requestEmail) {
@@ -297,13 +301,11 @@ public class AuthService {
 
     private LoginResponse.UserInfo toUserInfo(User user) {
         return LoginResponse.UserInfo.builder()
-                .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .avatar(user.getAvatar())
                 .phone(user.getPhone())
-                .createdAt(user.getCreatedAt() != null ? user.getCreatedAt().toString() : null)
-                .updatedAt(user.getUpdatedAt() != null ? user.getUpdatedAt().toString() : null)
+                .marketingAgreed(user.getMarketingAgreed())
                 .build();
     }
 }

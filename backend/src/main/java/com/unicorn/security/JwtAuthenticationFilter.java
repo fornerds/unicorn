@@ -3,12 +3,10 @@ package com.unicorn.security;
 import com.unicorn.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,9 +23,6 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-
-    @Value("${app.jwt.access-token-cookie-name:access_token}")
-    private String accessTokenCookieName;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -60,21 +55,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * JWT 추출: 1) Authorization Bearer 헤더, 2) access_token 쿠키 순으로 시도.
-     * Cookie와 Bearer 둘 다 지원하며, 둘 다 있을 경우 Bearer 우선.
+     * JWT 추출: Authorization Bearer 헤더만 사용. access_token 쿠키로는 인증 불가(리프레시만 쿠키 사용).
      */
     private String extractToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
         if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
             return bearer.substring(7).trim();
-        }
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (accessTokenCookieName.equals(cookie.getName()) && StringUtils.hasText(cookie.getValue())) {
-                    return cookie.getValue().trim();
-                }
-            }
         }
         return null;
     }

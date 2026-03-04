@@ -7,7 +7,9 @@ import java.time.Instant;
 import java.util.Optional;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 
-    Optional<RefreshToken> findByTokenHashAndExpiresAtAfter(String tokenHash, Instant now);
+    Optional<RefreshToken> findFirstByTokenHashAndExpiresAtAfterOrderByIdDesc(String tokenHash, Instant now);
+
+    Optional<RefreshToken> findByTokenHash(String tokenHash);
 
     void deleteByUser_Id(Long userId);
 

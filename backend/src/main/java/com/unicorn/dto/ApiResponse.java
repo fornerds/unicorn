@@ -16,8 +16,13 @@ import java.util.List;
 public class ApiResponse<T> {
 
     private int code;
-    private T data;
+
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private String message;
+
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    private T data;
+
     private PaginationDto pagination;
 
     public static <T> ApiResponse<T> success(T data) {
