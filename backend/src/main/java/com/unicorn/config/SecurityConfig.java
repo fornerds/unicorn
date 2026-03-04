@@ -64,6 +64,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_PATHS).permitAll()
                         .requestMatchers(PUBLIC_PATHS).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/inquiries").permitAll()
                         .requestMatchers(ADMIN_PATHS).hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex

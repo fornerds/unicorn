@@ -171,3 +171,20 @@ CREATE TABLE IF NOT EXISTS news (
   updated_at DATETIME(6) NOT NULL,
   deleted_at DATETIME(6) NULL
 );
+
+CREATE TABLE IF NOT EXISTS inquiries (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  company VARCHAR(200),
+  product_id BIGINT,
+  inquiry_type VARCHAR(50) NOT NULL,
+  content TEXT NOT NULL,
+  created_at DATETIME(6) NOT NULL,
+  updated_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL,
+  INDEX idx_inquiries_created_at (created_at),
+  INDEX idx_inquiries_inquiry_type (inquiry_type),
+  FOREIGN KEY (product_id) REFERENCES products(id)
+);
