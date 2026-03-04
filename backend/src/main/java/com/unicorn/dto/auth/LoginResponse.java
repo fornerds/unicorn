@@ -17,7 +17,6 @@ public class LoginResponse {
     public static class UserInfo {
         private String email;
         private String name;
-        private String avatar;
         private String phone;
         private Boolean marketingAgreed;
     }

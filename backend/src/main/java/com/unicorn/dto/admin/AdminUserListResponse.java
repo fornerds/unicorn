@@ -11,7 +11,6 @@ public class AdminUserListResponse {
     private Long id;
     private String email;
     private String name;
-    private String avatar;
     private String phone;
     private String status;
     private Instant createdAt;

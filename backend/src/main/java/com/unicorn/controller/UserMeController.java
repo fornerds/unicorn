@@ -6,6 +6,7 @@ import com.unicorn.dto.PaginationDto;
 import com.unicorn.dto.like.WishlistProductResponse;
 import com.unicorn.dto.user.UpdatePasswordRequest;
 import com.unicorn.dto.user.UpdateUserMeRequest;
+import com.unicorn.dto.user.VerifyPasswordRequest;
 import com.unicorn.dto.order.OrderListResponse;
 import com.unicorn.dto.user.UserMeResponse;
 import com.unicorn.security.JwtPrincipal;
@@ -81,12 +82,21 @@ public class UserMeController {
         return ApiResponse.success(data);
     }
 
+    @Operation(summary = "현재 비밀번호 확인")
+    @PostMapping("/password/verify")
+    public ApiResponse<Map<String, Boolean>> verifyPassword(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @Valid @RequestBody VerifyPasswordRequest request) {
+        userMeService.verifyPassword(principal.subjectId(), request);
+        return ApiResponse.success(Map.of("valid", true), "현재 비밀번호가 일치합니다.");
+    }
+
     @Operation(summary = "비밀번호 변경")
     @PatchMapping("/password")
     public ApiResponse<Map<String, Boolean>> updatePassword(
             @AuthenticationPrincipal JwtPrincipal principal,
             @Valid @RequestBody UpdatePasswordRequest request) {
         userMeService.updatePassword(principal.subjectId(), request);
-        return ApiResponse.success(Map.of("success", true));
+        return ApiResponse.success(Map.of("success", true), "비밀번호가 변경되었습니다.");
     }
 }

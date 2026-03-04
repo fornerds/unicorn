@@ -303,7 +303,6 @@ public class AuthService {
         return LoginResponse.UserInfo.builder()
                 .email(user.getEmail())
                 .name(user.getName())
-                .avatar(user.getAvatar())
                 .phone(user.getPhone())
                 .marketingAgreed(user.getMarketingAgreed())
                 .build();

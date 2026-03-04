@@ -2,6 +2,7 @@ package com.unicorn.service;
 
 import com.unicorn.dto.user.UpdatePasswordRequest;
 import com.unicorn.dto.user.UpdateUserMeRequest;
+import com.unicorn.dto.user.VerifyPasswordRequest;
 import com.unicorn.dto.user.UserMeResponse;
 import com.unicorn.entity.User;
 import com.unicorn.repository.UserRepository;
@@ -28,10 +29,17 @@ public class UserMeService {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         if (request.getName() != null) user.setName(request.getName());
         if (request.getPhone() != null) user.setPhone(request.getPhone());
-        if (request.getAvatar() != null) user.setAvatar(request.getAvatar());
         if (request.getMarketingAgreed() != null) user.setMarketingAgreed(request.getMarketingAgreed());
         user = userRepository.save(user);
         return toResponse(user);
+    }
+
+    @Transactional(readOnly = true)
+    public void verifyPassword(Long userId, VerifyPasswordRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        if (user.getPasswordHash() == null || !passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+            throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
+        }
     }
 
     @Transactional
@@ -48,7 +56,6 @@ public class UserMeService {
         return UserMeResponse.builder()
                 .email(user.getEmail())
                 .name(user.getName())
-                .avatar(user.getAvatar())
                 .phone(user.getPhone())
                 .marketingAgreed(user.getMarketingAgreed())
                 .build();

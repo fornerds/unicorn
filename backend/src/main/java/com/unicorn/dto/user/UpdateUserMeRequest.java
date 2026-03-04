@@ -13,8 +13,5 @@ public class UpdateUserMeRequest {
     @Size(max = 20)
     private String phone;
 
-    @Size(max = 512)
-    private String avatar;
-
     private Boolean marketingAgreed;
 }

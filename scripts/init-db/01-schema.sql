@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(255) NOT NULL UNIQUE,
   password_hash VARCHAR(255),
   name VARCHAR(100) NOT NULL,
-  avatar VARCHAR(512),
   phone VARCHAR(20),
   marketing_agreed TINYINT(1) NOT NULL DEFAULT 0,
   status VARCHAR(20) NOT NULL DEFAULT 'active',
