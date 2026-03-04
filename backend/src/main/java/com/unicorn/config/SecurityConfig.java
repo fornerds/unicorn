@@ -24,11 +24,13 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    /** 비로그인 조회 허용: 카테고리, 제품 목록/상세, 기분 질문 목록 */
+    /** 비로그인 조회 허용: 카테고리, 제품 목록/상세, 기분 질문 목록, 뉴스·태그 */
     private static final String[] PUBLIC_GET_PATHS = {
             "/categories", "/categories/**",
             "/products", "/products/**",
-            "/ai/mood-questions"
+            "/ai/mood-questions",
+            "/news", "/news/**",
+            "/tags"
     };
 
     /** 비로그인도 허용. POST /ai/chat 포함(추후 비로그인 사용자 횟수 제한 시 서비스/필터에서 처리). */

@@ -181,15 +181,43 @@ CREATE TABLE IF NOT EXISTS user_product_likes (
   FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
+CREATE TABLE IF NOT EXISTS tags (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  created_at DATETIME(6) NOT NULL,
+  updated_at DATETIME(6) NOT NULL,
+  deleted_at DATETIME(6) NULL,
+  UNIQUE KEY uk_tags_name (name),
+  INDEX idx_tags_deleted_at (deleted_at)
+);
+
 CREATE TABLE IF NOT EXISTS news (
   id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(200) NOT NULL,
   content TEXT,
   image_url VARCHAR(512),
   published_at DATETIME(6),
+  published BOOLEAN NOT NULL DEFAULT FALSE,
+  view_count INT NOT NULL DEFAULT 0,
+  is_featured BOOLEAN NOT NULL DEFAULT FALSE,
+  featured_order INT NULL,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
-  deleted_at DATETIME(6) NULL
+  deleted_at DATETIME(6) NULL,
+  INDEX idx_news_published (published),
+  INDEX idx_news_published_at (published_at),
+  INDEX idx_news_is_featured_order (is_featured, featured_order),
+  INDEX idx_news_view_count (view_count)
+);
+
+CREATE TABLE IF NOT EXISTS news_tags (
+  news_id BIGINT NOT NULL,
+  tag_id BIGINT NOT NULL,
+  created_at DATETIME(6) NOT NULL,
+  PRIMARY KEY (news_id, tag_id),
+  FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE,
+  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
+  INDEX idx_news_tags_tag_id (tag_id)
 );
 
 CREATE TABLE IF NOT EXISTS inquiries (

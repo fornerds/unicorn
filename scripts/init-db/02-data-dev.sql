@@ -92,3 +92,21 @@ INSERT IGNORE INTO mood_questions (id, question, sort_order, created_at, updated
 (1, '어떤 종류의 로봇에 관심이 있으신가요?', 1, NOW(), NOW()),
 (2, '로봇을 어떤 용도로 사용할 계획인가요?', 2, NOW(), NOW()),
 (3, '조립·프로그래밍 경험 수준을 알려주세요.', 3, NOW(), NOW());
+
+INSERT IGNORE INTO tags (id, name, created_at, updated_at) VALUES
+(1, 'AI', NOW(), NOW()),
+(2, '휴머노이드', NOW(), NOW()),
+(3, '자율주행', NOW(), NOW());
+
+INSERT IGNORE INTO news (id, title, content, image_url, published_at, published, view_count, is_featured, featured_order, created_at, updated_at) VALUES
+(1, 'AI 로봇의 미래', '인공지능과 로봇 공학이 결합하여 일상과 산업을 바꾸고 있습니다.', NULL, NOW(), 1, 10, 1, 1, NOW(), NOW()),
+(2, '휴머노이드 로봇, 인간과 협업', '휴머노이드 로봇이 제조·서비스 현장에서 인간과 함께 일하는 사례가 늘고 있습니다.', NULL, NOW(), 1, 5, 1, 2, NOW(), NOW()),
+(3, '자율주행 로봇 배송', '자율주행 기술을 적용한 배송·물류 로봇이 상용화 단계에 접어들었습니다.', NULL, NOW(), 1, 3, 0, NULL, NOW(), NOW()),
+(4, 'AI와 자율주행의 융합', 'AI 비전과 자율주행이 결합한 로봇 플랫폼이 주목받고 있습니다.', NULL, NOW(), 1, 0, 0, NULL, NOW(), NOW());
+
+INSERT IGNORE INTO news_tags (news_id, tag_id, created_at) VALUES
+(1, 1, NOW()),
+(2, 2, NOW()),
+(3, 3, NOW()),
+(4, 1, NOW()),
+(4, 3, NOW());
