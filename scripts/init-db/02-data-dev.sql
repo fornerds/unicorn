@@ -37,6 +37,57 @@ INSERT IGNORE INTO products (id, category_id, name, description, price, stock, c
 (9, 14, '물류 분류 로봇', '물류 분류 자동화 로봇. 바코드·무게 기반 분류.', 2800000.00, 15, NOW(), NOW()),
 (10, 14, '자동 포장 로봇', '분류/포장 로봇. 피킹·포장·라벨링 일체형.', 3500000.00, 12, NOW(), NOW());
 
+UPDATE products SET colors = '["화이트/White","블랙/Black","블루/Blue"]' WHERE id IN (1, 2);
+UPDATE products SET colors = '["레드/Red","그레이/Gray"]' WHERE id IN (3, 4);
+UPDATE products SET colors = '["화이트/White","실버/Silver"]' WHERE id IN (5, 6);
+UPDATE products SET colors = '["블랙/Black","옐로우/Yellow","그린/Green"]' WHERE id IN (7, 8);
+UPDATE products SET colors = '["화이트/White","블랙/Black","그레이/Gray"]' WHERE id IN (9, 10);
+
+INSERT IGNORE INTO product_color_stock (product_id, color, stock, created_at, updated_at) VALUES
+(1, '화이트/White', 10, NOW(), NOW()),
+(1, '블랙/Black', 10, NOW(), NOW()),
+(1, '블루/Blue', 10, NOW(), NOW()),
+(2, '화이트/White', 8, NOW(), NOW()),
+(2, '블랙/Black', 9, NOW(), NOW()),
+(2, '블루/Blue', 8, NOW(), NOW()),
+(3, '레드/Red', 3, NOW(), NOW()),
+(3, '그레이/Gray', 2, NOW(), NOW()),
+(4, '레드/Red', 4, NOW(), NOW()),
+(4, '그레이/Gray', 4, NOW(), NOW()),
+(5, '화이트/White', 6, NOW(), NOW()),
+(5, '실버/Silver', 6, NOW(), NOW()),
+(6, '화이트/White', 5, NOW(), NOW()),
+(6, '실버/Silver', 5, NOW(), NOW()),
+(7, '블랙/Black', 3, NOW(), NOW()),
+(7, '옐로우/Yellow', 2, NOW(), NOW()),
+(7, '그린/Green', 1, NOW(), NOW()),
+(8, '블랙/Black', 2, NOW(), NOW()),
+(8, '옐로우/Yellow', 1, NOW(), NOW()),
+(8, '그린/Green', 1, NOW(), NOW()),
+(9, '화이트/White', 5, NOW(), NOW()),
+(9, '블랙/Black', 5, NOW(), NOW()),
+(9, '그레이/Gray', 5, NOW(), NOW()),
+(10, '화이트/White', 4, NOW(), NOW()),
+(10, '블랙/Black', 4, NOW(), NOW()),
+(10, '그레이/Gray', 4, NOW(), NOW());
+
+INSERT IGNORE INTO orders (id, user_id, total_amount, status, recipient, phone, address, zip_code, payment_provider, payment_id, paid_at, created_at, updated_at) VALUES
+(1, 3, 848000.00, 'pending', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', NULL, NULL, NULL, NOW(), NOW()),
+(2, 3, 389000.00, 'paid', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', 'toss', 'pay-002', NOW(), DATE_SUB(NOW(), INTERVAL 5 DAY), NOW()),
+(3, 3, 459000.00, 'preparing', '테스트유저2', '010-2222-2222', '서울시 서초구 샘플동 33', '06633', 'toss', 'pay-003', DATE_SUB(NOW(), INTERVAL 3 DAY), DATE_SUB(NOW(), INTERVAL 3 DAY), NOW()),
+(4, 3, 3200000.00, 'shipping', '테스트유저2', '010-2222-2222', '경기도 성남시 분당구 44', '13444', 'toss', 'pay-004', DATE_SUB(NOW(), INTERVAL 2 DAY), DATE_SUB(NOW(), INTERVAL 2 DAY), NOW()),
+(5, 3, 2800000.00, 'delivered', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', 'toss', 'pay-005', DATE_SUB(NOW(), INTERVAL 10 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY), NOW()),
+(6, 3, 12500000.00, 'cancelled', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', NULL, NULL, NULL, DATE_SUB(NOW(), INTERVAL 1 DAY), NOW());
+
+INSERT IGNORE INTO order_items (id, order_id, product_id, quantity, price, created_at) VALUES
+(1, 1, 1, 1, 389000.00, NOW()),
+(2, 1, 2, 1, 459000.00, NOW()),
+(3, 2, 1, 1, 389000.00, NOW()),
+(4, 3, 2, 1, 459000.00, NOW()),
+(5, 4, 5, 1, 3200000.00, NOW()),
+(6, 5, 9, 1, 2800000.00, NOW()),
+(7, 6, 3, 1, 12500000.00, NOW());
+
 INSERT IGNORE INTO mood_questions (id, question, sort_order, created_at, updated_at) VALUES
 (1, '어떤 종류의 로봇에 관심이 있으신가요?', 1, NOW(), NOW()),
 (2, '로봇을 어떤 용도로 사용할 계획인가요?', 2, NOW(), NOW()),

@@ -9,5 +9,5 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     List<CartItem> findByUserIdOrderByCreatedAtDesc(Long userId);
 
-    Optional<CartItem> findByUserIdAndProductId(Long userId, Long productId);
+    Optional<CartItem> findByUserIdAndProductIdAndColor(Long userId, Long productId, String color);
 }

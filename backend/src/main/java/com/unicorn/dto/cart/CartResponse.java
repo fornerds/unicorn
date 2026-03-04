@@ -18,6 +18,7 @@ public class CartResponse {
     public static class CartItemDto {
         private Long id;
         private Long productId;
+        private String color;
         private ProductSummary product;
         private Integer quantity;
         private BigDecimal price;

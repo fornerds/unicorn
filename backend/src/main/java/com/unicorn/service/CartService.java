@@ -5,7 +5,9 @@ import com.unicorn.dto.cart.CartResponse;
 import com.unicorn.dto.cart.UpdateCartItemRequest;
 import com.unicorn.entity.CartItem;
 import com.unicorn.entity.Product;
+import com.unicorn.entity.ProductColorStock;
 import com.unicorn.repository.CartItemRepository;
+import com.unicorn.repository.ProductColorStockRepository;
 import com.unicorn.repository.ProductRepository;
 import com.unicorn.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class CartService {
 
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
+    private final ProductColorStockRepository productColorStockRepository;
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
@@ -40,10 +43,15 @@ public class CartService {
     public CartResponse.CartItemDto addItem(Long userId, AddCartItemRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다."));
-        if (product.getStock() < request.getQuantity()) {
+        String color = request.getColor() != null && !request.getColor().isBlank() ? request.getColor().trim() : "";
+        if (product.getColors() != null && !product.getColors().isEmpty() && color.isEmpty()) {
+            throw new IllegalArgumentException("색상을 선택해 주세요.");
+        }
+        int availableStock = getAvailableStock(product.getId(), color, product.getStock());
+        if (availableStock < request.getQuantity()) {
             throw new IllegalArgumentException("재고가 부족합니다.");
         }
-        CartItem item = cartItemRepository.findByUserIdAndProductId(userId, request.getProductId())
+        CartItem item = cartItemRepository.findByUserIdAndProductIdAndColor(userId, request.getProductId(), color)
                 .orElse(null);
         if (item != null) {
             item.setQuantity(item.getQuantity() + request.getQuantity());
@@ -52,23 +60,12 @@ public class CartService {
             item = CartItem.builder()
                     .user(userRepository.getReferenceById(userId))
                     .product(product)
+                    .color(color)
                     .quantity(request.getQuantity())
                     .build();
             item = cartItemRepository.save(item);
         }
-        BigDecimal price = product.getPrice();
-        return CartResponse.CartItemDto.builder()
-                .id(item.getId())
-                .productId(product.getId())
-                .product(CartResponse.ProductSummary.builder()
-                        .id(product.getId())
-                        .name(product.getName())
-                        .price(price)
-                        .imageUrl(product.getImageUrl())
-                        .build())
-                .quantity(item.getQuantity())
-                .price(price)
-                .build();
+        return toItemDto(item);
     }
 
     @Transactional
@@ -78,7 +75,9 @@ public class CartService {
         if (!item.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
-        if (item.getProduct().getStock() < request.getQuantity()) {
+        Product p = item.getProduct();
+        int available = getAvailableStock(p.getId(), item.getColor() != null ? item.getColor() : "", p.getStock());
+        if (available < request.getQuantity()) {
             throw new IllegalArgumentException("재고가 부족합니다.");
         }
         item.setQuantity(request.getQuantity());
@@ -96,11 +95,24 @@ public class CartService {
         cartItemRepository.delete(item);
     }
 
+    private int getAvailableStock(Long productId, String color, int productStock) {
+        if (color != null && !color.isEmpty()) {
+            return productColorStockRepository.findByProductIdOrderByColor(productId).stream()
+                    .filter(cs -> color.equals(cs.getColor()))
+                    .findFirst()
+                    .map(ProductColorStock::getStock)
+                    .orElse(0);
+        }
+        return productStock;
+    }
+
     private CartResponse.CartItemDto toItemDto(CartItem ci) {
         Product p = ci.getProduct();
+        String colorForResponse = ci.getColor() != null && !ci.getColor().isEmpty() ? ci.getColor() : null;
         return CartResponse.CartItemDto.builder()
                 .id(ci.getId())
                 .productId(p.getId())
+                .color(colorForResponse)
                 .product(CartResponse.ProductSummary.builder()
                         .id(p.getId())
                         .name(p.getName())

@@ -3,8 +3,7 @@ package com.unicorn.controller;
 import com.unicorn.dto.ApiResponse;
 import com.unicorn.dto.ListResponse;
 import com.unicorn.dto.PaginationDto;
-import com.unicorn.dto.product.ProductListResponse;
-import com.unicorn.dto.like.LikeToggleResponse;
+import com.unicorn.dto.like.WishlistProductResponse;
 import com.unicorn.dto.user.UpdatePasswordRequest;
 import com.unicorn.dto.user.UpdateUserMeRequest;
 import com.unicorn.dto.order.OrderListResponse;
@@ -22,7 +21,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 @Tag(name = "사용자 - 프로필/찜/주문", description = "내 정보 조회·수정, 찜 목록, 내 주문 목록")
 @RestController
@@ -36,11 +34,11 @@ public class UserMeController {
 
     @Operation(summary = "찜 목록 조회")
     @GetMapping("/likes")
-    public ApiResponse<ListResponse<ProductListResponse>> getLikes(
+    public ApiResponse<ListResponse<WishlistProductResponse>> getLikes(
             @AuthenticationPrincipal JwtPrincipal principal,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int limit) {
-        Page<ProductListResponse> result = userLikeService.getLikes(principal.subjectId(), page, limit);
+        Page<WishlistProductResponse> result = userLikeService.getLikes(principal.subjectId(), page, limit);
         PaginationDto pag = PaginationDto.builder()
                 .page(result.getNumber() + 1)
                 .limit(result.getSize())
@@ -48,15 +46,6 @@ public class UserMeController {
                 .totalPages(result.getTotalPages())
                 .build();
         return ApiResponse.successList(result.getContent(), pag);
-    }
-
-    @Operation(summary = "찜 추가/취소 토글")
-    @PostMapping("/likes/{productId}")
-    public ApiResponse<LikeToggleResponse> toggleLike(
-            @AuthenticationPrincipal JwtPrincipal principal,
-            @PathVariable Long productId) {
-        LikeToggleResponse data = userLikeService.toggleLike(principal.subjectId(), productId);
-        return ApiResponse.success(data);
     }
 
     @Operation(summary = "내 주문 목록 조회")

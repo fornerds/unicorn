@@ -1,9 +1,10 @@
 package com.unicorn.service;
 
 import com.unicorn.dto.like.LikeToggleResponse;
-import com.unicorn.dto.product.ProductListResponse;
+import com.unicorn.dto.like.WishlistProductResponse;
 import com.unicorn.entity.Product;
 import com.unicorn.entity.UserProductLike;
+import com.unicorn.repository.ProductColorStockRepository;
 import com.unicorn.repository.ProductRepository;
 import com.unicorn.repository.UserProductLikeRepository;
 import com.unicorn.repository.UserRepository;
@@ -20,31 +21,38 @@ public class UserLikeService {
 
     private final UserProductLikeRepository userProductLikeRepository;
     private final ProductRepository productRepository;
+    private final ProductColorStockRepository productColorStockRepository;
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Page<ProductListResponse> getLikes(Long userId, int page, int limit) {
+    public Page<WishlistProductResponse> getLikes(Long userId, int page, int limit) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), Math.min(100, Math.max(1, limit)));
         Page<UserProductLike> likes = userProductLikeRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
-        return likes.map(like -> {
-            Product p = like.getProduct();
-            var cat = p.getCategory();
-            var parent = cat.getParent();
-            return ProductListResponse.builder()
-                    .id(p.getId())
-                    .name(p.getName())
-                    .price(p.getPrice())
-                    .isLiked(true)
-                    .parentCategory(parent != null ? ProductListResponse.CategorySummary.builder()
-                            .id(parent.getId())
-                            .name(parent.getName())
-                            .build() : null)
-                    .category(ProductListResponse.CategorySummary.builder()
-                            .id(cat.getId())
-                            .name(cat.getName())
-                            .build())
-                    .build();
-        });
+        return likes.map(like -> toWishlistResponse(like.getProduct()));
+    }
+
+    private WishlistProductResponse toWishlistResponse(Product p) {
+        var cat = p.getCategory();
+        var parent = cat.getParent();
+        var colorStocks = productColorStockRepository.findByProductIdOrderByColor(p.getId());
+        int stock = colorStocks.isEmpty()
+                ? (p.getStock() != null ? p.getStock() : 0)
+                : colorStocks.stream().mapToInt(cs -> cs.getStock() != null ? cs.getStock() : 0).sum();
+        return WishlistProductResponse.builder()
+                .id(p.getId())
+                .name(p.getName())
+                .category(WishlistProductResponse.CategorySummary.builder()
+                        .id(cat.getId())
+                        .name(cat.getName())
+                        .build())
+                .parentCategory(parent != null ? WishlistProductResponse.CategorySummary.builder()
+                        .id(parent.getId())
+                        .name(parent.getName())
+                        .build() : null)
+                .stock(stock)
+                .price(p.getPrice())
+                .colors(p.getColors())
+                .build();
     }
 
     @Transactional

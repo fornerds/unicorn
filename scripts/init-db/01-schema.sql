@@ -123,11 +123,12 @@ CREATE TABLE IF NOT EXISTS cart_items (
   id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT NOT NULL,
   product_id BIGINT NOT NULL,
+  color VARCHAR(100) NOT NULL DEFAULT '',
   quantity INT NOT NULL,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
   deleted_at DATETIME(6) NULL,
-  UNIQUE KEY uk_cart_items_user_product (user_id, product_id),
+  UNIQUE KEY uk_cart_items_user_product_color (user_id, product_id, color),
   INDEX idx_cart_items_user_id (user_id),
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (product_id) REFERENCES products(id)
