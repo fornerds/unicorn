@@ -284,17 +284,17 @@ export default function MyLikesPage() {
       <div className="flex items-center justify-center pb-[150px] pt-[100px] px-[365px] w-full">
         <div className="flex gap-[30px] items-start">
           <div className="flex flex-col gap-[17px] items-start text-[#2a313f] w-[275px]">
-            <div className="flex flex-col font-suit font-extralight justify-center text-[60px] w-full">
+            <div className="flex flex-col font-suit font-thin justify-center text-[60px] w-full">
               <p className="leading-[normal] whitespace-pre-wrap">Mypage</p>
             </div>
-            <div className="flex flex-col font-suit font-light justify-center text-[30px] w-full">
+            <div className="flex flex-col font-suit font-extralight justify-center text-[30px] w-full">
               <p className="leading-[1.35] whitespace-pre-wrap">마이페이지</p>
             </div>
           </div>
 
           <div className="flex flex-col gap-[20px] items-end w-[885px]">
             <div className="flex h-[36px] items-center w-full">
-              <div className="flex flex-col font-elice font-light justify-center text-[#111827] text-[26px] whitespace-nowrap">
+              <div className="flex flex-col font-elice font-extralight justify-center text-[#111827] text-[26px] whitespace-nowrap">
                 <p className="leading-[36px]">찜한 상품({TOTAL_LIKED_PRODUCTS})</p>
               </div>
             </div>
@@ -306,7 +306,7 @@ export default function MyLikesPage() {
                 aria-label="카테고리 선택"
               >
                 <div className="flex flex-col items-center justify-center">
-                  <div className="flex flex-col font-suit font-medium justify-center text-[20px] text-[#374151] whitespace-nowrap">
+                  <div className="flex flex-col font-suit font-normal justify-center text-[20px] text-[#374151] whitespace-nowrap">
                     <p className="leading-[1.35]">{selectedCategoryLabel}</p>
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export default function MyLikesPage() {
                     <button
                       key={option.value}
                       onClick={() => handleCategoryChange(option.value)}
-                      className={`w-full px-[16px] py-[8px] text-left font-suit font-medium text-[16px] leading-[1.5] text-[#374151] hover:bg-[#f9fafb] first:rounded-t-[8px] last:rounded-b-[8px] ${
+                      className={`w-full px-[16px] py-[8px] text-left font-suit font-normal text-[16px] leading-[1.5] text-[#374151] hover:bg-[#f9fafb] first:rounded-t-[8px] last:rounded-b-[8px] ${
                         selectedCategory === option.value ? 'bg-[#f3f4f6]' : ''
                       }`}
                     >
@@ -344,7 +344,7 @@ export default function MyLikesPage() {
                     >
                       <div className="flex gap-[10px] h-[48px] items-center justify-end px-[18px] py-[6px] w-full">
                         <div className="flex flex-1 items-center">
-                          <div className="flex flex-col font-suit font-medium justify-center text-[16px] text-[#959ba9] whitespace-nowrap">
+                          <div className="flex flex-col font-suit font-normal justify-center text-[16px] text-[#959ba9] whitespace-nowrap">
                             <p className="leading-[1.5]">{getCategoryDisplayName(product.category)}</p>
                           </div>
                         </div>
@@ -370,7 +370,7 @@ export default function MyLikesPage() {
                           />
                         </div>
                       </div>
-                      <div className="flex flex-col font-suit font-medium gap-[6px] items-start px-[20px] py-[10px] text-center w-full">
+                      <div className="flex flex-col font-suit font-normal gap-[6px] items-start px-[20px] py-[10px] text-center w-full">
                         <div className="flex flex-col justify-center overflow-hidden text-[20px] text-black text-ellipsis w-full whitespace-nowrap">
                           <p className="leading-[1.5] overflow-hidden">{product.name}</p>
                         </div>

@@ -15,7 +15,7 @@ export default function SignupCompletePage() {
           </div>
 
           <div className="flex items-center justify-center w-full">
-            <p className="font-suit font-medium text-[24px] text-[#1f2937] leading-[1.5] whitespace-nowrap">
+            <p className="font-suit font-normal text-[24px] text-[#1f2937] leading-[1.5] whitespace-nowrap">
               회원가입이 완료 되었습니다!
             </p>
           </div>
@@ -26,7 +26,7 @@ export default function SignupCompletePage() {
             </p>
             <Link
               href={ROUTES.LOGIN}
-              className="font-suit font-semibold text-[16px] text-[#1f2937] leading-[1.5] text-center whitespace-nowrap hover:opacity-80 transition-opacity"
+              className="font-suit font-medium text-[16px] text-[#1f2937] leading-[1.5] text-center whitespace-nowrap hover:opacity-80 transition-opacity"
             >
               로그인
             </Link>

@@ -33,7 +33,7 @@ export default function ResetPasswordPage() {
                   <ArrowBackIcon width={20} height={16} stroke="#1F2937" />
                 </div>
               </Link>
-              <h2 className="font-suit font-medium text-[20px] text-[#1f2937] leading-[1.45] whitespace-nowrap">
+              <h2 className="font-suit font-normal text-[20px] text-[#1f2937] leading-[1.45] whitespace-nowrap">
                 비밀번호 변경
               </h2>
             </div>
@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
             <div className="flex flex-col gap-[16px] items-start w-full">
               <div className="flex flex-col gap-[4px] items-start w-full">
                 <div className="flex items-start w-full">
-                  <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <label className="font-suit font-semibold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                     새 비밀번호 입력
                   </label>
                 </div>
@@ -102,7 +102,7 @@ export default function ResetPasswordPage() {
             <div className="flex flex-col items-start w-full">
               <button
                 type="submit"
-                className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-bold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
               >
                 비밀번호 변경하기
               </button>

@@ -200,7 +200,7 @@ export const ProductsContent = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="원하는 로봇을 검색해 보세요."
-                  className="flex-1 font-suit font-normal text-[15px] leading-[1.5] text-[#959ba9] bg-transparent border-none outline-none placeholder:text-[#959ba9]"
+                  className="flex-1 font-suit font-light text-[15px] leading-[1.5] text-[#959ba9] bg-transparent border-none outline-none placeholder:text-[#959ba9]"
                 />
                 <button className="flex items-center justify-center p-[1.5px] rounded-[8px] w-[18px] h-[18px] shrink-0">
                   <SearchIcon width={12} height={12} stroke="#959ba9" strokeWidth={1.5} />
@@ -211,7 +211,7 @@ export const ProductsContent = () => {
                   onClick={() => setShowSortMenu(!showSortMenu)}
                   className="flex gap-[7.5px] items-center overflow-clip pl-[15px] pr-[12px] py-[4.5px] rounded-[74.25px] shrink-0 hover:opacity-80 transition-opacity"
                 >
-                  <p className="font-suit font-medium text-[15px] leading-[1.35] text-[#374151] whitespace-nowrap">
+                  <p className="font-suit font-normal text-[15px] leading-[1.35] text-[#374151] whitespace-nowrap">
                     {selectedSortLabel}
                   </p>
                   <div className={`flex items-center justify-center p-[1.333px] rounded-[5.333px] w-[12px] h-[12px] shrink-0 transition-transform ${showSortMenu ? 'rotate-180' : ''}`}>
@@ -227,7 +227,7 @@ export const ProductsContent = () => {
                           setSortBy(option.value);
                           setShowSortMenu(false);
                         }}
-                        className={`w-full px-[16px] py-[8px] text-left font-suit font-medium text-[16px] leading-[1.5] text-[#374151] hover:bg-[#f9fafb] first:rounded-t-[8px] last:rounded-b-[8px] ${
+                        className={`w-full px-[16px] py-[8px] text-left font-suit font-normal text-[16px] leading-[1.5] text-[#374151] hover:bg-[#f9fafb] first:rounded-t-[8px] last:rounded-b-[8px] ${
                           sortBy === option.value ? 'bg-[#f3f4f6]' : ''
                         }`}
                       >
@@ -246,7 +246,7 @@ export const ProductsContent = () => {
                 ))
               ) : (
                 <div className="w-full text-center py-[60px]">
-                  <p className="font-suit font-medium text-[18px] text-[#959ba9]">
+                  <p className="font-suit font-normal text-[18px] text-[#959ba9]">
                     검색 결과가 없습니다.
                   </p>
                 </div>

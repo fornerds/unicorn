@@ -162,7 +162,7 @@ export const ProductDetailClient = () => {
               <div className="flex flex-col gap-[15px] items-start w-full">
                 <div className="flex items-center justify-between w-full">
                   <div className="flex flex-1 gap-[2px] items-center min-w-0">
-                    <p className="font-suit font-light text-[16px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+                    <p className="font-suit font-extralight text-[16px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
                       {mockProduct.category}
                     </p>
                     <div className="w-[12px] h-[12px] relative shrink-0">
@@ -182,18 +182,18 @@ export const ProductDetailClient = () => {
                         />
                       </svg>
                     </div>
-                    <p className="font-suit font-light text-[16px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+                    <p className="font-suit font-extralight text-[16px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
                       {mockProduct.subCategory}
                     </p>
                   </div>
                   <div className="flex items-center justify-center px-[8px] py-[2px] rounded-[99px] shrink-0">
-                    <p className="font-suit font-bold text-[15px] leading-[1.5] text-[#4b5563] whitespace-nowrap">
+                    <p className="font-suit font-semibold text-[15px] leading-[1.5] text-[#4b5563] whitespace-nowrap">
                       {mockProduct.companyName}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between w-full">
-                  <h1 className="flex flex-1 flex-col font-suit font-normal justify-center max-h-[108px] min-w-0 overflow-hidden text-[24px] text-[#1f2937] text-ellipsis">
+                  <h1 className="flex flex-1 flex-col font-suit font-light justify-center max-h-[108px] min-w-0 overflow-hidden text-[24px] text-[#1f2937] text-ellipsis">
                     <span className="leading-[1.5] whitespace-pre-wrap">
                       {mockProduct.name}
                     </span>
@@ -223,7 +223,7 @@ export const ProductDetailClient = () => {
               </div>
               <div className="flex flex-col gap-[10px] items-start w-full">
                 <div className="flex items-center py-[6px] w-full">
-                  <p className="font-suit font-normal text-[15px] leading-[1.5] text-[#6b7280] whitespace-nowrap">
+                  <p className="font-suit font-light text-[15px] leading-[1.5] text-[#6b7280] whitespace-nowrap">
                     COLOR(3)
                   </p>
                 </div>
@@ -240,7 +240,7 @@ export const ProductDetailClient = () => {
                           borderColor: selectedColorData?.borderColor,
                         }}
                       />
-                      <p className="flex-1 font-suit font-normal text-[15px] leading-[1.35] text-[#374151] text-left text-ellipsis overflow-hidden whitespace-pre-wrap max-h-[40.5px]">
+                      <p className="flex-1 font-suit font-light text-[15px] leading-[1.35] text-[#374151] text-left text-ellipsis overflow-hidden whitespace-pre-wrap max-h-[40.5px]">
                         {selectedColorData?.name}
                       </p>
                     </div>
@@ -285,7 +285,7 @@ export const ProductDetailClient = () => {
                                 borderColor: color.borderColor,
                               }}
                             />
-                            <p className="flex-1 font-suit font-normal text-[15px] leading-[1.35] text-[#374151] text-ellipsis overflow-hidden whitespace-pre-wrap">
+                            <p className="flex-1 font-suit font-light text-[15px] leading-[1.35] text-[#374151] text-ellipsis overflow-hidden whitespace-pre-wrap">
                               {color.name}
                             </p>
                           </div>
@@ -299,12 +299,12 @@ export const ProductDetailClient = () => {
 
             <div className="flex flex-col gap-[40px] items-end w-full">
               <div className="flex gap-[4.5px] h-[30px] items-center justify-end w-full text-[#111827]">
-                <p className="flex flex-1 flex-col font-suit font-bold justify-center min-w-0 text-[28.5px] text-right">
+                <p className="flex flex-1 flex-col font-suit font-semibold justify-center min-w-0 text-[28.5px] text-right">
                   <span className="leading-[30px] whitespace-pre-wrap">
                     {formattedPrice}
                   </span>
                 </p>
-                <p className="flex flex-col font-suit font-normal justify-center shrink-0 text-[24px] whitespace-nowrap">
+                <p className="flex flex-col font-suit font-light justify-center shrink-0 text-[24px] whitespace-nowrap">
                   <span className="leading-[30px]">₩</span>
                 </p>
               </div>
@@ -330,7 +330,7 @@ export const ProductDetailClient = () => {
                         onChange={(e) => handleQuantityInput(e.target.value)}
                         onFocus={handleQuantityFocus}
                         onBlur={handleQuantityBlur}
-                        className="font-suit font-semibold text-[18px] leading-[1.35] text-[#6b7280] text-center bg-transparent border-none outline-none w-full"
+                        className="font-suit font-medium text-[18px] leading-[1.35] text-[#6b7280] text-center bg-transparent border-none outline-none w-full"
                       />
                     </div>
                     <button
@@ -346,17 +346,17 @@ export const ProductDetailClient = () => {
                     </button>
                   </div>
                   <button className="flex flex-1 h-[48.75px] items-center justify-center px-[24px] sm:px-[24px] py-[9px] bg-[#f9fafb] border-[0.5px] border-[#e5e7eb] rounded-[7.5px] hover:opacity-80 transition-opacity">
-                    <p className="font-suit font-normal text-[15px] leading-[1.3] text-[#6c6c6c] text-center whitespace-nowrap">
+                    <p className="font-suit font-light text-[15px] leading-[1.3] text-[#6c6c6c] text-center whitespace-nowrap">
                       장바구니
                     </p>
                   </button>
                   <button className="flex flex-1 h-[48.75px] items-center justify-center px-[24px] sm:px-[24px] py-[9px] bg-black rounded-[7.5px] hover:opacity-90 transition-opacity">
-                    <p className="font-suit font-semibold text-[15px] leading-[1.3] text-white text-center whitespace-nowrap">
+                    <p className="font-suit font-medium text-[15px] leading-[1.3] text-white text-center whitespace-nowrap">
                       구매하기
                     </p>
                   </button>
                 </div>
-                <div className="flex flex-col md:flex-row font-suit font-light items-start md:items-end justify-between px-[3px] w-full text-[13.5px] text-[#959ba9] gap-[10px] md:gap-0">
+                <div className="flex flex-col md:flex-row font-suit font-extralight items-start md:items-end justify-between px-[3px] w-full text-[13.5px] text-[#959ba9] gap-[10px] md:gap-0">
                   <div className="flex flex-col gap-[3.75px] items-start w-full md:w-[223.5px]">
                     <p className="leading-[normal] whitespace-pre-wrap">
                       부가세가 포함된 가격입니다.
@@ -365,7 +365,7 @@ export const ProductDetailClient = () => {
                       추후 배송 관련 안내사항 들어갈 부분
                     </p>
                   </div>
-                  <button className="font-suit font-light text-[15px] text-[#374151] underline hover:opacity-80 transition-opacity whitespace-nowrap shrink-0">
+                  <button className="font-suit font-extralight text-[15px] text-[#374151] underline hover:opacity-80 transition-opacity whitespace-nowrap shrink-0">
                     문의하기
                   </button>
                 </div>
@@ -375,7 +375,7 @@ export const ProductDetailClient = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row items-start justify-between px-[2px] w-full gap-[20px] lg:gap-0">
-          <h2 className="flex flex-col font-suit font-normal justify-center text-[24px] text-[#1f2937] w-full lg:w-[73.5px] shrink-0">
+          <h2 className="flex flex-col font-suit font-light justify-center text-[24px] text-[#1f2937] w-full lg:w-[73.5px] shrink-0">
             <span className="leading-[normal] whitespace-pre-wrap">
               Details
             </span>
@@ -392,10 +392,10 @@ export const ProductDetailClient = () => {
                 />
               </div>
               <div className="flex flex-col gap-[7.5px] items-start min-w-0 flex-1 lg:w-[195px]">
-                <p className="font-suit font-medium text-[15px] leading-[1.2] text-[#959ba9] w-full">
+                <p className="font-suit font-normal text-[15px] leading-[1.2] text-[#959ba9] w-full">
                   무게
                 </p>
-                <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] w-full">
+                <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] w-full">
                   {mockProduct.details.weight}
                 </p>
               </div>
@@ -415,10 +415,10 @@ export const ProductDetailClient = () => {
                 />
               </div>
               <div className="flex flex-col gap-[7.5px] items-start min-w-0 flex-1 lg:w-[195px]">
-                <p className="font-suit font-medium text-[15px] leading-[1.2] text-[#959ba9] w-full">
+                <p className="font-suit font-normal text-[15px] leading-[1.2] text-[#959ba9] w-full">
                   높이
                 </p>
-                <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] w-full">
+                <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] w-full">
                   {mockProduct.details.height}
                 </p>
               </div>
@@ -438,10 +438,10 @@ export const ProductDetailClient = () => {
                 />
               </div>
               <div className="flex flex-col gap-[7.5px] items-start min-w-0 flex-1 lg:w-[195px]">
-                <p className="font-suit font-medium text-[15px] leading-[1.2] text-[#959ba9] w-full">
+                <p className="font-suit font-normal text-[15px] leading-[1.2] text-[#959ba9] w-full">
                   작동 시간
                 </p>
-                <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] w-full">
+                <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] w-full">
                   {mockProduct.details.workingTime}
                 </p>
               </div>
@@ -457,10 +457,10 @@ export const ProductDetailClient = () => {
                 />
               </div>
               <div className="flex flex-col gap-[7.5px] items-start min-w-0 flex-1 lg:w-[195px]">
-                <p className="font-suit font-medium text-[15px] leading-[1.2] text-[#959ba9] w-full">
+                <p className="font-suit font-normal text-[15px] leading-[1.2] text-[#959ba9] w-full">
                   배터리
                 </p>
-                <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] w-full">
+                <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] w-full">
                   {mockProduct.details.battery}
                 </p>
               </div>
@@ -481,10 +481,10 @@ export const ProductDetailClient = () => {
                 />
               </div>
               <div className="flex flex-col gap-[7.5px] items-start min-w-0 flex-1 lg:w-[195px]">
-                <p className="font-suit font-medium text-[15px] leading-[1.2] text-[#959ba9] w-full">
+                <p className="font-suit font-normal text-[15px] leading-[1.2] text-[#959ba9] w-full">
                   속도
                 </p>
-                <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] w-full">
+                <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] w-full">
                   {mockProduct.details.speed}
                 </p>
               </div>
@@ -493,7 +493,7 @@ export const ProductDetailClient = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row items-start justify-between px-[6px] w-full text-[#1f2937] gap-[20px] lg:gap-0">
-          <h2 className="flex flex-col font-suit font-normal justify-center text-[24px] whitespace-nowrap shrink-0">
+          <h2 className="flex flex-col font-suit font-light justify-center text-[24px] whitespace-nowrap shrink-0">
             <span className="leading-[normal]">About</span>
           </h2>
           <p className="font-suit font-thin leading-[1.5] text-[16.5px] tracking-[-0.495px] w-full lg:w-[1036.5px] whitespace-pre-wrap">
@@ -519,7 +519,7 @@ export const ProductDetailClient = () => {
             />
           </div>
           <div className="flex items-center justify-center p-[10px] w-full">
-            <p className="font-suit font-light text-[20px] leading-[1.5] text-[#959ba9] text-center whitespace-nowrap">
+            <p className="font-suit font-extralight text-[20px] leading-[1.5] text-[#959ba9] text-center whitespace-nowrap">
               {mockProduct.videoTitle}
             </p>
           </div>

@@ -162,17 +162,17 @@ export default function CheckoutPage() {
             <div className="flex flex-col gap-[38px] items-start w-full">
               <div className="flex items-center w-full">
                 <div className="flex flex-col items-start justify-center w-[50px] shrink-0">
-                  <p className="font-suit font-light text-[48px] leading-[1.5] text-[#1f2937]">1</p>
+                  <p className="font-suit font-extralight text-[48px] leading-[1.5] text-[#1f2937]">1</p>
                 </div>
                 <div className="flex flex-1 flex-col items-start min-w-0">
-                  <h2 className="font-suit font-medium text-[32px] leading-[1.5] text-[#1f2937] mb-[8px]">
+                  <h2 className="font-suit font-normal text-[32px] leading-[1.5] text-[#1f2937] mb-[8px]">
                     배송정보
                   </h2>
                   <div className="flex items-center justify-between w-full">
-                    <p className="font-suit font-normal text-[16px] leading-[1.5] text-[#6b7280]">
+                    <p className="font-suit font-light text-[16px] leading-[1.5] text-[#6b7280]">
                       배송정보를 확인하고 내용을 입력해 주세요.
                     </p>
-                    <button className="font-suit font-normal text-[16px] leading-[1.5] text-[#1f2937] underline hover:opacity-80 transition-opacity">
+                    <button className="font-suit font-light text-[16px] leading-[1.5] text-[#1f2937] underline hover:opacity-80 transition-opacity">
                       배송정보 추가
                     </button>
                   </div>
@@ -182,7 +182,7 @@ export default function CheckoutPage() {
               <div className="flex flex-col gap-[20px] items-start w-full">
                 <div className="flex flex-col gap-[8px] items-start w-full">
                   <label className="flex gap-[2px] items-start px-[4px] w-full">
-                    <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                    <p className="font-suit font-normal text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                       받는 분
                     </p>
                   </label>
@@ -192,14 +192,14 @@ export default function CheckoutPage() {
                       value={deliveryInfo.recipientName}
                       onChange={(e) => setDeliveryInfo({ ...deliveryInfo, recipientName: e.target.value })}
                       placeholder="이름을 입력해 주세요"
-                      className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
+                      className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-normal text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-[8px] items-start w-full">
                   <label className="flex gap-[2px] items-start px-[4px] w-full">
-                    <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                    <p className="font-suit font-normal text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                       연락처
                     </p>
                   </label>
@@ -209,14 +209,14 @@ export default function CheckoutPage() {
                       value={deliveryInfo.contact}
                       onChange={(e) => setDeliveryInfo({ ...deliveryInfo, contact: e.target.value })}
                       placeholder="연락처를 입력해 주세요"
-                      className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
+                      className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-normal text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-[8px] items-start w-full">
                   <label className="flex gap-[2px] items-start w-full">
-                    <p className="font-suit font-bold text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                    <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                       주소
                     </p>
                   </label>
@@ -227,14 +227,14 @@ export default function CheckoutPage() {
                         value={deliveryInfo.address}
                         onChange={(e) => setDeliveryInfo({ ...deliveryInfo, address: e.target.value })}
                         placeholder="주소를 검색해 주세요"
-                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
+                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-normal text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
                       />
                     </div>
                     <button
                       onClick={handleAddressSearch}
                       className="bg-white border border-[#3f7bfc] flex h-[48px] items-center justify-center px-[16px] py-[10px] rounded-[4px] shrink-0 hover:opacity-80 transition-opacity"
                     >
-                      <p className="font-suit font-bold text-[14px] leading-[1.35] text-[#3f7bfc] whitespace-nowrap">
+                      <p className="font-suit font-semibold text-[14px] leading-[1.35] text-[#3f7bfc] whitespace-nowrap">
                         주소 검색
                       </p>
                     </button>
@@ -245,14 +245,14 @@ export default function CheckoutPage() {
                       value={deliveryInfo.detailAddress}
                       onChange={(e) => setDeliveryInfo({ ...deliveryInfo, detailAddress: e.target.value })}
                       placeholder="상세주소를 입력해 주세요"
-                      className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
+                      className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-normal text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-[8px] items-start w-full">
                   <label className="flex gap-[2px] items-start px-[4px] w-full">
-                    <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                    <p className="font-suit font-normal text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                       배송 요청사항
                     </p>
                   </label>
@@ -262,7 +262,7 @@ export default function CheckoutPage() {
                       value={deliveryInfo.shippingRequest}
                       onChange={(e) => setDeliveryInfo({ ...deliveryInfo, shippingRequest: e.target.value })}
                       placeholder="배송 시 요청사항을 입력해 주세요"
-                      className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
+                      className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-normal text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
                     />
                   </div>
                 </div>
@@ -276,13 +276,13 @@ export default function CheckoutPage() {
             <div className="flex flex-col gap-[38px] items-start w-full">
               <div className="flex items-center w-full">
                 <div className="flex flex-col items-start justify-center w-[50px] shrink-0">
-                  <p className="font-suit font-light text-[48px] leading-[1.5] text-[#1f2937]">2</p>
+                  <p className="font-suit font-extralight text-[48px] leading-[1.5] text-[#1f2937]">2</p>
                 </div>
                 <div className="flex flex-1 flex-col items-start min-w-0">
-                  <h2 className="font-suit font-medium text-[32px] leading-[1.5] text-[#1f2937] mb-[8px]">
+                  <h2 className="font-suit font-normal text-[32px] leading-[1.5] text-[#1f2937] mb-[8px]">
                     결제방법
                   </h2>
-                  <p className="font-suit font-normal text-[16px] leading-[1.5] text-[#6b7280]">
+                  <p className="font-suit font-light text-[16px] leading-[1.5] text-[#6b7280]">
                     결제방법을 선택해 주세요.
                   </p>
                 </div>
@@ -316,8 +316,8 @@ export default function CheckoutPage() {
                         className={cn(
                           'font-suit text-[20px] leading-[1.3] text-center whitespace-nowrap',
                           selectedPaymentMethod === method.id
-                            ? 'font-bold text-white'
-                            : 'font-medium text-[#747d8d]'
+                            ? 'font-semibold text-white'
+                            : 'font-normal text-[#747d8d]'
                         )}
                       >
                         {method.name}
@@ -331,7 +331,7 @@ export default function CheckoutPage() {
                 <div className="flex flex-col gap-[20px] items-start w-full">
                   <div className="flex flex-col gap-[8px] items-start w-full">
                     <label className="flex gap-[2px] items-start px-[4px] w-full">
-                      <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                      <p className="font-suit font-normal text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                         카드번호
                       </p>
                     </label>
@@ -341,7 +341,7 @@ export default function CheckoutPage() {
                         value={cardInfo.cardNumber}
                         onChange={(e) => setCardInfo({ ...cardInfo, cardNumber: e.target.value })}
                         placeholder="16자리 입력"
-                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-semibold text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
+                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
                       />
                     </div>
                   </div>
@@ -349,7 +349,7 @@ export default function CheckoutPage() {
                   <div className="flex gap-[14px] items-center w-full">
                     <div className="flex flex-1 flex-col gap-[8px] items-start min-w-0">
                       <label className="flex gap-[2px] items-start px-[4px] w-full">
-                        <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                        <p className="font-suit font-normal text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                           유효기간
                         </p>
                       </label>
@@ -359,13 +359,13 @@ export default function CheckoutPage() {
                           value={cardInfo.expiryDate}
                           onChange={(e) => setCardInfo({ ...cardInfo, expiryDate: e.target.value })}
                           placeholder="MM/YY"
-                          className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-semibold text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
+                          className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
                         />
                       </div>
                     </div>
                     <div className="flex flex-1 flex-col gap-[8px] items-start min-w-0">
                       <label className="flex gap-[2px] items-start px-[4px] w-full">
-                        <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                        <p className="font-suit font-normal text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                           CVC
                         </p>
                       </label>
@@ -375,13 +375,13 @@ export default function CheckoutPage() {
                           value={cardInfo.cvv}
                           onChange={(e) => setCardInfo({ ...cardInfo, cvv: e.target.value })}
                           placeholder="000"
-                          className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-semibold text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
+                          className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
                         />
                       </div>
                     </div>
                     <div className="flex flex-1 flex-col gap-[8px] items-start min-w-0">
                       <label className="flex gap-[2px] items-start px-[4px] w-full">
-                        <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                        <p className="font-suit font-normal text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                           비밀번호
                         </p>
                       </label>
@@ -391,7 +391,7 @@ export default function CheckoutPage() {
                           value={cardInfo.password}
                           onChange={(e) => setCardInfo({ ...cardInfo, password: e.target.value })}
                           placeholder="앞 2자리"
-                          className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-semibold text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
+                          className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
                         />
                       </div>
                     </div>
@@ -403,7 +403,7 @@ export default function CheckoutPage() {
                 <div className="flex flex-col gap-[20px] items-start w-full">
                   <div className="flex flex-col gap-[8px] items-start w-full">
                     <label className="flex gap-[2px] items-start px-[4px] w-full">
-                      <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                      <p className="font-suit font-normal text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                         입금 은행
                       </p>
                     </label>
@@ -411,13 +411,13 @@ export default function CheckoutPage() {
                       <input
                         type="text"
                         placeholder="은행을 선택해주세요"
-                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-semibold text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
+                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
                       />
                     </div>
                   </div>
                   <div className="flex flex-col gap-[8px] items-start w-full">
                     <label className="flex gap-[2px] items-start px-[4px] w-full">
-                      <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                      <p className="font-suit font-normal text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                         입금 계좌번호
                       </p>
                     </label>
@@ -425,7 +425,7 @@ export default function CheckoutPage() {
                       <input
                         type="text"
                         placeholder="계좌번호를 입력해주세요"
-                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-semibold text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
+                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
                       />
                     </div>
                   </div>
@@ -436,7 +436,7 @@ export default function CheckoutPage() {
                 <div className="flex flex-col gap-[20px] items-start w-full">
                   <div className="flex flex-col gap-[8px] items-start w-full">
                     <label className="flex gap-[2px] items-start px-[4px] w-full">
-                      <p className="font-suit font-medium text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                      <p className="font-suit font-normal text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                         휴대폰 번호
                       </p>
                     </label>
@@ -444,7 +444,7 @@ export default function CheckoutPage() {
                       <input
                         type="tel"
                         placeholder="010-0000-0000"
-                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-semibold text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
+                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
                       />
                     </div>
                   </div>
@@ -457,7 +457,7 @@ export default function CheckoutPage() {
 
               <div className="flex flex-col gap-[8px] items-start w-full">
                 <label className="flex gap-[2px] items-start w-full">
-                  <p className="font-suit font-bold text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
+                  <p className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151] whitespace-nowrap">
                     결제정보를 받을 이메일
                   </p>
                 </label>
@@ -468,7 +468,7 @@ export default function CheckoutPage() {
                       value={deliveryInfo.email}
                       onChange={(e) => setDeliveryInfo({ ...deliveryInfo, email: e.target.value })}
                       placeholder="이메일 주소"
-                      className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-semibold text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
+                      className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-medium text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#bac2d0] border-none outline-none"
                     />
                   </div>
                   <div className="flex items-center justify-center p-[5.002px] shrink-0 size-[24px]">
@@ -479,7 +479,7 @@ export default function CheckoutPage() {
                       onClick={() => setShowEmailDomainDropdown(!showEmailDomainDropdown)}
                       className="bg-[#f9fafb] flex h-[48px] w-full items-center justify-between pl-[16px] pr-[12px] py-[16px] rounded-[6px] hover:opacity-80 transition-opacity"
                     >
-                      <p className="font-suit font-semibold text-[16px] leading-[1.35] text-[#bac2d0]">
+                      <p className="font-suit font-medium text-[16px] leading-[1.35] text-[#bac2d0]">
                         {deliveryInfo.emailDomain || '선택'}
                       </p>
                       <div className="flex items-center justify-center p-[1.667px] rounded-[6.667px] shrink-0 size-[20px]">
@@ -502,7 +502,7 @@ export default function CheckoutPage() {
                             }}
                             className="w-full bg-[#f9fafb] border-b border-[#e5e7eb] last:border-b-0 flex items-center px-[16px] py-[10px] hover:bg-[#f3f4f6] transition-colors first:rounded-t-[6px] last:rounded-b-[6px]"
                           >
-                            <p className="font-suit font-semibold text-[16px] leading-[1.35] text-[#bac2d0] whitespace-nowrap">
+                            <p className="font-suit font-medium text-[16px] leading-[1.35] text-[#bac2d0] whitespace-nowrap">
                               {domain}
                             </p>
                           </button>
@@ -517,42 +517,42 @@ export default function CheckoutPage() {
 
           <div className="flex flex-col gap-[90px] items-start shrink-0 w-full lg:w-[457px]">
             <div className="flex flex-col gap-[26px] items-start rounded-[16px] shrink-0 w-full">
-              <h2 className="font-suit font-semibold text-[24px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
+              <h2 className="font-suit font-medium text-[24px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
                 Order Summary
               </h2>
               <div className="h-[1px] w-full bg-[#e5e7eb]" />
               <div className="flex flex-col gap-[16px] items-end w-full">
                 <div className="flex items-center justify-between w-full">
-                  <p className="font-suit font-normal text-[20px] leading-[1.5] text-[#6b7280]">
+                  <p className="font-suit font-light text-[20px] leading-[1.5] text-[#6b7280]">
                     총 상품 가격
                   </p>
-                  <p className="font-suit font-semibold text-[20px] leading-[1.5] text-[#1f2937]">
+                  <p className="font-suit font-medium text-[20px] leading-[1.5] text-[#1f2937]">
                     {new Intl.NumberFormat('ko-KR').format(totalProductPrice)}원
                   </p>
                 </div>
                 <div className="flex items-center justify-between w-full">
-                  <p className="font-suit font-normal text-[20px] leading-[1.5] text-[#6b7280]">
+                  <p className="font-suit font-light text-[20px] leading-[1.5] text-[#6b7280]">
                     배송비
                   </p>
-                  <p className="font-suit font-semibold text-[20px] leading-[1.5] text-[#1f2937]">
+                  <p className="font-suit font-medium text-[20px] leading-[1.5] text-[#1f2937]">
                     {new Intl.NumberFormat('ko-KR').format(shippingFee)}원
                   </p>
                 </div>
                 <div className="flex items-center justify-between w-full">
-                  <p className="font-suit font-normal text-[20px] leading-[1.5] text-[#6b7280]">
+                  <p className="font-suit font-light text-[20px] leading-[1.5] text-[#6b7280]">
                     총 할인율
                   </p>
-                  <p className="font-suit font-semibold text-[20px] leading-[1.5] text-[#1f2937]">
+                  <p className="font-suit font-medium text-[20px] leading-[1.5] text-[#1f2937]">
                     {new Intl.NumberFormat('ko-KR').format(discount)}원
                   </p>
                 </div>
               </div>
               <div className="h-[1px] w-full bg-[#e5e7eb]" />
               <div className="flex items-center justify-between w-full">
-                <p className="font-suit font-normal text-[20px] leading-[1.5] text-[#6b7280]">
+                <p className="font-suit font-light text-[20px] leading-[1.5] text-[#6b7280]">
                   총 결제 예상 금액
                 </p>
-                <p className="font-suit font-bold text-[32px] leading-[1.5] text-[#1f2937]">
+                <p className="font-suit font-semibold text-[32px] leading-[1.5] text-[#1f2937]">
                   {new Intl.NumberFormat('ko-KR').format(totalPrice)}원
                 </p>
               </div>
@@ -580,14 +580,14 @@ export default function CheckoutPage() {
                 }}
                 className="bg-[#1f2937] flex h-[65px] items-center justify-center px-[32px] py-[12px] rounded-[10px] w-full hover:opacity-90 transition-opacity"
               >
-                <p className="font-suit font-bold text-[24px] leading-[1.5] text-white text-center whitespace-nowrap">
+                <p className="font-suit font-semibold text-[24px] leading-[1.5] text-white text-center whitespace-nowrap">
                   {new Intl.NumberFormat('ko-KR').format(totalPrice)}원 결제하기
                 </p>
               </button>
             </div>
 
             <div className="flex flex-col gap-[22px] items-start w-full">
-              <h3 className="font-suit font-semibold text-[20px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
+              <h3 className="font-suit font-medium text-[20px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
                 구매 진행중인 상품({orderItems.length})
               </h3>
               <div className="flex flex-col gap-[16px] items-start w-full">
@@ -609,22 +609,22 @@ export default function CheckoutPage() {
                         <div className="flex flex-1 flex-col h-[104px] items-start justify-between min-w-0">
                           <div className="flex flex-col items-start w-full">
                             <div className="flex items-center w-full">
-                              <h4 className="flex-1 font-suit font-medium text-[20px] leading-[1.5] text-[#1f2937] truncate">
+                              <h4 className="flex-1 font-suit font-normal text-[20px] leading-[1.5] text-[#1f2937] truncate">
                                 {item.name}
                               </h4>
                             </div>
                             <div className="flex gap-[8px] items-center">
-                              <p className="font-suit font-medium text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+                              <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
                                 수량 {item.quantity}
                               </p>
                               <Divider orientation="vertical" />
-                              <p className="font-suit font-medium text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+                              <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
                                 {item.selectedColor.name.split('/')[0]}
                               </p>
                             </div>
                           </div>
                           <div className="flex items-end justify-end w-full">
-                            <p className="font-suit font-semibold text-[20px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
+                            <p className="font-suit font-medium text-[20px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
                               {new Intl.NumberFormat('ko-KR').format(item.price * item.quantity)}원
                             </p>
                           </div>
@@ -636,7 +636,7 @@ export default function CheckoutPage() {
                     </div>
                   ))
                 ) : (
-                  <p className="font-suit font-normal text-[16px] text-[#959ba9]">
+                  <p className="font-suit font-light text-[16px] text-[#959ba9]">
                     주문할 상품이 없습니다.
                   </p>
                 )}

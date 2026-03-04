@@ -192,10 +192,10 @@ export default function ContactPage() {
           className="flex flex-col gap-[40px] md:gap-[80px] 4xl:gap-[200px] items-start shrink-0 w-full 4xl:w-[580px]"
         >
           <div className="flex flex-col gap-[12px] items-start w-full">
-            <h2 className="font-suit font-medium text-[18px] md:text-[20px] lg:text-[24px] text-[#1f2937] leading-[1.2] tracking-[-0.96px]">
+            <h2 className="font-suit font-normal text-[18px] md:text-[20px] lg:text-[24px] text-[#1f2937] leading-[1.2] tracking-[-0.96px]">
               Contact us
             </h2>
-            <h1 className="font-suit font-light text-[32px] sm:text-[40px] md:text-[50px] lg:text-[70px] text-[#1f2937] leading-[1.2] tracking-[-2.8px]">
+            <h1 className="font-suit font-extralight text-[32px] sm:text-[40px] md:text-[50px] lg:text-[70px] text-[#1f2937] leading-[1.2] tracking-[-2.8px]">
               Beyond the Limits
               <br />
               of Robotic Toward
@@ -207,7 +207,7 @@ export default function ContactPage() {
           <div className="flex flex-col gap-[30px] md:gap-[40px] lg:gap-[60px] items-start w-full">
             <div className="flex flex-col md:flex-row gap-[30px] md:gap-[50px] lg:gap-[86px] items-start md:items-center w-full">
               <div className="flex flex-col gap-[12px] md:gap-[16px] lg:gap-[20px] items-start justify-center">
-                <h3 className="font-suit font-medium text-[18px] md:text-[20px] lg:text-[24px] text-[#1f2937] leading-[1.2] tracking-[-0.96px]">
+                <h3 className="font-suit font-normal text-[18px] md:text-[20px] lg:text-[24px] text-[#1f2937] leading-[1.2] tracking-[-0.96px]">
                   Address
                 </h3>
                 <p className="font-suit text-[14px] md:text-[15px] lg:text-[16px] text-[#959ba9] leading-[1.2] tracking-[-0.64px] break-words">
@@ -215,7 +215,7 @@ export default function ContactPage() {
                 </p>
               </div>
               <div className="flex flex-col gap-[12px] md:gap-[16px] lg:gap-[20px] items-start justify-center">
-                <h3 className="font-suit font-medium text-[18px] md:text-[20px] lg:text-[24px] text-[#1f2937] leading-[1.2] tracking-[-0.96px]">
+                <h3 className="font-suit font-normal text-[18px] md:text-[20px] lg:text-[24px] text-[#1f2937] leading-[1.2] tracking-[-0.96px]">
                   Tel.
                 </h3>
                 <p className="font-suit text-[14px] md:text-[15px] lg:text-[16px] text-[#959ba9] leading-[1.2] tracking-[-0.64px]">
@@ -224,7 +224,7 @@ export default function ContactPage() {
               </div>
             </div>
             <div className="flex flex-col gap-[12px] md:gap-[16px] lg:gap-[20px] items-start justify-center">
-              <h3 className="font-suit font-medium text-[18px] md:text-[20px] lg:text-[24px] text-[#1f2937] leading-[1.2] tracking-[-0.96px]">
+              <h3 className="font-suit font-normal text-[18px] md:text-[20px] lg:text-[24px] text-[#1f2937] leading-[1.2] tracking-[-0.96px]">
                 E-mail
               </h3>
               <p className="font-suit text-[14px] md:text-[15px] lg:text-[16px] text-[#959ba9] leading-[1.2] tracking-[-0.64px] break-all">
@@ -244,7 +244,7 @@ export default function ContactPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-[24px] md:gap-[32px] lg:gap-[40px] items-start w-full">
             <div className="flex flex-col gap-[24px] md:gap-[32px] lg:gap-[40px] items-start w-full">
               <div className="flex flex-col gap-[8px] md:gap-[10px] lg:gap-[12px] items-start px-[2px] w-full">
-                <h2 className="font-suit font-semibold text-[24px] md:text-[28px] lg:text-[32px] text-[#1f2937] leading-[1.5]">
+                <h2 className="font-suit font-medium text-[24px] md:text-[28px] lg:text-[32px] text-[#1f2937] leading-[1.5]">
                   문의하기
                 </h2>
                 <p className="font-suit text-[14px] md:text-[15px] lg:text-[16px] text-[#959ba9] leading-[1.5]">
@@ -274,7 +274,7 @@ export default function ContactPage() {
 
                 <div className="flex flex-col gap-[8px] items-start w-full">
                   <div className="flex gap-[2px] items-start px-[4px] w-full">
-                    <label className="font-suit font-bold text-[18px] text-[#374151] leading-[1.5]">
+                    <label className="font-suit font-semibold text-[18px] text-[#374151] leading-[1.5]">
                       이메일
                     </label>
                   </div>
@@ -286,7 +286,7 @@ export default function ContactPage() {
                             placeholder="이메일 주소를 입력해 주세요"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
-                            className="flex-1 font-suit font-semibold text-[16px] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#ABB0BA]"
+                            className="flex-1 font-suit font-medium text-[16px] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#ABB0BA]"
                             style={{
                               color: formData.email && formData.email.trim() !== '' ? '#121212' : '#ABB0BA',
                             }}

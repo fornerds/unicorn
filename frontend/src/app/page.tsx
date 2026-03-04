@@ -130,7 +130,7 @@ export default function HomePage() {
         animate={{ opacity: showScrollIndicator ? 1 : 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <p className={`font-suit font-normal text-[20px] leading-[1.3] text-center tracking-[-0.8px] transition-colors duration-300 ${isFirstSection ? 'text-white' : 'text-[#6b7280]'}`}>
+        <p className={`font-suit font-light text-[20px] leading-[1.3] text-center tracking-[-0.8px] transition-colors duration-300 ${isFirstSection ? 'text-white' : 'text-[#6b7280]'}`}>
           계속 스크롤해서 카테고리 한 눈에 확인하기
         </p>
         <motion.div

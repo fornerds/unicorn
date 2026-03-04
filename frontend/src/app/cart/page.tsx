@@ -290,10 +290,10 @@ export default function CartPage() {
         <div className="flex flex-col lg:flex-row gap-[30px] lg:gap-[151px] items-start w-full">
           <div className="flex flex-col gap-[52px] items-start w-full lg:w-[886px]">
             <div className="flex flex-col gap-[10px] items-start w-full">
-              <h1 className="font-suit font-medium text-[32px] leading-[1.5] text-[#1f2937]">
+              <h1 className="font-suit font-normal text-[32px] leading-[1.5] text-[#1f2937]">
                 Shopping Cart ({cartItems.length})
               </h1>
-              <p className="font-suit font-normal text-[16px] leading-[1.5] text-[#959ba9]">
+              <p className="font-suit font-light text-[16px] leading-[1.5] text-[#959ba9]">
                 선택하신 로봇들을 확인하고 주문하세요.
               </p>
             </div>
@@ -304,13 +304,13 @@ export default function CartPage() {
                   <div className="flex items-center p-[10px] shrink-0">
                     <Checkbox checked={allChecked} onChange={handleSelectAll} />
                   </div>
-                  <p className="font-suit font-medium text-[14px] leading-[1.35] text-[#374151]">
+                  <p className="font-suit font-normal text-[14px] leading-[1.35] text-[#374151]">
                     전체 선택
                   </p>
                 </div>
                 <button
                   onClick={handleDeleteAll}
-                  className="font-suit font-medium text-[18px] leading-[1.35] text-[#959ba9] underline hover:opacity-80 transition-opacity"
+                  className="font-suit font-normal text-[18px] leading-[1.35] text-[#959ba9] underline hover:opacity-80 transition-opacity"
                 >
                   모두 삭제
                 </button>
@@ -343,7 +343,7 @@ export default function CartPage() {
                         <div className="flex flex-col items-start w-full">
                           <div className="flex items-center justify-between w-full">
                             <div className="flex gap-[11px] items-center">
-                              <p className="font-suit font-medium text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+                              <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
                                 {categoryDisplayMap[item.category] ||
                                   item.category}
                               </p>
@@ -364,7 +364,7 @@ export default function CartPage() {
                                   />
                                 </svg>
                               </div>
-                              <p className="font-suit font-medium text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+                              <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
                                 {subCategoryDisplayMap[item.subCategory] ||
                                   item.subCategory}
                               </p>
@@ -382,7 +382,7 @@ export default function CartPage() {
                             </button>
                           </div>
                           <div className="flex items-center w-full">
-                            <h3 className="flex-1 font-suit font-medium text-[20px] leading-[1.5] text-[#1f2937] truncate">
+                            <h3 className="flex-1 font-suit font-normal text-[20px] leading-[1.5] text-[#1f2937] truncate">
                               {item.name}
                             </h3>
                           </div>
@@ -415,7 +415,7 @@ export default function CartPage() {
                                   }
                                   onFocus={() => handleQuantityFocus(item.id)}
                                   onBlur={() => handleQuantityBlur(item.id)}
-                                  className="font-suit font-semibold text-[16px] leading-[1.35] text-[#6b7280] text-center bg-transparent border-none outline-none w-full"
+                                  className="font-suit font-medium text-[16px] leading-[1.35] text-[#6b7280] text-center bg-transparent border-none outline-none w-full"
                                 />
                               </div>
                               <button
@@ -447,7 +447,7 @@ export default function CartPage() {
                                     borderColor: item.selectedColor.borderColor,
                                   }}
                                 />
-                                <p className="font-suit font-medium text-[14px] leading-[1.5] text-[#6b7280] whitespace-nowrap leading-[1]">
+                                <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#6b7280] whitespace-nowrap leading-[1]">
                                   {item.selectedColor.name.split("/")[0]}
                                 </p>
                                 <div className="flex items-center justify-center p-px rounded-[4px] w-[12px] h-[12px] shrink-0">
@@ -476,7 +476,7 @@ export default function CartPage() {
                                           borderColor: color.borderColor,
                                         }}
                                       />
-                                      <p className="font-suit font-medium text-[14px] leading-[1.5] text-[#6b7280] whitespace-nowrap">
+                                      <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#6b7280] whitespace-nowrap">
                                         {color.name.split("/")[0]}
                                       </p>
                                     </button>
@@ -486,7 +486,7 @@ export default function CartPage() {
                             </div>
                           </div>
                           <div className="flex items-center shrink-0">
-                            <p className="font-suit font-bold text-[24px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
+                            <p className="font-suit font-semibold text-[24px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
                               {new Intl.NumberFormat("ko-KR").format(
                                 item.price * item.quantity,
                               )}
@@ -506,42 +506,42 @@ export default function CartPage() {
           </div>
 
           <div className="flex flex-col gap-[26px] items-start rounded-[16px] shrink-0 w-full lg:w-[457px]">
-            <h2 className="font-suit font-semibold text-[24px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
+            <h2 className="font-suit font-medium text-[24px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
               Order Summery
             </h2>
             <div className="h-[1px] w-full bg-[#e5e7eb]" />
             <div className="flex flex-col gap-[16px] items-end w-full">
               <div className="flex items-center justify-between w-full">
-                <p className="font-suit font-normal text-[20px] leading-[1.5] text-[#6b7280]">
+                <p className="font-suit font-light text-[20px] leading-[1.5] text-[#6b7280]">
                   총 상품 가격
                 </p>
-                <p className="font-suit font-semibold text-[20px] leading-[1.5] text-[#1f2937]">
+                <p className="font-suit font-medium text-[20px] leading-[1.5] text-[#1f2937]">
                   {new Intl.NumberFormat("ko-KR").format(totalProductPrice)}원
                 </p>
               </div>
               <div className="flex items-center justify-between w-full">
-                <p className="font-suit font-normal text-[20px] leading-[1.5] text-[#6b7280]">
+                <p className="font-suit font-light text-[20px] leading-[1.5] text-[#6b7280]">
                   배송비
                 </p>
-                <p className="font-suit font-semibold text-[20px] leading-[1.5] text-[#1f2937]">
+                <p className="font-suit font-medium text-[20px] leading-[1.5] text-[#1f2937]">
                   {new Intl.NumberFormat("ko-KR").format(shippingFee)}원
                 </p>
               </div>
               <div className="flex items-center justify-between w-full">
-                <p className="font-suit font-normal text-[20px] leading-[1.5] text-[#6b7280]">
+                <p className="font-suit font-light text-[20px] leading-[1.5] text-[#6b7280]">
                   총 할인율
                 </p>
-                <p className="font-suit font-semibold text-[20px] leading-[1.5] text-[#1f2937]">
+                <p className="font-suit font-medium text-[20px] leading-[1.5] text-[#1f2937]">
                   {new Intl.NumberFormat("ko-KR").format(discount)}원
                 </p>
               </div>
             </div>
             <div className="h-[1px] w-full bg-[#e5e7eb]" />
             <div className="flex items-center justify-between w-full">
-              <p className="font-suit font-normal text-[20px] leading-[1.5] text-[#6b7280]">
+              <p className="font-suit font-light text-[20px] leading-[1.5] text-[#6b7280]">
                 총 결제 예상 금액
               </p>
-              <p className="font-suit font-bold text-[32px] leading-[1.5] text-[#1f2937]">
+              <p className="font-suit font-semibold text-[32px] leading-[1.5] text-[#1f2937]">
                 {new Intl.NumberFormat("ko-KR").format(totalPrice)}원
               </p>
             </div>
@@ -574,7 +574,7 @@ export default function CartPage() {
               }}
               className="bg-[#1f2937] flex h-[65px] items-center justify-center px-[32px] py-[12px] rounded-[10px] w-full hover:opacity-90 transition-opacity"
             >
-              <p className="font-suit font-bold text-[24px] leading-[1.5] text-white text-center whitespace-nowrap">
+              <p className="font-suit font-semibold text-[24px] leading-[1.5] text-white text-center whitespace-nowrap">
                 주문하기
               </p>
             </button>
