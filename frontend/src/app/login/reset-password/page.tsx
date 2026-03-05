@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowBackIcon, EyeOffIcon, ViewIcon } from '@/components/ui/icons';
 import { ROUTES } from '@/utils/constants';
 import { apiFetch, ApiClientError } from '@/lib/api';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -196,5 +196,17 @@ export default function ResetPasswordPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="bg-white flex flex-col min-h-screen items-center justify-center">
+        <p className="font-suit text-[#6b7280]">로딩 중...</p>
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

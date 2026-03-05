@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Toggle } from '@/components/ui/Toggle';
@@ -200,10 +201,10 @@ export default function LoginPage() {
                 provider="google"
                 onClick={() => handleSocialLogin('google')}
                 icon={
-                  <img 
-                    src="/icons/google.svg" 
-                    alt="Google logo" 
-                    width={17} 
+                  <Image
+                    src="/icons/google.svg"
+                    alt="Google logo"
+                    width={17}
                     height={17}
                     className="w-[17px] h-[17px]"
                   />
