@@ -1,18 +1,27 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
 import { ArrowBackIcon, ArrowDownIcon, AtIcon } from '@/components/ui/icons';
 import { ROUTES } from '@/utils/constants';
+import { formatPhoneNumber, stripPhoneFormat } from '@/utils/phone';
+import { apiFetch, ApiClientError } from '@/lib/api';
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'phone' | 'email'>('phone');
   const [countryCode, setCountryCode] = useState('');
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [email, setEmail] = useState('');
   const [emailDomain, setEmailDomain] = useState('');
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const countryCodes = [
     { code: '82', label: '82' },
@@ -23,21 +32,106 @@ export default function ForgotPasswordPage() {
 
   const emailDomains = ['gmail.com', 'naver.com', 'daum.net', 'kakao.com'];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendVerificationCode = async () => {
+    setError('');
+    setSuccessMessage('');
+
     if (activeTab === 'phone') {
-      console.log('Forgot password attempt:', { countryCode, phone, verificationCode, activeTab });
+      if (!phone.trim()) {
+        setError('전화번호를 입력해 주세요.');
+        return;
+      }
+      setIsSending(true);
+      try {
+        await apiFetch<{ data: { sent: boolean } }>('/auth/password/find/phone', {
+          method: 'POST',
+          body: JSON.stringify({ phone: stripPhoneFormat(phone) }),
+        });
+        setIsCodeSent(true);
+        setSuccessMessage('인증번호가 전송되었습니다.');
+      } catch (err) {
+        if (err instanceof ApiClientError) {
+          setError(err.message);
+        } else {
+          setError('인증번호 전송에 실패했습니다.');
+        }
+      } finally {
+        setIsSending(false);
+      }
     } else {
-      console.log('Forgot password attempt:', { email, emailDomain, verificationCode, activeTab });
+      if (!email.trim() || !emailDomain) {
+        setError('이메일 주소를 입력해 주세요.');
+        return;
+      }
+      const fullEmail = `${email}@${emailDomain}`;
+      setIsSending(true);
+      try {
+        await apiFetch<{ data: { sent: boolean } }>('/auth/password/find/email', {
+          method: 'POST',
+          body: JSON.stringify({ email: fullEmail }),
+        });
+        setIsCodeSent(true);
+        setSuccessMessage('인증 메일이 전송되었습니다. 이메일을 확인해 주세요.');
+      } catch (err) {
+        if (err instanceof ApiClientError) {
+          setError(err.message);
+        } else {
+          setError('인증 메일 전송에 실패했습니다.');
+        }
+      } finally {
+        setIsSending(false);
+      }
     }
   };
 
-  const handleSendVerificationCode = () => {
-    console.log('Send verification code');
+  const handleVerifyCode = () => {
+    setError('');
+    if (!verificationCode.trim()) {
+      setError('인증번호를 입력해 주세요.');
+      return;
+    }
+    setIsVerified(true);
+    setSuccessMessage('인증이 완료되었습니다.');
   };
 
-  const handleVerifyCode = () => {
-    console.log('Verify code');
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (!isCodeSent) {
+      setError('먼저 인증번호를 전송해 주세요.');
+      return;
+    }
+    if (!isVerified) {
+      setError('인증을 완료해 주세요.');
+      return;
+    }
+
+    if (activeTab === 'phone') {
+      const params = new URLSearchParams({
+        method: 'phone',
+        phone: stripPhoneFormat(phone),
+        verifyCode: verificationCode,
+      });
+      router.push(`/login/reset-password?${params.toString()}`);
+    } else {
+      const fullEmail = `${email}@${emailDomain}`;
+      const params = new URLSearchParams({
+        method: 'email',
+        email: fullEmail,
+        token: verificationCode,
+      });
+      router.push(`/login/reset-password?${params.toString()}`);
+    }
+  };
+
+  const handleTabChange = (tab: 'phone' | 'email') => {
+    setActiveTab(tab);
+    setIsCodeSent(false);
+    setIsVerified(false);
+    setVerificationCode('');
+    setError('');
+    setSuccessMessage('');
   };
 
   return (
@@ -66,7 +160,7 @@ export default function ForgotPasswordPage() {
           <div className="flex gap-[4px] items-center w-full">
             <button
               type="button"
-              onClick={() => setActiveTab('phone')}
+              onClick={() => handleTabChange('phone')}
               className={`flex flex-1 h-[56px] items-center justify-center border-b ${
                 activeTab === 'phone'
                   ? 'border-[#374151] border-b-[1.5px]'
@@ -83,7 +177,7 @@ export default function ForgotPasswordPage() {
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('email')}
+              onClick={() => handleTabChange('email')}
               className={`flex flex-1 h-[56px] items-center justify-center border-b ${
                 activeTab === 'email'
                   ? 'border-[#374151] border-b-[1.5px]'
@@ -101,6 +195,17 @@ export default function ForgotPasswordPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-[60px] items-start w-full">
+            {error && (
+              <div className="w-full px-[16px] py-[12px] bg-red-50 border border-red-200 rounded-[6px]">
+                <p className="font-suit font-normal text-[14px] text-red-600 leading-[1.5]">{error}</p>
+              </div>
+            )}
+            {successMessage && (
+              <div className="w-full px-[16px] py-[12px] bg-green-50 border border-green-200 rounded-[6px]">
+                <p className="font-suit font-normal text-[14px] text-green-700 leading-[1.5]">{successMessage}</p>
+              </div>
+            )}
+
             <div className="flex flex-col gap-[20px] items-start w-full">
               {activeTab === 'phone' ? (
                 <>
@@ -138,8 +243,9 @@ export default function ForgotPasswordPage() {
                             <input
                               type="text"
                               value={phone}
-                              onChange={(e) => setPhone(e.target.value)}
-                              placeholder="전화번호를 입력해 주세요."
+                              onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
+                              placeholder="010-0000-0000"
+                              maxLength={13}
                               className={`flex-1 font-suit font-regular text-[16px] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#bac2d0] ${
                                 phone ? 'text-[#161616]' : 'text-[#bac2d0]'
                               }`}
@@ -152,9 +258,10 @@ export default function ForgotPasswordPage() {
                       <button
                         type="button"
                         onClick={handleSendVerificationCode}
-                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                        disabled={isSending}
+                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity disabled:opacity-50"
                       >
-                        인증번호 전송
+                        {isSending ? '전송 중...' : isCodeSent ? '재전송' : '인증번호 전송'}
                       </button>
                     </div>
                   </div>
@@ -177,9 +284,14 @@ export default function ForgotPasswordPage() {
                       <button
                         type="button"
                         onClick={handleVerifyCode}
-                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] border border-[#E5E7EB] bg-[#F9FAFB] text-[#6C6C6C] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                        disabled={isVerifying || isVerified}
+                        className={`w-full h-[48px] flex items-center justify-center rounded-[6px] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity disabled:opacity-50 ${
+                          isVerified
+                            ? 'bg-green-50 border border-green-300 text-green-700'
+                            : 'border border-[#E5E7EB] bg-[#F9FAFB] text-[#6C6C6C]'
+                        }`}
                       >
-                        인증하기
+                        {isVerified ? '인증완료' : '인증하기'}
                       </button>
                     </div>
                   </div>
@@ -235,9 +347,10 @@ export default function ForgotPasswordPage() {
                       <button
                         type="button"
                         onClick={handleSendVerificationCode}
-                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                        disabled={isSending}
+                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity disabled:opacity-50"
                       >
-                        인증번호 전송
+                        {isSending ? '전송 중...' : isCodeSent ? '재전송' : '인증번호 전송'}
                       </button>
                     </div>
                   </div>
@@ -260,9 +373,14 @@ export default function ForgotPasswordPage() {
                       <button
                         type="button"
                         onClick={handleVerifyCode}
-                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] border border-[#E5E7EB] bg-[#F9FAFB] text-[#6C6C6C] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                        disabled={isVerifying || isVerified}
+                        className={`w-full h-[48px] flex items-center justify-center rounded-[6px] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity disabled:opacity-50 ${
+                          isVerified
+                            ? 'bg-green-50 border border-green-300 text-green-700'
+                            : 'border border-[#E5E7EB] bg-[#F9FAFB] text-[#6C6C6C]'
+                        }`}
                       >
-                        인증하기
+                        {isVerified ? '인증완료' : '인증하기'}
                       </button>
                     </div>
                   </div>
@@ -273,7 +391,8 @@ export default function ForgotPasswordPage() {
             <div className="flex flex-col items-start w-full">
               <button
                 type="submit"
-                className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                disabled={!isVerified}
+                className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity disabled:opacity-50"
               >
                 비밀번호 변경
               </button>

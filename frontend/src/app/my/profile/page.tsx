@@ -1,41 +1,100 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/utils/constants';
 import { PasswordChangeModal } from '@/components/ui/PasswordChangeModal';
+import { formatPhoneNumber, stripPhoneFormat } from '@/utils/phone';
+import { apiFetch, ApiClientError } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function MyProfilePage() {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const updateUser = useAuthStore((state) => state.updateUser);
+  const authLogout = useAuthStore((state) => state.logout);
+
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const [name, setName] = useState('김철수');
-  const [email, setEmail] = useState('cheon@gmail.com');
-  const [phone, setPhone] = useState('010-1234-5678');
-  const [joinDate] = useState('2024-01-15');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [joinDate, setJoinDate] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setEmail(user.email || '');
+      setPhone(user.phone ? formatPhoneNumber(user.phone) : '');
+      if (user.createdAt) {
+        const d = new Date(user.createdAt);
+        setJoinDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+      }
+    }
+  }, [user]);
 
   const handleEdit = () => {
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    console.log('Save profile:', { name, email, phone });
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const res = await apiFetch<{ data: { email: string; name: string; phone: string; marketingAgreed: boolean } }>('/users/me', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          name,
+          phone: stripPhoneFormat(phone),
+          marketingAgreed: user?.marketingAgreed ?? false,
+        }),
+      });
+
+      updateUser({
+        name: res.data.name,
+        phone: res.data.phone,
+        marketingAgreed: res.data.marketingAgreed,
+      });
+
+      setIsEditing(false);
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        alert(err.message);
+      } else {
+        alert('정보 수정에 실패했습니다.');
+      }
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleLogout = () => {
-    console.log('Logout');
+  const handleLogout = async () => {
+    try {
+      await apiFetch('/auth/logout', { method: 'POST' });
+    } catch {
+      // 로그아웃 API 실패해도 클라이언트 상태는 초기화
+    } finally {
+      authLogout();
+      router.push(ROUTES.LOGIN);
+    }
   };
 
-  const handlePasswordChange = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
-    console.log('Password change:', { currentPassword, newPassword, confirmPassword });
-    
-    // TODO: 실제 API 호출로 대체
-    // 예시: 현재 비밀번호가 틀렸을 때
-    // if (currentPassword !== 'correct-password') {
-    //   throw new Error('현재 비밀번호가 올바르지 않습니다.');
-    // }
-    
-    // 성공 시 아무것도 반환하지 않음 (모달에서 성공 메시지 표시)
+  const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
+    // 1. 현재 비밀번호 확인
+    try {
+      await apiFetch('/users/me/password/verify', {
+        method: 'POST',
+        body: JSON.stringify({ currentPassword }),
+      });
+    } catch {
+      throw new Error('현재 비밀번호가 올바르지 않습니다.');
+    }
+
+    // 2. 비밀번호 변경
+    await apiFetch('/users/me/password', {
+      method: 'PATCH',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
   };
 
   return (
@@ -67,10 +126,11 @@ export default function MyProfilePage() {
                 </button>
                 <button
                   onClick={isEditing ? handleSave : handleEdit}
-                  className="bg-black flex flex-1 h-[40px] items-center justify-center px-[32px] py-[12px] rounded-[10px] hover:opacity-90 transition-opacity"
+                  disabled={isSaving}
+                  className="bg-black flex flex-1 h-[40px] items-center justify-center px-[32px] py-[12px] rounded-[10px] hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
                   <div className="flex flex-col font-suit font-semibold justify-center text-[16px] text-center text-white whitespace-nowrap">
-                    <p className="leading-[1.3]">{isEditing ? '저장' : '정보 수정'}</p>
+                    <p className="leading-[1.3]">{isSaving ? '저장 중...' : isEditing ? '저장' : '정보 수정'}</p>
                   </div>
                 </button>
               </div>
@@ -248,7 +308,8 @@ export default function MyProfilePage() {
                         <input
                           type="tel"
                           value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
+                          onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
+                          maxLength={13}
                           className="flex-1 font-suit font-normal text-[18px] text-[#4B5563] leading-[1.5] bg-transparent border-none outline-none"
                           style={{
                             color: '#4B5563',

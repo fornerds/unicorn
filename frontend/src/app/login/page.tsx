@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -8,21 +9,67 @@ import { Toggle } from '@/components/ui/Toggle';
 import { SocialLoginButton } from '@/components/ui/SocialLoginButton';
 import { AtIcon, EyeOffIcon, ViewIcon, ArrowDownIcon, GoogleIcon, NaverIcon, KakaoIcon } from '@/components/ui/icons';
 import { ROUTES } from '@/utils/constants';
+import { apiFetch, ApiClientError } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
+import { LoginResponse } from '@/lib/types';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser);
+
   const [email, setEmail] = useState('');
   const [emailDomain, setEmailDomain] = useState('gmail.com');
   const [password, setPassword] = useState('');
-  const [birthDate, setBirthDate] = useState('');
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const emailDomains = ['gmail.com', 'naver.com', 'daum.net', 'kakao.com'];
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
     const fullEmail = `${email}@${emailDomain}`;
-    console.log('Login attempt:', { email: fullEmail, password, birthDate, keepLoggedIn });
+
+    if (!email.trim()) {
+      setError('이메일을 입력해 주세요.');
+      return;
+    }
+    if (!password) {
+      setError('비밀번호를 입력해 주세요.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await apiFetch<LoginResponse>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email: fullEmail, password }),
+      });
+
+      // 토큰은 서버가 Set-Cookie로 자동 설정, Zustand에 사용자 정보만 저장
+      setUser({
+        id: '',
+        email: res.data.user.email,
+        name: res.data.user.name,
+        phone: res.data.user.phone,
+        marketingAgreed: res.data.user.marketingAgreed,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      router.push(ROUTES.HOME);
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        setError(err.message);
+      } else {
+        setError('로그인에 실패했습니다. 다시 시도해 주세요.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSocialLogin = (provider: 'google' | 'naver' | 'kakao') => {
@@ -40,6 +87,11 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-[20px] items-start w-full">
+            {error && (
+              <div className="w-full px-[16px] py-[12px] bg-red-50 border border-red-200 rounded-[6px]">
+                <p className="font-suit font-normal text-[14px] text-red-600 leading-[1.5]">{error}</p>
+              </div>
+            )}
             <div className="flex flex-col gap-[20px] items-start w-full">
               <div className="flex flex-col gap-[4px] items-start w-full">
                 <div className="flex gap-[4px] items-start w-full">
@@ -54,7 +106,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="이메일 주소"
-                      className="flex-1 font-suit font-medium text-[16px] text-[#bac2d0] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#bac2d0]"
+                      className={`flex-1 font-suit font-medium text-[16px] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#bac2d0] ${email ? 'text-[#161616]' : 'text-[#bac2d0]'}`}
                     />
                   </div>
                   <div className="flex items-center justify-center shrink-0 w-[16px] h-[16px]">
@@ -64,7 +116,7 @@ export default function LoginPage() {
                     <select
                       value={emailDomain}
                       onChange={(e) => setEmailDomain(e.target.value)}
-                      className="flex-1 font-suit font-regular text-[16px] text-[#bac2d0] leading-[1.35] bg-transparent border-none outline-none appearance-none"
+                      className={`flex-1 font-suit font-regular text-[16px] leading-[1.35] bg-transparent border-none outline-none appearance-none ${emailDomain ? 'text-[#161616]' : 'text-[#bac2d0]'}`}
                     >
                       {emailDomains.map((domain) => (
                         <option key={domain} value={domain}>
@@ -92,7 +144,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="비밀번호를 입력해 주세요."
-                      className="flex-1 font-suit font-regular text-[16px] text-[#bac2d0] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#bac2d0]"
+                      className={`flex-1 font-suit font-regular text-[16px] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#bac2d0] ${password ? 'text-[#161616]' : 'text-[#bac2d0]'}`}
                     />
                     <button
                       type="button"
@@ -111,8 +163,8 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full">
-              로그인
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? '로그인 중...' : '로그인'}
             </Button>
 
             <div className="flex items-center justify-between w-full">

@@ -2,9 +2,27 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  phone?: string;
+  marketingAgreed?: boolean;
   avatar?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface LoginResponse {
+  code: number;
+  message: string;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
+    user: {
+      email: string;
+      name: string;
+      phone: string;
+      marketingAgreed: boolean;
+    };
+  };
 }
 
 export interface Product {

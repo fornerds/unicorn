@@ -4,6 +4,9 @@
 # MCP config (contains API keys)
 .mcp.json
 
+#deploy
+deploy/
+
 # Dependencies
 node_modules/
 

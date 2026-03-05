@@ -1,185 +1,30 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Pagination } from '@/components/ui/Pagination';
 import { ArrowDownIcon, LikeIcon } from '@/components/ui/icons';
 import { ROUTES } from '@/utils/constants';
+import { apiFetch } from '@/lib/api';
 
-const mockLikedProducts = [
-  {
-    id: '1',
-    name: 'G1',
-    price: 890000,
-    imageUrl: '/images/product01.png',
-    category: 'HOME',
-    isLiked: true,
-  },
-  {
-    id: '2',
-    name: 'H1',
-    price: 1200000,
-    imageUrl: '/images/product02.png',
-    category: 'HOME',
-    isLiked: true,
-  },
-  {
-    id: '3',
-    name: 'Spot',
-    price: 74500,
-    imageUrl: '/images/product03.png',
-    category: 'HOME',
-    isLiked: true,
-  },
-  {
-    id: '4',
-    name: 'Go1',
-    price: 2700,
-    imageUrl: '/images/product04.png',
-    category: 'HOME',
-    isLiked: true,
-  },
-  {
-    id: '5',
-    name: 'UR5e',
-    price: 35000,
-    imageUrl: '/images/product05.png',
-    category: 'HOME',
-    isLiked: true,
-  },
-  {
-    id: '6',
-    name: 'FireBot X1',
-    price: 250000,
-    imageUrl: '/images/product06.png',
-    category: 'FIREFIGHTING',
-    isLiked: true,
-  },
-  {
-    id: '7',
-    name: 'RescueBot Pro',
-    price: 180000,
-    imageUrl: '/images/product07.png',
-    category: 'FIREFIGHTING',
-    isLiked: true,
-  },
-  {
-    id: '8',
-    name: 'Industrial Arm 3000',
-    price: 45000,
-    imageUrl: '/images/product08.png',
-    category: 'INDUSTRIAL',
-    isLiked: true,
-  },
-  {
-    id: '9',
-    name: 'FactoryBot',
-    price: 32000,
-    imageUrl: '/images/product09.png',
-    category: 'INDUSTRIAL',
-    isLiked: true,
-  },
-  {
-    id: '10',
-    name: 'CareBot',
-    price: 150000,
-    imageUrl: '/images/product10.png',
-    category: 'MEDICAL',
-    isLiked: true,
-  },
-  {
-    id: '11',
-    name: 'LogiBot 5000',
-    price: 95000,
-    imageUrl: '/images/product11.png',
-    category: 'LOGISTICS',
-    isLiked: true,
-  },
-  {
-    id: '12',
-    name: 'G1',
-    price: 890000,
-    imageUrl: '/images/product01.png',
-    category: 'HOME',
-    isLiked: true,
-  },
-  {
-    id: '13',
-    name: 'H1',
-    price: 1200000,
-    imageUrl: '/images/product02.png',
-    category: 'HOME',
-    isLiked: true,
-  },
-  {
-    id: '14',
-    name: 'Spot',
-    price: 74500,
-    imageUrl: '/images/product03.png',
-    category: 'HOME',
-    isLiked: true,
-  },
-  {
-    id: '15',
-    name: 'Go1',
-    price: 2700,
-    imageUrl: '/images/product04.png',
-    category: 'HOME',
-    isLiked: true,
-  },
-  {
-    id: '16',
-    name: 'UR5e',
-    price: 35000,
-    imageUrl: '/images/product05.png',
-    category: 'HOME',
-    isLiked: true,
-  },
-  {
-    id: '17',
-    name: 'FireBot X1',
-    price: 250000,
-    imageUrl: '/images/product06.png',
-    category: 'FIREFIGHTING',
-    isLiked: true,
-  },
-  {
-    id: '18',
-    name: 'RescueBot Pro',
-    price: 180000,
-    imageUrl: '/images/product07.png',
-    category: 'FIREFIGHTING',
-    isLiked: true,
-  },
-  {
-    id: '19',
-    name: 'Industrial Arm 3000',
-    price: 45000,
-    imageUrl: '/images/product08.png',
-    category: 'INDUSTRIAL',
-    isLiked: true,
-  },
-  {
-    id: '20',
-    name: 'FactoryBot',
-    price: 32000,
-    imageUrl: '/images/product09.png',
-    category: 'INDUSTRIAL',
-    isLiked: true,
-  },
-  {
-    id: '21',
-    name: 'CareBot',
-    price: 150000,
-    imageUrl: '/images/product10.png',
-    category: 'MEDICAL',
-    isLiked: true,
-  },
-];
+interface LikedProduct {
+  id: number;
+  name: string;
+  category: { id: number; name: string };
+  parentCategory: { id: number; name: string };
+  stock: number;
+  price: number;
+  colors: string[];
+}
+
+interface LikesResponse {
+  data: {
+    items: LikedProduct[];
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  };
+}
 
 const ITEMS_PER_PAGE = 9;
-const TOTAL_LIKED_PRODUCTS = 21;
 
 const categoryOptions = [
   { label: '전체', value: 'all' },
@@ -191,44 +36,34 @@ const categoryOptions = [
 ];
 
 export default function MyLikesPage() {
+  const [likes, setLikes] = useState<LikedProduct[]>([]);
+  const [totalLikes, setTotalLikes] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showCategoryMenu, setShowCategoryMenu] = useState(false);
-  const [basePath, setBasePath] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const path = window.location.pathname;
-      if (path.startsWith('/unicorn')) {
-        return '/unicorn';
-      }
-    }
-    return process.env.NEXT_PUBLIC_BASE_PATH || '';
-  });
+  const [isLoading, setIsLoading] = useState(true);
   const categoryMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const path = window.location.pathname;
-      if (path.startsWith('/unicorn')) {
-        setBasePath('/unicorn');
+    const fetchLikes = async () => {
+      setIsLoading(true);
+      try {
+        const res = await apiFetch<LikesResponse>(`/users/me/likes?page=${currentPage}&limit=${ITEMS_PER_PAGE}`);
+        setLikes(res.data.items);
+        setTotalLikes(res.data.pagination.total);
+        setTotalPages(res.data.pagination.totalPages);
+      } catch {
+        setLikes([]);
+        setTotalLikes(0);
+        setTotalPages(1);
+      } finally {
+        setIsLoading(false);
       }
-    }
-  }, []);
+    };
 
-  const getImagePath = (path: string) => {
-    if (basePath && path.startsWith('/')) {
-      return `${basePath}${path}`;
-    }
-    return path;
-  };
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const path = window.location.pathname;
-      if (path.startsWith('/unicorn')) {
-        setBasePath('/unicorn');
-      }
-    }
-  }, []);
+    fetchLikes();
+  }, [currentPage]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -246,15 +81,10 @@ export default function MyLikesPage() {
     };
   }, [showCategoryMenu]);
 
-  const filteredProducts = mockLikedProducts.filter((product) => {
+  const filteredProducts = likes.filter((product) => {
     if (selectedCategory === 'all') return true;
-    return product.category === selectedCategory;
+    return product.parentCategory?.name === selectedCategory || product.category?.name === selectedCategory;
   });
-
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const displayedProducts = filteredProducts.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -268,15 +98,8 @@ export default function MyLikesPage() {
 
   const selectedCategoryLabel = categoryOptions.find((opt) => opt.value === selectedCategory)?.label || '전체';
 
-  const getCategoryDisplayName = (category: string) => {
-    const categoryMap: Record<string, string> = {
-      HOME: 'Home',
-      FIREFIGHTING: 'FIREFIGHTING',
-      INDUSTRIAL: 'INDUSTRIAL',
-      MEDICAL: 'MEDICAL',
-      LOGISTICS: 'LOGISTICS',
-    };
-    return categoryMap[category] || category;
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('ko-KR').format(price);
   };
 
   return (
@@ -295,7 +118,7 @@ export default function MyLikesPage() {
           <div className="flex flex-col gap-[20px] items-end w-[885px]">
             <div className="flex h-[36px] items-center w-full">
               <div className="flex flex-col font-elice font-extralight justify-center text-[#111827] text-[26px] whitespace-nowrap">
-                <p className="leading-[36px]">찜한 상품({TOTAL_LIKED_PRODUCTS})</p>
+                <p className="leading-[36px]">찜한 상품({totalLikes})</p>
               </div>
             </div>
 
@@ -332,64 +155,64 @@ export default function MyLikesPage() {
             </div>
 
             <div className="flex flex-col items-start px-[4px] w-full">
-              <div className="grid grid-cols-3 gap-[12px] w-full">
-                {displayedProducts.map((product) => {
-                  const formattedPrice = new Intl.NumberFormat('ko-KR').format(product.price);
-
-                  return (
-                    <Link
-                      key={product.id}
-                      href={ROUTES.PRODUCT_DETAIL(product.id)}
-                      className="bg-[#f9fafb] border border-[#eeeff1] flex flex-col h-[362px] items-center overflow-clip pb-[14px] rounded-[9.863px] w-[284px] hover:opacity-95 transition-opacity"
-                    >
-                      <div className="flex gap-[10px] h-[48px] items-center justify-end px-[18px] py-[6px] w-full">
-                        <div className="flex flex-1 items-center">
-                          <div className="flex flex-col font-suit font-normal justify-center text-[16px] text-[#959ba9] whitespace-nowrap">
-                            <p className="leading-[1.5]">{getCategoryDisplayName(product.category)}</p>
+              {isLoading ? (
+                <div className="flex items-center justify-center w-full py-[60px]">
+                  <p className="font-suit font-normal text-[16px] text-[#959ba9]">불러오는 중...</p>
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="flex items-center justify-center w-full py-[60px]">
+                  <p className="font-suit font-normal text-[16px] text-[#959ba9]">아직 찜한 상품이 없습니다.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-3 gap-[12px] w-full">
+                    {filteredProducts.map((product) => (
+                      <Link
+                        key={product.id}
+                        href={ROUTES.PRODUCT_DETAIL(product.id)}
+                        className="bg-[#f9fafb] border border-[#eeeff1] flex flex-col h-[362px] items-center overflow-clip pb-[14px] rounded-[9.863px] w-[284px] hover:opacity-95 transition-opacity"
+                      >
+                        <div className="flex gap-[10px] h-[48px] items-center justify-end px-[18px] py-[6px] w-full">
+                          <div className="flex flex-1 items-center">
+                            <div className="flex flex-col font-suit font-normal justify-center text-[16px] text-[#959ba9] whitespace-nowrap">
+                              <p className="leading-[1.5]">{product.parentCategory?.name || product.category?.name || ''}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-center shrink-0 w-[22px] h-[22px]">
+                            <LikeIcon
+                              width={20}
+                              height={18}
+                              fill="#1F2937"
+                              stroke="#1F2937"
+                              strokeWidth={0.6875}
+                              isLiked={true}
+                            />
                           </div>
                         </div>
-                        <div className="flex items-center justify-center shrink-0 w-[22px] h-[22px]">
-                          <LikeIcon
-                            width={20}
-                            height={18}
-                            fill="#1F2937"
-                            stroke="#1F2937"
-                            strokeWidth={0.6875}
-                            isLiked={true}
-                          />
+                        <div className="flex flex-col h-[227px] items-center justify-end w-full">
+                          <div className="aspect-square flex-1 relative w-full bg-[#f3f4f6]" />
                         </div>
-                      </div>
-                      <div className="flex flex-col h-[227px] items-center justify-end w-full">
-                        <div className="aspect-square flex-1 relative w-full">
-                          <Image
-                            src={getImagePath(product.imageUrl)}
-                            alt={product.name}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                          />
+                        <div className="flex flex-col font-suit font-normal gap-[6px] items-start px-[20px] py-[10px] text-center w-full">
+                          <div className="flex flex-col justify-center overflow-hidden text-[20px] text-black text-ellipsis w-full whitespace-nowrap">
+                            <p className="leading-[1.5] overflow-hidden">{product.name}</p>
+                          </div>
+                          <div className="flex flex-col justify-center text-[16px] text-[#6b7280] w-full">
+                            <p className="leading-[1.5] whitespace-pre-wrap">{formatPrice(product.price)}원</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex flex-col font-suit font-normal gap-[6px] items-start px-[20px] py-[10px] text-center w-full">
-                        <div className="flex flex-col justify-center overflow-hidden text-[20px] text-black text-ellipsis w-full whitespace-nowrap">
-                          <p className="leading-[1.5] overflow-hidden">{product.name}</p>
-                        </div>
-                        <div className="flex flex-col justify-center text-[16px] text-[#6b7280] w-full">
-                          <p className="leading-[1.5] whitespace-pre-wrap">{formattedPrice}원</p>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
+                      </Link>
+                    ))}
+                  </div>
 
-              <div className="flex flex-col items-center justify-center px-[10px] py-[100px] w-full">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
-              </div>
+                  <div className="flex flex-col items-center justify-center px-[10px] py-[100px] w-full">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

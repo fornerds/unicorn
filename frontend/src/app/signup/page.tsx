@@ -1,12 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { AtIcon, EyeOffIcon, ViewIcon, ArrowDownIcon, ArrowBackIcon } from '@/components/ui/icons';
 import { ROUTES } from '@/utils/constants';
+import { apiFetch, ApiClientError } from '@/lib/api';
+import { formatPhoneNumber, stripPhoneFormat } from '@/utils/phone';
 
 export default function SignupPage() {
+  const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [emailDomain, setEmailDomain] = useState('');
@@ -17,6 +21,8 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [agreements, setAgreements] = useState({
     terms: false,
     privacy: false,
@@ -25,17 +31,42 @@ export default function SignupPage() {
 
   const emailDomains = ['gmail.com', 'naver.com', 'daum.net', 'kakao.com'];
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
+
+    if (!name.trim()) { setErrorMessage('이름을 입력해 주세요.'); return; }
+    if (!email.trim() || !emailDomain) { setErrorMessage('이메일 주소를 입력해 주세요.'); return; }
+    if (!password) { setErrorMessage('비밀번호를 입력해 주세요.'); return; }
+    if (password.length < 8) { setErrorMessage('비밀번호는 8자 이상이어야 합니다.'); return; }
+    if (password !== passwordConfirm) { setErrorMessage('비밀번호가 일치하지 않습니다.'); return; }
+    if (!agreements.terms) { setErrorMessage('이용약관에 동의해 주세요.'); return; }
+    if (!agreements.privacy) { setErrorMessage('개인정보처리방침에 동의해 주세요.'); return; }
+
     const fullEmail = `${email}@${emailDomain}`;
-    console.log('Signup attempt:', {
-      name,
-      email: fullEmail,
-      password,
-      passwordConfirm,
-      phone,
-      agreements,
-    });
+
+    setIsLoading(true);
+    try {
+      await apiFetch('/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: fullEmail,
+          password,
+          name: name.trim(),
+          phone: stripPhoneFormat(phone) || undefined,
+          marketingAgreed: agreements.marketing,
+        }),
+      });
+      router.push('/signup/complete');
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        setErrorMessage(err.message);
+      } else {
+        setErrorMessage('회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAgreementChange = (key: keyof typeof agreements) => {
@@ -210,8 +241,9 @@ export default function SignupPage() {
                   <input
                     type="text"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="'-' 표시를 제외하고 입력해 주세요."
+                    onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
+                    placeholder="010-0000-0000"
+                    maxLength={13}
                     className="flex-1 font-suit font-regular text-[16px] text-[#161616] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#bac2d0]"
                   />
                   <button
@@ -359,8 +391,17 @@ export default function SignupPage() {
                   </div>
                 </button>
               </div>
-              <Button type="submit" className="w-full bg-[#161616] text-[#FFFBF4]">
-                회원가입
+              {errorMessage && (
+                <p className="font-suit text-[14px] text-red-500 leading-[1.5] w-full">
+                  {errorMessage}
+                </p>
+              )}
+              <Button
+                type="submit"
+                className="w-full bg-[#161616] text-[#FFFBF4] disabled:opacity-50"
+                disabled={isLoading}
+              >
+                {isLoading ? '가입 중...' : '회원가입'}
               </Button>
             </div>
           </form>

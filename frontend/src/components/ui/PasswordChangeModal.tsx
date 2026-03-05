@@ -6,7 +6,7 @@ import { EyeOffIcon, ViewIcon } from '@/components/ui/icons';
 interface PasswordChangeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (currentPassword: string, newPassword: string, confirmPassword: string) => void;
+  onSave: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 export const PasswordChangeModal = ({ isOpen, onClose, onSave }: PasswordChangeModalProps) => {
@@ -74,7 +74,7 @@ export const PasswordChangeModal = ({ isOpen, onClose, onSave }: PasswordChangeM
     setSuccessMessage('');
 
     try {
-      await onSave(currentPassword, newPassword, confirmPassword);
+      await onSave(currentPassword, newPassword);
       setSuccessMessage('비밀번호가 성공적으로 변경되었습니다.');
       
       setTimeout(() => {

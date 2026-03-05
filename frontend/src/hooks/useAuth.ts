@@ -1,19 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
-import { getToken, getUserIdFromToken } from '@/utils/auth';
-import { fetchUserProfile } from '@/lib/database';
+import { apiFetch } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 
 export const useAuth = () => {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
   return useQuery({
     queryKey: ['auth', 'profile'],
     queryFn: async () => {
-      const token = getToken();
-      if (!token) throw new Error('Not authenticated');
-      
-      const userId = getUserIdFromToken(token);
-      if (!userId) throw new Error('Invalid token');
-      
-      return await fetchUserProfile(userId);
+      const res = await apiFetch<{ data: { email: string; name: string; phone: string; marketingAgreed: boolean } }>('/users/me');
+      return res.data;
     },
-    enabled: !!getToken(),
+    enabled: isAuthenticated,
   });
 };
