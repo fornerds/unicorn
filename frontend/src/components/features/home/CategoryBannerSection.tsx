@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ROUTES } from '@/utils/constants';
 import Image from 'next/image';
 import { withBasePath } from '@/utils/assets';
+import { motion } from 'framer-motion';
 
 const categories = [
   {
@@ -132,58 +133,67 @@ export const CategoryBannerSection = () => {
             }}
           >
             {categories.slice(0, 3).map((category, index) => (
-              <Link
+              <motion.div
                 key={category.id}
-                href={category.href}
-                className="group bg-[#f8f8f8] border border-[#eee] overflow-hidden relative rounded-[24px] shrink-0"
+                initial={{ opacity: 0, y: 60 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: index * 0.12, ease: 'easeOut' }}
                 style={{
                   gridColumn: `${index + 1} / ${index + 2}`,
                   height: '100%',
-                  maxHeight: '414px',
-                  padding: '34px 41px',
                 }}
               >
-                <div className="flex flex-col justify-center leading-[0] whitespace-nowrap z-10 relative">
-                  <p className="font-suit font-bold text-[24px] leading-[normal] text-[#1f2937] mb-[8px]">
-                    {category.title}
-                  </p>
-                  <p className="font-suit font-normal text-[16px] leading-[normal] text-[#6b7280]">
-                    {category.subtitle}
-                  </p>
-                </div>
-                <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0">
-                  {category.imageConfig.type === 'fill' ? (
-                    <Image
-                      src={category.image}
-                      alt={category.title}
-                      fill
-                      unoptimized
-                      className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out group-hover:scale-110"
-                      style={{ objectPosition: 'center' }}
-                    />
-                  ) : (
-                    <div
-                      className="absolute grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out group-hover:scale-110"
-                      style={{
-                        left: `${category.imageConfig.left}px`,
-                        top: `${category.imageConfig.top}px`,
-                        width: `${category.imageConfig.width}px`,
-                        height: `${category.imageConfig.height}px`,
-                        transform: category.imageConfig.transform || undefined,
-                      }}
-                    >
+                <Link
+                  href={category.href}
+                  className="group bg-[#f8f8f8] border border-[#eee] overflow-hidden relative rounded-[24px] shrink-0 block h-full"
+                  style={{
+                    maxHeight: '414px',
+                    padding: '34px 41px',
+                  }}
+                >
+                  <div className="flex flex-col justify-center leading-[0] whitespace-nowrap z-10 relative">
+                    <p className="font-suit font-bold text-[24px] leading-[normal] text-[#1f2937] mb-[8px]">
+                      {category.title}
+                    </p>
+                    <p className="font-suit font-normal text-[16px] leading-[normal] text-[#6b7280]">
+                      {category.subtitle}
+                    </p>
+                  </div>
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0">
+                    {category.imageConfig.type === 'fill' ? (
                       <Image
                         src={category.image}
                         alt={category.title}
-                        width={category.imageConfig.width}
-                        height={category.imageConfig.height}
+                        fill
                         unoptimized
-                        className="object-contain w-full h-full"
+                        className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out group-hover:scale-110"
+                        style={{ objectPosition: 'center' }}
                       />
-                    </div>
-                  )}
-                </div>
-              </Link>
+                    ) : (
+                      <div
+                        className="absolute grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out group-hover:scale-110"
+                        style={{
+                          left: `${category.imageConfig.left}px`,
+                          top: `${category.imageConfig.top}px`,
+                          width: `${category.imageConfig.width}px`,
+                          height: `${category.imageConfig.height}px`,
+                          transform: category.imageConfig.transform || undefined,
+                        }}
+                      >
+                        <Image
+                          src={category.image}
+                          alt={category.title}
+                          width={category.imageConfig.width}
+                          height={category.imageConfig.height}
+                          unoptimized
+                          className="object-contain w-full h-full"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              </motion.div>
             ))}
           </div>
           <div
@@ -194,58 +204,65 @@ export const CategoryBannerSection = () => {
               height: 'calc((100% - 10px) / 2)',
             }}
           >
-            {categories.slice(3).map((category) => (
-              <Link
+            {categories.slice(3).map((category, index) => (
+              <motion.div
                 key={category.id}
-                href={category.href}
-                className="group bg-[#f8f8f8] border border-[#eee] overflow-hidden relative rounded-[24px] shrink-0"
-                style={{
-                  height: '100%',
-                  maxHeight: '414px',
-                  padding: '34px 41px',
-                }}
+                initial={{ opacity: 0, y: 60 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: (index + 3) * 0.12, ease: 'easeOut' }}
+                style={{ height: '100%' }}
               >
-                <div className="flex flex-col justify-center leading-[0] whitespace-nowrap z-10 relative">
-                  <p className="font-suit font-bold text-[24px] leading-[normal] text-[#1f2937] mb-[8px]">
-                    {category.title}
-                  </p>
-                  <p className="font-suit font-normal text-[16px] leading-[normal] text-[#6b7280]">
-                    {category.subtitle}
-                  </p>
-                </div>
-                <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0">
-                  {category.imageConfig.type === 'fill' ? (
-                    <Image
-                      src={category.image}
-                      alt={category.title}
-                      fill
-                      unoptimized
-                      className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out group-hover:scale-110"
-                      style={{ objectPosition: 'center' }}
-                    />
-                  ) : (
-                    <div
-                      className="absolute grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out group-hover:scale-110"
-                      style={{
-                        left: `${category.imageConfig.left}px`,
-                        top: `${category.imageConfig.top}px`,
-                        width: `${category.imageConfig.width}px`,
-                        height: `${category.imageConfig.height}px`,
-                        transform: category.imageConfig.transform || undefined,
-                      }}
-                    >
+                <Link
+                  href={category.href}
+                  className="group bg-[#f8f8f8] border border-[#eee] overflow-hidden relative rounded-[24px] shrink-0 block h-full"
+                  style={{
+                    maxHeight: '414px',
+                    padding: '34px 41px',
+                  }}
+                >
+                  <div className="flex flex-col justify-center leading-[0] whitespace-nowrap z-10 relative">
+                    <p className="font-suit font-bold text-[24px] leading-[normal] text-[#1f2937] mb-[8px]">
+                      {category.title}
+                    </p>
+                    <p className="font-suit font-normal text-[16px] leading-[normal] text-[#6b7280]">
+                      {category.subtitle}
+                    </p>
+                  </div>
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0">
+                    {category.imageConfig.type === 'fill' ? (
                       <Image
                         src={category.image}
                         alt={category.title}
-                        width={category.imageConfig.width}
-                        height={category.imageConfig.height}
+                        fill
                         unoptimized
-                        className="object-contain w-full h-full"
+                        className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out group-hover:scale-110"
+                        style={{ objectPosition: 'center' }}
                       />
-                    </div>
-                  )}
-                </div>
-              </Link>
+                    ) : (
+                      <div
+                        className="absolute grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out group-hover:scale-110"
+                        style={{
+                          left: `${category.imageConfig.left}px`,
+                          top: `${category.imageConfig.top}px`,
+                          width: `${category.imageConfig.width}px`,
+                          height: `${category.imageConfig.height}px`,
+                          transform: category.imageConfig.transform || undefined,
+                        }}
+                      >
+                        <Image
+                          src={category.image}
+                          alt={category.title}
+                          width={category.imageConfig.width}
+                          height={category.imageConfig.height}
+                          unoptimized
+                          className="object-contain w-full h-full"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </div>

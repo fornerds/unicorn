@@ -14,7 +14,6 @@ const mockProducts = [
     price: 890000,
     imageUrl: '/images/product01.png',
     category: 'HOME',
-    subCategory: 'Human',
     companyName: 'Unitree',
     isLiked: true,
   },
@@ -24,7 +23,6 @@ const mockProducts = [
     price: 1200000,
     imageUrl: '/images/product02.png',
     category: 'HOME',
-    subCategory: 'Human',
     companyName: 'Boston Dynamics',
     isLiked: false,
   },
@@ -34,7 +32,6 @@ const mockProducts = [
     price: 74500,
     imageUrl: '/images/product03.png',
     category: 'HOME',
-    subCategory: 'Quadruped',
     companyName: 'Boston Dynamics',
     isLiked: false,
   },
@@ -44,7 +41,6 @@ const mockProducts = [
     price: 2700,
     imageUrl: '/images/product04.png',
     category: 'HOME',
-    subCategory: 'Quadruped',
     companyName: 'Unitree',
     isLiked: false,
   },
@@ -54,7 +50,6 @@ const mockProducts = [
     price: 35000,
     imageUrl: '/images/product05.png',
     category: 'HOME',
-    subCategory: 'Manipulator',
     companyName: 'Universal Robots',
     isLiked: false,
   },
@@ -64,7 +59,6 @@ const mockProducts = [
     price: 250000,
     imageUrl: '/images/product06.png',
     category: 'FIREFIGHTING',
-    subCategory: 'Wheeled',
     companyName: 'FireTech',
     isLiked: false,
   },
@@ -74,7 +68,6 @@ const mockProducts = [
     price: 180000,
     imageUrl: '/images/product07.png',
     category: 'FIREFIGHTING',
-    subCategory: 'Quadruped',
     companyName: 'RescueSystems',
     isLiked: false,
   },
@@ -84,7 +77,6 @@ const mockProducts = [
     price: 45000,
     imageUrl: '/images/product08.png',
     category: 'INDUSTRIAL',
-    subCategory: 'Manipulator',
     companyName: 'IndustrialRobotics',
     isLiked: false,
   },
@@ -94,7 +86,6 @@ const mockProducts = [
     price: 32000,
     imageUrl: '/images/product09.png',
     category: 'INDUSTRIAL',
-    subCategory: 'Wheeled',
     companyName: 'FactoryTech',
     isLiked: false,
   },
@@ -104,7 +95,6 @@ const mockProducts = [
     price: 150000,
     imageUrl: '/images/product10.png',
     category: 'MEDICAL',
-    subCategory: 'Human',
     companyName: 'MediCare Robotics',
     isLiked: false,
   },
@@ -114,7 +104,6 @@ const mockProducts = [
     price: 95000,
     imageUrl: '/images/product11.png',
     category: 'LOGISTICS',
-    subCategory: 'Wheeled',
     companyName: 'LogiTech',
     isLiked: false,
   },
@@ -137,10 +126,9 @@ export const ProductsContent = () => {
 
   useEffect(() => {
     const category = searchParams.get('category');
-    const subCategory = searchParams.get('subCategory');
-    
-    if (!category && !subCategory) {
-      router.replace('/products?category=HOME&subCategory=Human');
+
+    if (!category) {
+      router.replace('/products?category=HOME');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -162,17 +150,12 @@ export const ProductsContent = () => {
   }, [showSortMenu]);
 
   const category = searchParams.get('category') || '';
-  const subCategory = searchParams.get('subCategory') || '';
 
   const filteredProducts = useMemo(() => {
     let filtered = [...mockProducts];
 
     if (category) {
       filtered = filtered.filter((product) => product.category === category);
-    }
-
-    if (subCategory) {
-      filtered = filtered.filter((product) => product.subCategory === subCategory);
     }
 
     if (searchQuery) {
@@ -199,7 +182,7 @@ export const ProductsContent = () => {
     }
 
     return filtered;
-  }, [category, subCategory, searchQuery, sortBy]);
+  }, [category, searchQuery, sortBy]);
 
   const selectedSortLabel = sortOptions.find((opt) => opt.value === sortBy)?.label || '최신 순';
 
@@ -217,7 +200,7 @@ export const ProductsContent = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="원하는 로봇을 검색해 보세요."
-                  className="flex-1 font-suit font-normal text-[15px] leading-[1.5] text-[#959ba9] bg-transparent border-none outline-none placeholder:text-[#959ba9]"
+                  className="flex-1 font-suit font-light text-[15px] leading-[1.5] text-[#959ba9] bg-transparent border-none outline-none placeholder:text-[#959ba9]"
                 />
                 <button className="flex items-center justify-center p-[1.5px] rounded-[8px] w-[18px] h-[18px] shrink-0">
                   <SearchIcon width={12} height={12} stroke="#959ba9" strokeWidth={1.5} />
@@ -228,7 +211,7 @@ export const ProductsContent = () => {
                   onClick={() => setShowSortMenu(!showSortMenu)}
                   className="flex gap-[7.5px] items-center overflow-clip pl-[15px] pr-[12px] py-[4.5px] rounded-[74.25px] shrink-0 hover:opacity-80 transition-opacity"
                 >
-                  <p className="font-suit font-medium text-[15px] leading-[1.35] text-[#374151] whitespace-nowrap">
+                  <p className="font-suit font-normal text-[15px] leading-[1.35] text-[#374151] whitespace-nowrap">
                     {selectedSortLabel}
                   </p>
                   <div className={`flex items-center justify-center p-[1.333px] rounded-[5.333px] w-[12px] h-[12px] shrink-0 transition-transform ${showSortMenu ? 'rotate-180' : ''}`}>
@@ -244,7 +227,7 @@ export const ProductsContent = () => {
                           setSortBy(option.value);
                           setShowSortMenu(false);
                         }}
-                        className={`w-full px-[16px] py-[8px] text-left font-suit font-medium text-[16px] leading-[1.5] text-[#374151] hover:bg-[#f9fafb] first:rounded-t-[8px] last:rounded-b-[8px] ${
+                        className={`w-full px-[16px] py-[8px] text-left font-suit font-normal text-[16px] leading-[1.5] text-[#374151] hover:bg-[#f9fafb] first:rounded-t-[8px] last:rounded-b-[8px] ${
                           sortBy === option.value ? 'bg-[#f3f4f6]' : ''
                         }`}
                       >
@@ -263,7 +246,7 @@ export const ProductsContent = () => {
                 ))
               ) : (
                 <div className="w-full text-center py-[60px]">
-                  <p className="font-suit font-medium text-[18px] text-[#959ba9]">
+                  <p className="font-suit font-normal text-[18px] text-[#959ba9]">
                     검색 결과가 없습니다.
                   </p>
                 </div>

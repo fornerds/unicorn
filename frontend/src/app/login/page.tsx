@@ -43,7 +43,7 @@ export default function LoginPage() {
             <div className="flex flex-col gap-[20px] items-start w-full">
               <div className="flex flex-col gap-[4px] items-start w-full">
                 <div className="flex gap-[4px] items-start w-full">
-                  <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <label className="font-suit font-semibold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                     이메일
                   </label>
                 </div>
@@ -54,7 +54,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="이메일 주소"
-                      className="flex-1 font-suit font-semibold text-[16px] text-[#bac2d0] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#bac2d0]"
+                      className="flex-1 font-suit font-medium text-[16px] text-[#bac2d0] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#bac2d0]"
                     />
                   </div>
                   <div className="flex items-center justify-center shrink-0 w-[16px] h-[16px]">
@@ -81,7 +81,7 @@ export default function LoginPage() {
 
               <div className="flex flex-col gap-[4px] items-start w-full">
                 <div className="flex gap-[4px] items-start w-full">
-                  <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <label className="font-suit font-semibold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                     비밀번호
                   </label>
                 </div>
@@ -123,7 +123,7 @@ export default function LoginPage() {
               />
               <Link
                 href="/login/forgot-password"
-                className="flex items-center justify-center px-[4px] py-[10px] font-suit font-medium text-[16px] text-[#6b7280] leading-[1.6] whitespace-nowrap underline decoration-solid hover:opacity-80 transition-opacity"
+                className="flex items-center justify-center px-[4px] py-[10px] font-suit font-normal text-[16px] text-[#6b7280] leading-[1.6] whitespace-nowrap underline decoration-solid hover:opacity-80 transition-opacity"
               >
                 비밀번호를 잊으셨나요?
               </Link>
@@ -135,7 +135,7 @@ export default function LoginPage() {
               <div className="flex flex-1 items-center justify-center">
                 <div className="h-0 w-full border-t border-[#959BA9]" />
               </div>
-              <p className="font-suit font-medium text-[16px] text-[#6b7280] leading-none shrink-0">
+              <p className="font-suit font-normal text-[16px] text-[#6b7280] leading-none shrink-0">
                 소셜 계정으로 간편 로그인
               </p>
               <div className="flex flex-1 items-center justify-center">
@@ -182,7 +182,7 @@ export default function LoginPage() {
             </p>
             <Link
               href={ROUTES.SIGNUP}
-              className="font-suit font-semibold text-[16px] text-[#1f2937] leading-[1.5] text-center whitespace-nowrap hover:opacity-80 transition-opacity"
+              className="font-suit font-medium text-[16px] text-[#1f2937] leading-[1.5] text-center whitespace-nowrap hover:opacity-80 transition-opacity"
             >
               회원가입
             </Link>

@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
                   <ArrowBackIcon width={20} height={16} stroke="#1F2937" />
                 </div>
               </Link>
-              <h2 className="font-suit font-medium text-[20px] text-[#1f2937] leading-[1.45] whitespace-nowrap">
+              <h2 className="font-suit font-normal text-[20px] text-[#1f2937] leading-[1.45] whitespace-nowrap">
                 비밀번호 변경
               </h2>
             </div>
@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
               }`}
             >
               <span
-                className={`font-suit font-semibold text-[22px] leading-[1.45] whitespace-nowrap ${
+                className={`font-suit font-medium text-[22px] leading-[1.45] whitespace-nowrap ${
                   activeTab === 'phone' ? 'text-[#374151]' : 'text-[#d1d5db]'
                 }`}
               >
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
               }`}
             >
               <span
-                className={`font-suit font-semibold text-[22px] leading-[1.45] whitespace-nowrap ${
+                className={`font-suit font-medium text-[22px] leading-[1.45] whitespace-nowrap ${
                   activeTab === 'email' ? 'text-[#374151]' : 'text-[#d1d5db]'
                 }`}
               >
@@ -107,7 +107,7 @@ export default function ForgotPasswordPage() {
                   <div className="flex gap-[30px] items-end justify-center w-full">
                     <div className="flex flex-1 flex-col gap-[4px] items-start min-w-0">
                       <div className="flex items-start w-full">
-                        <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                        <label className="font-suit font-semibold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                           전화번호 입력
                         </label>
                       </div>
@@ -152,7 +152,7 @@ export default function ForgotPasswordPage() {
                       <button
                         type="button"
                         onClick={handleSendVerificationCode}
-                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-bold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
                       >
                         인증번호 전송
                       </button>
@@ -177,7 +177,7 @@ export default function ForgotPasswordPage() {
                       <button
                         type="button"
                         onClick={handleVerifyCode}
-                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] border border-[#E5E7EB] bg-[#F9FAFB] text-[#6C6C6C] font-suit font-bold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] border border-[#E5E7EB] bg-[#F9FAFB] text-[#6C6C6C] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
                       >
                         인증하기
                       </button>
@@ -189,7 +189,7 @@ export default function ForgotPasswordPage() {
                   <div className="flex gap-[30px] items-end justify-center w-full">
                     <div className="flex flex-1 flex-col gap-[4px] items-start min-w-0">
                       <div className="flex gap-[4px] items-start w-full">
-                        <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                        <label className="font-suit font-semibold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                           이메일 주소
                         </label>
                       </div>
@@ -235,7 +235,7 @@ export default function ForgotPasswordPage() {
                       <button
                         type="button"
                         onClick={handleSendVerificationCode}
-                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-bold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
                       >
                         인증번호 전송
                       </button>
@@ -260,7 +260,7 @@ export default function ForgotPasswordPage() {
                       <button
                         type="button"
                         onClick={handleVerifyCode}
-                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] border border-[#E5E7EB] bg-[#F9FAFB] text-[#6C6C6C] font-suit font-bold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                        className="w-full h-[48px] flex items-center justify-center rounded-[6px] border border-[#E5E7EB] bg-[#F9FAFB] text-[#6C6C6C] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
                       >
                         인증하기
                       </button>
@@ -273,7 +273,7 @@ export default function ForgotPasswordPage() {
             <div className="flex flex-col items-start w-full">
               <button
                 type="submit"
-                className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-bold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
+                className="w-full h-[48px] flex items-center justify-center rounded-[6px] bg-[#161616] text-[#FFF] font-suit font-semibold text-[18px] leading-[1.5] hover:opacity-90 transition-opacity"
               >
                 비밀번호 변경
               </button>

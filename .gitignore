@@ -1,6 +1,9 @@
 # Cursor IDE files (contains secrets)
 .cursor/
 
+# MCP config (contains API keys)
+.mcp.json
+
 # Dependencies
 node_modules/
 

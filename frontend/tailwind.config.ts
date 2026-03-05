@@ -21,7 +21,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['SUIT', 'var(--font-suit)', 'sans-serif'],
-        elice: ['EliceDXNeolliOTF', 'sans-serif'],
+        elice: ['var(--font-elice)', 'sans-serif'],
         suit: ['SUIT', 'sans-serif'],
         cardo: ['var(--font-cardo)', 'serif'],
       },

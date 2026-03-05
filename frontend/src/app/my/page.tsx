@@ -80,10 +80,10 @@ export default function MyPage() {
       <div className="flex items-center justify-center pb-[150px] pt-[100px] px-[365px] w-full">
         <div className="flex gap-[30px] items-start">
           <div className="flex flex-col gap-[17px] items-start text-[#2a313f] w-[275px]">
-            <div className="flex flex-col font-suit font-extralight justify-center text-[60px] w-full">
+            <div className="flex flex-col font-suit font-thin justify-center text-[60px] w-full">
               <p className="leading-[normal] whitespace-pre-wrap">Mypage</p>
             </div>
-            <div className="flex flex-col font-suit font-light justify-center text-[30px] w-full">
+            <div className="flex flex-col font-suit font-extralight justify-center text-[30px] w-full">
               <p className="leading-[1.35] whitespace-pre-wrap">마이페이지</p>
             </div>
           </div>
@@ -91,10 +91,10 @@ export default function MyPage() {
           <div className="flex flex-col gap-[100px] items-start w-[885px]">
             <div className="bg-[#f9fafb] flex items-center justify-between px-[30px] py-[34px] rounded-[20px] w-full">
               <div className="flex flex-1 flex-col gap-[2px] items-start">
-                <div className="flex flex-col font-suit font-semibold justify-center text-[#2a313f] text-[30px] w-full">
+                <div className="flex flex-col font-suit font-medium justify-center text-[#2a313f] text-[30px] w-full">
                   <p className="leading-[1.35] whitespace-pre-wrap">김철수</p>
                 </div>
-                <div className="flex flex-col font-suit font-medium justify-center text-[#6b7280] text-[18px] w-full">
+                <div className="flex flex-col font-suit font-normal justify-center text-[#6b7280] text-[18px] w-full">
                   <p className="leading-[20px] whitespace-pre-wrap">kimcs@example.com</p>
                 </div>
               </div>
@@ -105,14 +105,14 @@ export default function MyPage() {
 
             <div className="flex flex-col gap-[30px] items-start px-[4px] w-full">
               <div className="flex items-center justify-between w-full">
-                <div className="flex flex-col font-elice font-light justify-center text-[24px] text-[#1f2937] whitespace-nowrap">
+                <div className="flex flex-col font-elice font-extralight justify-center text-[24px] text-[#1f2937] whitespace-nowrap">
                   <p className="leading-[1.35]">주문 내역</p>
                 </div>
                 <Link
                   href={ROUTES.MY_ORDERS}
                   className="flex gap-[10px] items-center justify-center py-[10px]"
                 >
-                  <div className="flex flex-col font-suit font-medium justify-center text-[18px] text-[#6b7280] text-center whitespace-nowrap">
+                  <div className="flex flex-col font-suit font-normal justify-center text-[18px] text-[#6b7280] text-center whitespace-nowrap">
                     <p className="leading-[20px]">더보기</p>
                   </div>
                   <div className="flex items-center justify-center shrink-0 w-[16px] h-[16px]">
@@ -130,13 +130,13 @@ export default function MyPage() {
                     <div className="flex items-center justify-between w-full">
                       <div className="flex gap-[10px] items-center text-[14px]">
                         <div className="flex gap-[4px] items-center justify-center leading-[20px] text-[#8e8e93]">
-                          <p className="font-suit font-semibold">주문번호</p>
-                          <p className="font-suit font-medium">{order.orderNumber}</p>
+                          <p className="font-suit font-medium">주문번호</p>
+                          <p className="font-suit font-normal">{order.orderNumber}</p>
                         </div>
-                        <div className="flex flex-col font-suit font-semibold justify-center text-[#959ba9] whitespace-nowrap">
+                        <div className="flex flex-col font-suit font-medium justify-center text-[#959ba9] whitespace-nowrap">
                           <p className="leading-[1.5]">|</p>
                         </div>
-                        <div className="flex flex-col font-suit font-semibold justify-center text-[#959ba9] whitespace-nowrap">
+                        <div className="flex flex-col font-suit font-medium justify-center text-[#959ba9] whitespace-nowrap">
                           <p className="leading-[1.5]">{order.date}</p>
                         </div>
                       </div>
@@ -157,12 +157,12 @@ export default function MyPage() {
                         <div className="flex flex-1 flex-col h-[104px] items-start justify-between">
                           <div className="flex flex-col items-start w-full">
                             <div className="flex items-center w-full">
-                              <div className="flex flex-1 flex-col font-suit font-medium justify-center overflow-hidden text-[20px] text-[#1f2937] text-ellipsis whitespace-nowrap">
+                              <div className="flex flex-1 flex-col font-suit font-normal justify-center overflow-hidden text-[20px] text-[#1f2937] text-ellipsis whitespace-nowrap">
                                 <p className="leading-[1.5] overflow-hidden">{order.productName}</p>
                               </div>
                             </div>
                             <div className="flex gap-[8px] items-center">
-                              <div className="flex flex-col font-suit font-medium justify-center text-[14px] text-[#959ba9] whitespace-nowrap">
+                              <div className="flex flex-col font-suit font-normal justify-center text-[14px] text-[#959ba9] whitespace-nowrap">
                                 <p className="leading-[1.5]">수량 {order.quantity}</p>
                               </div>
                               <div className="flex h-[13px] items-center justify-center w-0">
@@ -170,7 +170,7 @@ export default function MyPage() {
                                   <div className="h-0 w-[13px] border-t border-[#959ba9]" />
                                 </div>
                               </div>
-                              <div className="flex flex-col font-suit font-medium justify-center text-[14px] text-[#959ba9] whitespace-nowrap">
+                              <div className="flex flex-col font-suit font-normal justify-center text-[14px] text-[#959ba9] whitespace-nowrap">
                                 <p className="leading-[1.5]">{order.color}</p>
                               </div>
                             </div>
@@ -178,16 +178,16 @@ export default function MyPage() {
                           <div className="flex items-end justify-end w-full">
                             <div className="flex gap-[8px] items-end">
                               <div className="flex flex-col items-center justify-center py-[4px]">
-                                <div className="capitalize flex flex-col font-suit font-medium justify-center text-[14px] text-[#1f2937] whitespace-nowrap">
+                                <div className="capitalize flex flex-col font-suit font-normal justify-center text-[14px] text-[#1f2937] whitespace-nowrap">
                                   <p className="leading-[1.5]">Total</p>
                                 </div>
                               </div>
                               <div className="flex gap-[3px] items-end justify-center">
-                                <div className="flex flex-col font-suit font-bold justify-center text-[22px] text-[#1f2937] whitespace-nowrap">
+                                <div className="flex flex-col font-suit font-semibold justify-center text-[22px] text-[#1f2937] whitespace-nowrap">
                                   <p className="leading-[1.5]">{order.total}</p>
                                 </div>
                                 <div className="flex flex-col items-center justify-center py-[3px] w-[14px]">
-                                  <div className="flex flex-col font-suit font-semibold justify-center text-[18px] text-[#1f2937] w-full">
+                                  <div className="flex flex-col font-suit font-medium justify-center text-[18px] text-[#1f2937] w-full">
                                     <p className="leading-[1.5] whitespace-pre-wrap">원</p>
                                   </div>
                                 </div>
@@ -205,14 +205,14 @@ export default function MyPage() {
 
             <div className="flex flex-col gap-[30px] items-center px-[4px] w-full">
               <div className="flex items-center justify-between w-full">
-                <div className="flex flex-col font-elice font-light justify-center text-[24px] text-[#1f2937] whitespace-nowrap">
+                <div className="flex flex-col font-elice font-extralight justify-center text-[24px] text-[#1f2937] whitespace-nowrap">
                   <p className="leading-[1.35]">찜한제품(7)</p>
                 </div>
                 <Link
                   href={ROUTES.MY_LIKES}
                   className="flex gap-[10px] items-center justify-center py-[10px]"
                 >
-                  <div className="flex flex-col font-suit font-medium justify-center text-[18px] text-[#6b7280] text-center whitespace-nowrap">
+                  <div className="flex flex-col font-suit font-normal justify-center text-[18px] text-[#6b7280] text-center whitespace-nowrap">
                     <p className="leading-[20px]">더보기</p>
                   </div>
                   <div className="flex items-center justify-center shrink-0 w-[16px] h-[16px]">
@@ -228,7 +228,7 @@ export default function MyPage() {
                   >
                     <div className="flex gap-[10px] h-[48px] items-center justify-end px-[18px] py-[6px] w-full">
                       <div className="flex flex-1 items-center">
-                        <div className="flex flex-col font-suit font-medium justify-center text-[16px] text-[#959ba9] whitespace-nowrap">
+                        <div className="flex flex-col font-suit font-normal justify-center text-[16px] text-[#959ba9] whitespace-nowrap">
                           <p className="leading-[1.5]">{product.category}</p>
                         </div>
                       </div>
@@ -254,7 +254,7 @@ export default function MyPage() {
                         />
                       </div>
                     </div>
-                    <div className="flex flex-col font-suit font-medium gap-[6px] items-start px-[20px] py-[10px] text-center w-full">
+                    <div className="flex flex-col font-suit font-normal gap-[6px] items-start px-[20px] py-[10px] text-center w-full">
                       <div className="flex flex-col justify-center overflow-hidden text-[20px] text-black text-ellipsis w-full whitespace-nowrap">
                         <p className="leading-[1.5] overflow-hidden">{product.name}</p>
                       </div>
@@ -279,10 +279,10 @@ export default function MyPage() {
               </div>
               <div className="absolute flex items-end justify-between left-[43px] top-[50px] w-[800px]">
                 <div className="flex flex-col gap-[10px] items-start text-white w-[395px]">
-                  <div className="flex flex-col font-suit font-light justify-center text-[36px] w-full">
+                  <div className="flex flex-col font-suit font-extralight justify-center text-[36px] w-full">
                     <p className="leading-[normal] whitespace-pre-wrap">Life Changing Robots</p>
                   </div>
-                  <div className="flex flex-col font-suit font-extralight justify-center text-[18px] tracking-[-0.54px] w-full">
+                  <div className="flex flex-col font-suit font-thin justify-center text-[18px] tracking-[-0.54px] w-full">
                     <p className="leading-[normal] whitespace-pre-wrap">
                       사람과 로봇이 조화로운 일상, 그 새로운 시작을 함께합니다
                     </p>
@@ -292,7 +292,7 @@ export default function MyPage() {
                   href={ROUTES.PRODUCTS}
                   className="flex items-center justify-between py-[18px] w-[112px]"
                 >
-                  <div className="flex flex-col font-suit font-light justify-center text-[14px] text-center text-white whitespace-nowrap">
+                  <div className="flex flex-col font-suit font-extralight justify-center text-[14px] text-center text-white whitespace-nowrap">
                     <p className="leading-[24px]">제품 둘러보기</p>
                   </div>
                   <div className="relative shrink-0 w-[28px] h-[28px]">

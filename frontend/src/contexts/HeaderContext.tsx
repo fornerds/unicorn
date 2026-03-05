@@ -9,6 +9,8 @@ interface HeaderContextType {
   setShowInitialAnimation: (value: boolean) => void;
   logoAnimationComplete: boolean;
   setLogoAnimationComplete: (value: boolean) => void;
+  introOverlayVisible: boolean;
+  setIntroOverlayVisible: (value: boolean) => void;
 }
 
 const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
@@ -17,6 +19,7 @@ export const HeaderProvider = ({ children }: { children: ReactNode }) => {
   const [isFirstSection, setIsFirstSection] = useState(true);
   const [showInitialAnimation, setShowInitialAnimation] = useState(false);
   const [logoAnimationComplete, setLogoAnimationComplete] = useState(false);
+  const [introOverlayVisible, setIntroOverlayVisible] = useState(false);
 
   return (
     <HeaderContext.Provider
@@ -27,6 +30,8 @@ export const HeaderProvider = ({ children }: { children: ReactNode }) => {
         setShowInitialAnimation,
         logoAnimationComplete,
         setLogoAnimationComplete,
+        introOverlayVisible,
+        setIntroOverlayVisible,
       }}
     >
       {children}
@@ -44,6 +49,8 @@ export const useHeader = () => {
       setShowInitialAnimation: () => {},
       logoAnimationComplete: false,
       setLogoAnimationComplete: () => {},
+      introOverlayVisible: false,
+      setIntroOverlayVisible: () => {},
     };
   }
   return context;

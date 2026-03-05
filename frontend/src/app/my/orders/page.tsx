@@ -160,17 +160,17 @@ export default function MyOrdersPage() {
       <div className="flex items-center justify-center pb-[150px] pt-[100px] px-[365px] w-full">
         <div className="flex gap-[81px] items-start">
           <div className="flex flex-col gap-[17px] items-start text-[#2a313f] w-[224px]">
-            <div className="flex flex-col font-suit font-extralight justify-center text-[60px] w-full">
+            <div className="flex flex-col font-suit font-thin justify-center text-[60px] w-full">
               <p className="leading-[normal] whitespace-pre-wrap">Mypage</p>
             </div>
-            <div className="flex flex-col font-suit font-light justify-center text-[30px] w-full">
+            <div className="flex flex-col font-suit font-extralight justify-center text-[30px] w-full">
               <p className="leading-[1.35] whitespace-pre-wrap">마이페이지</p>
             </div>
           </div>
 
           <div className="flex flex-col gap-[20px] items-end w-[885px]">
             <div className="flex h-[36px] items-center w-full">
-              <div className="flex flex-col font-elice font-light justify-center text-[#111827] text-[26px] whitespace-nowrap">
+              <div className="flex flex-col font-elice font-extralight justify-center text-[#111827] text-[26px] whitespace-nowrap">
                 <p className="leading-[36px]">주문 내역({TOTAL_ORDERS})</p>
               </div>
             </div>
@@ -181,7 +181,7 @@ export default function MyOrdersPage() {
               aria-label="정렬 변경"
             >
               <div className="flex flex-col items-center justify-center">
-                <div className="flex flex-col font-suit font-medium justify-center text-[20px] text-[#374151] whitespace-nowrap">
+                <div className="flex flex-col font-suit font-normal justify-center text-[20px] text-[#374151] whitespace-nowrap">
                   <p className="leading-[1.35]">{sortOrder === 'latest' ? '최신순' : '오래된순'}</p>
                 </div>
               </div>
@@ -201,13 +201,13 @@ export default function MyOrdersPage() {
                     <div className="flex items-center justify-between w-full">
                       <div className="flex gap-[10px] items-center text-[14px]">
                         <div className="flex gap-[4px] items-center justify-center leading-[20px] text-[#8e8e93]">
-                          <p className="font-suit font-semibold">주문번호</p>
-                          <p className="font-suit font-medium">{order.orderNumber}</p>
+                          <p className="font-suit font-medium">주문번호</p>
+                          <p className="font-suit font-normal">{order.orderNumber}</p>
                         </div>
-                        <div className="flex flex-col font-suit font-semibold justify-center text-[#959ba9] whitespace-nowrap">
+                        <div className="flex flex-col font-suit font-medium justify-center text-[#959ba9] whitespace-nowrap">
                           <p className="leading-[1.5]">|</p>
                         </div>
-                        <div className="flex flex-col font-suit font-semibold justify-center text-[#959ba9] whitespace-nowrap">
+                        <div className="flex flex-col font-suit font-medium justify-center text-[#959ba9] whitespace-nowrap">
                           <p className="leading-[1.5]">{order.date}</p>
                         </div>
                       </div>
@@ -229,12 +229,12 @@ export default function MyOrdersPage() {
                         <div className="flex flex-1 flex-col h-[104px] items-start justify-between">
                           <div className="flex flex-col items-start w-full">
                             <div className="flex items-center w-full">
-                              <div className="flex flex-1 flex-col font-suit font-medium justify-center overflow-hidden text-[20px] text-[#1f2937] text-ellipsis whitespace-nowrap">
+                              <div className="flex flex-1 flex-col font-suit font-normal justify-center overflow-hidden text-[20px] text-[#1f2937] text-ellipsis whitespace-nowrap">
                                 <p className="leading-[1.5] overflow-hidden">{order.productName}</p>
                               </div>
                             </div>
                             <div className="flex gap-[8px] items-center">
-                              <div className="flex flex-col font-suit font-medium justify-center text-[14px] text-[#959ba9] whitespace-nowrap">
+                              <div className="flex flex-col font-suit font-normal justify-center text-[14px] text-[#959ba9] whitespace-nowrap">
                                 <p className="leading-[1.5]">수량 {order.quantity}</p>
                               </div>
                               <div className="flex h-[13px] items-center justify-center w-0">
@@ -242,7 +242,7 @@ export default function MyOrdersPage() {
                                   <div className="h-0 w-[13px] border-t border-[#959ba9]" />
                                 </div>
                               </div>
-                              <div className="flex flex-col font-suit font-medium justify-center text-[14px] text-[#959ba9] whitespace-nowrap">
+                              <div className="flex flex-col font-suit font-normal justify-center text-[14px] text-[#959ba9] whitespace-nowrap">
                                 <p className="leading-[1.5]">{order.color}</p>
                               </div>
                             </div>
@@ -250,16 +250,16 @@ export default function MyOrdersPage() {
                           <div className="flex items-end justify-end w-full">
                             <div className="flex gap-[8px] items-end">
                               <div className="flex flex-col items-center justify-center py-[4px]">
-                                <div className="capitalize flex flex-col font-suit font-medium justify-center text-[14px] text-[#1f2937] whitespace-nowrap">
+                                <div className="capitalize flex flex-col font-suit font-normal justify-center text-[14px] text-[#1f2937] whitespace-nowrap">
                                   <p className="leading-[1.5]">Total</p>
                                 </div>
                               </div>
                               <div className="flex gap-[3px] items-end justify-center">
-                                <div className="flex flex-col font-suit font-bold justify-center text-[22px] text-[#1f2937] whitespace-nowrap">
+                                <div className="flex flex-col font-suit font-semibold justify-center text-[22px] text-[#1f2937] whitespace-nowrap">
                                   <p className="leading-[1.5]">{order.total}</p>
                                 </div>
                                 <div className="flex flex-col items-center justify-center py-[3px] w-[14px]">
-                                  <div className="flex flex-col font-suit font-semibold justify-center text-[18px] text-[#1f2937] w-full">
+                                  <div className="flex flex-col font-suit font-medium justify-center text-[18px] text-[#1f2937] w-full">
                                     <p className="leading-[1.5] whitespace-pre-wrap">원</p>
                                   </div>
                                 </div>

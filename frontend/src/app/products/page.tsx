@@ -5,7 +5,7 @@ export default function ProductsPage() {
   return (
     <Suspense fallback={
       <div className="bg-white min-h-screen flex items-center justify-center">
-        <p className="font-suit font-medium text-[18px] text-[#959ba9]">로딩 중...</p>
+        <p className="font-suit font-normal text-[18px] text-[#959ba9]">로딩 중...</p>
       </div>
     }>
       <ProductsContent />

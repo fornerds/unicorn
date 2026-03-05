@@ -64,7 +64,7 @@ export default function SignupPage() {
               >
                 <ArrowBackIcon width={20} height={16} stroke="#1f2937" />
               </Link>
-              <h2 className="font-suit font-medium text-[20px] text-[#1f2937] leading-[1.45] whitespace-nowrap">
+              <h2 className="font-suit font-normal text-[20px] text-[#1f2937] leading-[1.45] whitespace-nowrap">
                 회원가입
               </h2>
             </div>
@@ -74,10 +74,10 @@ export default function SignupPage() {
             <div className="flex flex-col gap-[30px] items-start w-full">
               <div className="flex flex-col gap-[4px] items-start w-full">
                 <div className="flex gap-[4px] items-start w-full">
-                  <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <label className="font-suit font-semibold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                     이름
                   </label>
-                  <span className="font-suit font-bold text-[14px] text-[#3F7BFC] leading-[1.35]">
+                  <span className="font-suit font-semibold text-[14px] text-[#3F7BFC] leading-[1.35]">
                     *
                   </span>
                 </div>
@@ -102,10 +102,10 @@ export default function SignupPage() {
 
               <div className="flex flex-col gap-[4px] items-start w-full">
                 <div className="flex gap-[4px] items-start w-full">
-                  <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <label className="font-suit font-semibold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                     이메일 주소
                   </label>
-                  <span className="font-suit font-bold text-[14px] text-[#3F7BFC] leading-[1.35]">
+                  <span className="font-suit font-semibold text-[14px] text-[#3F7BFC] leading-[1.35]">
                     *
                   </span>
                 </div>
@@ -116,7 +116,7 @@ export default function SignupPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="이메일 주소"
-                      className="flex-1 font-suit font-semibold text-[16px] text-[#161616] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#bac2d0]"
+                      className="flex-1 font-suit font-medium text-[16px] text-[#161616] leading-[1.35] bg-transparent border-none outline-none placeholder:text-[#bac2d0]"
                     />
                   </div>
                   <div className="flex items-center justify-center shrink-0 w-[16px] h-[16px]">
@@ -144,7 +144,7 @@ export default function SignupPage() {
 
               <div className="flex flex-col gap-[4px] items-start w-full">
                 <div className="flex gap-[4px] items-start w-full">
-                  <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <label className="font-suit font-semibold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                     비밀번호
                   </label>
                 </div>
@@ -173,7 +173,7 @@ export default function SignupPage() {
 
               <div className="flex flex-col gap-[4px] items-start w-full">
                 <div className="flex gap-[4px] items-start w-full">
-                  <label className="font-suit font-bold text-[16px] text-[#161616] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <label className="font-suit font-semibold text-[16px] text-[#161616] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                     비밀번호 확인
                   </label>
                 </div>
@@ -202,7 +202,7 @@ export default function SignupPage() {
 
               <div className="flex flex-col gap-[4px] items-start w-full">
                 <div className="flex gap-[4px] items-start w-full">
-                  <label className="font-suit font-bold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <label className="font-suit font-semibold text-[16px] text-[#4b5563] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                     전화번호
                   </label>
                 </div>
@@ -262,14 +262,14 @@ export default function SignupPage() {
                       )}
                     </div>
                     <div className="flex h-[22px] items-center py-[10px]">
-                      <span className="font-suit font-medium text-[16px] text-[#374151] leading-[1.35]">
+                      <span className="font-suit font-normal text-[16px] text-[#374151] leading-[1.35]">
                         이용약관에 동의합니다.
                       </span>
                     </div>
                   </button>
                   <Link
                     href="#"
-                    className="font-suit font-medium text-[16px] text-[#959ba9] leading-[1.35] underline"
+                    className="font-suit font-normal text-[16px] text-[#959ba9] leading-[1.35] underline"
                   >
                     보기
                   </Link>
@@ -308,14 +308,14 @@ export default function SignupPage() {
                       )}
                     </div>
                     <div className="flex h-[22px] items-center py-[10px]">
-                      <span className="font-suit font-medium text-[16px] text-[#374151] leading-[1.35]">
+                      <span className="font-suit font-normal text-[16px] text-[#374151] leading-[1.35]">
                         개인정보처리방침에 동의합니다.
                       </span>
                     </div>
                   </button>
                   <Link
                     href="#"
-                    className="font-suit font-medium text-[16px] text-[#959ba9] leading-[1.35] underline"
+                    className="font-suit font-normal text-[16px] text-[#959ba9] leading-[1.35] underline"
                   >
                     보기
                   </Link>
@@ -353,7 +353,7 @@ export default function SignupPage() {
                     )}
                   </div>
                   <div className="flex h-[22px] items-center py-[10px]">
-                    <span className="font-suit font-medium text-[16px] text-[#374151] leading-[1.35]">
+                    <span className="font-suit font-normal text-[16px] text-[#374151] leading-[1.35]">
                       마케팅 정보 수신에 동의합니다 (선택)
                     </span>
                   </div>
@@ -371,7 +371,7 @@ export default function SignupPage() {
             </p>
             <Link
               href={ROUTES.LOGIN}
-              className="font-suit font-semibold text-[16px] text-[#1f2937] leading-[1.5] text-center whitespace-nowrap hover:opacity-80 transition-opacity"
+              className="font-suit font-medium text-[16px] text-[#1f2937] leading-[1.5] text-center whitespace-nowrap hover:opacity-80 transition-opacity"
             >
               로그인
             </Link>

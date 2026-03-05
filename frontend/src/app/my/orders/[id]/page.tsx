@@ -69,13 +69,13 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             <div className="flex items-center justify-between w-full">
               <div className="flex gap-[10px] items-center text-[14px] text-[#959ba9]">
                 <div className="flex gap-[4px] items-center justify-center leading-[20px]">
-                  <p className="font-suit font-semibold">주문번호</p>
-                  <p className="font-suit font-medium">{orderNumber}</p>
+                  <p className="font-suit font-medium">주문번호</p>
+                  <p className="font-suit font-normal">{orderNumber}</p>
                 </div>
-                <div className="flex flex-col font-suit font-semibold justify-center whitespace-nowrap">
+                <div className="flex flex-col font-suit font-medium justify-center whitespace-nowrap">
                   <p className="leading-[1.5]">|</p>
                 </div>
-                <div className="flex flex-col font-suit font-semibold justify-center whitespace-nowrap">
+                <div className="flex flex-col font-suit font-medium justify-center whitespace-nowrap">
                   <p className="leading-[1.5]">{orderDate}</p>
                 </div>
               </div>
@@ -83,12 +83,12 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 href={ROUTES.CONTACT}
                 className="flex h-[36px] items-center justify-center hover:opacity-80 transition-opacity"
               >
-                <p className="font-suit font-semibold text-[14px] text-[#959ba9] leading-[1.5] underline">
+                <p className="font-suit font-medium text-[14px] text-[#959ba9] leading-[1.5] underline">
                   취소문의
                 </p>
               </Link>
             </div>
-            <h1 className="font-suit font-medium text-[32px] text-[#1f2937] leading-[1.35] w-full">
+            <h1 className="font-suit font-normal text-[32px] text-[#1f2937] leading-[1.35] w-full">
               주문 상세
             </h1>
           </div>
@@ -121,7 +121,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                             <Icon width={24} height={24} stroke={iconColor} strokeWidth={1.5} />
                           )}
                         </div>
-                        <p className={`font-suit font-medium text-[16px] leading-[1.35] text-center min-w-full ${textColor}`}>
+                        <p className={`font-suit font-normal text-[16px] leading-[1.35] text-center min-w-full ${textColor}`}>
                           {step.label}
                         </p>
                       </div>
@@ -160,7 +160,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
           <div className="flex flex-col gap-[70px] items-start w-full">
             <div className="flex flex-col gap-[18px] items-start w-full">
-              <h2 className="font-suit font-medium text-[22px] text-[#1f2937] leading-[1.5]">
+              <h2 className="font-suit font-normal text-[22px] text-[#1f2937] leading-[1.5]">
                 주문 상품
               </h2>
               <div className="flex flex-col gap-[16px] items-start w-full">
@@ -181,12 +181,12 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                       <div className="flex flex-1 flex-col h-[104px] items-start justify-between">
                         <div className="flex flex-col items-start w-full">
                           <div className="flex items-center w-full">
-                            <p className="flex-1 font-suit font-medium text-[20px] text-[#1f2937] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
+                            <p className="flex-1 font-suit font-normal text-[20px] text-[#1f2937] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap">
                               {item.name}
                             </p>
                           </div>
                           <div className="flex gap-[8px] items-center">
-                            <p className="font-suit font-medium text-[14px] text-[#959ba9] leading-[1.5] whitespace-nowrap">
+                            <p className="font-suit font-normal text-[14px] text-[#959ba9] leading-[1.5] whitespace-nowrap">
                               수량 {item.quantity}
                             </p>
                             <div className="flex h-[13px] items-center justify-center w-0">
@@ -194,13 +194,13 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                                 <div className="h-0 w-[13px] border-t border-[#959ba9]" />
                               </div>
                             </div>
-                            <p className="font-suit font-medium text-[14px] text-[#959ba9] leading-[1.5] whitespace-nowrap">
+                            <p className="font-suit font-normal text-[14px] text-[#959ba9] leading-[1.5] whitespace-nowrap">
                               {item.color}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-end justify-end w-full">
-                          <p className="font-suit font-semibold text-[20px] text-[#1f2937] leading-[1.5]">
+                          <p className="font-suit font-medium text-[20px] text-[#1f2937] leading-[1.5]">
                             {item.price.toLocaleString()}원
                           </p>
                         </div>
@@ -215,24 +215,24 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="flex flex-col gap-[18px] items-start w-full">
-              <h2 className="font-suit font-medium text-[22px] text-[#1f2937] leading-[1.5]">
+              <h2 className="font-suit font-normal text-[22px] text-[#1f2937] leading-[1.5]">
                 배송지
               </h2>
               <div className="flex flex-col gap-[6px] items-start px-[2px] text-[#4b5563] w-full">
-                <p className="font-suit font-medium text-[20px] leading-[24px] max-w-[400px] overflow-hidden text-ellipsis">
+                <p className="font-suit font-normal text-[20px] leading-[24px] max-w-[400px] overflow-hidden text-ellipsis">
                   {mockShippingAddress.name}
                 </p>
-                <p className="font-suit font-medium text-[16px] leading-[20px] max-w-[400px] overflow-hidden text-ellipsis">
+                <p className="font-suit font-normal text-[16px] leading-[20px] max-w-[400px] overflow-hidden text-ellipsis">
                   {mockShippingAddress.phone}
                 </p>
-                <p className="font-suit font-medium text-[16px] leading-[20px]">
+                <p className="font-suit font-normal text-[16px] leading-[20px]">
                   {mockShippingAddress.address}
                 </p>
               </div>
             </div>
 
             <div className="flex flex-col gap-[18px] items-start rounded-[16px] w-full">
-              <h2 className="font-suit font-medium text-[22px] text-[#1f2937] leading-[1.5]">
+              <h2 className="font-suit font-normal text-[22px] text-[#1f2937] leading-[1.5]">
                 결제 금액
               </h2>
               <div className="flex flex-col gap-[10px] items-start px-[2px] w-full">
@@ -241,7 +241,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                     <p className="font-suit font-regular text-[#959ba9] leading-[1.5]">
                       총 상품 가격
                     </p>
-                    <p className="font-suit font-semibold text-[#1f2937] leading-[1.5]">
+                    <p className="font-suit font-medium text-[#1f2937] leading-[1.5]">
                       {totalProductPrice.toLocaleString()}원
                     </p>
                   </div>
@@ -249,7 +249,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                     <p className="font-suit font-regular text-[#959ba9] leading-[1.5]">
                       배송비
                     </p>
-                    <p className="font-suit font-semibold text-[#1f2937] leading-[1.5]">
+                    <p className="font-suit font-medium text-[#1f2937] leading-[1.5]">
                       {shippingFee.toLocaleString()}원
                     </p>
                   </div>
@@ -257,17 +257,17 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                     <p className="font-suit font-regular text-[#959ba9] leading-[1.5]">
                       총 할인율
                     </p>
-                    <p className="font-suit font-semibold text-[#1f2937] leading-[1.5]">
+                    <p className="font-suit font-medium text-[#1f2937] leading-[1.5]">
                       {discount.toLocaleString()}원
                     </p>
                   </div>
                 </div>
                 <div className="h-0 w-full border-t border-[#E5E7EB]" />
                 <div className="flex items-center justify-between text-[#1f2937] w-full whitespace-nowrap">
-                  <p className="font-suit font-semibold text-[20px] leading-[1.5]">
+                  <p className="font-suit font-medium text-[20px] leading-[1.5]">
                     총 결제 금액
                   </p>
-                  <p className="font-suit font-bold text-[28px] leading-[1.5]">
+                  <p className="font-suit font-semibold text-[28px] leading-[1.5]">
                     {totalPrice.toLocaleString()}원
                   </p>
                 </div>

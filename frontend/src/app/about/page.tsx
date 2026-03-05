@@ -157,10 +157,10 @@ export default function AboutPage() {
           style={{ y: textY, opacity: textOpacity }}
           className="absolute inset-0 flex flex-col gap-[10px] items-start justify-center px-[20px] md:px-[40px] lg:px-[141px] z-10"
         >
-          <h1 className="font-suit font-extralight text-[60px] md:text-[90px] leading-[normal] text-black whitespace-nowrap">
+          <h1 className="font-suit font-thin text-[60px] md:text-[90px] leading-[normal] text-black whitespace-nowrap">
             Company
           </h1>
-          <p className="font-suit font-light text-[20px] md:text-[28px] leading-[normal] text-black max-w-[865px]">
+          <p className="font-suit font-extralight text-[20px] md:text-[28px] leading-[normal] text-black max-w-[865px]">
             더 나은 내일을 제안하는 AI 로봇 큐레이션 서비스
           </p>
         </motion.div>
@@ -176,7 +176,7 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="flex flex-col gap-[50px] items-start w-full"
           >
-            <h2 className="font-suit font-light text-[40px] md:text-[60px] leading-[normal] text-black">
+            <h2 className="font-suit font-extralight text-[40px] md:text-[60px] leading-[normal] text-black">
               Value
             </h2>
             <div className="flex flex-col lg:flex-row gap-[30px] items-start w-full">
@@ -188,10 +188,10 @@ export default function AboutPage() {
                 className="bg-[#f8f8f8] border border-[#eee] flex flex-col gap-[10px] items-start px-[30px] md:px-[50px] py-[30px] rounded-[26px] w-full lg:flex-1 lg:min-w-[682px] h-[463px] relative overflow-hidden"
               >
                 <div className="flex flex-col gap-[16px] items-start w-full z-10">
-                  <h3 className="font-suit font-semibold text-[28px] md:text-[36px] leading-[normal] text-black">
+                  <h3 className="font-suit font-medium text-[28px] md:text-[36px] leading-[normal] text-black">
                     Mission
                   </h3>
-                  <div className="flex flex-col font-suit font-extralight text-[16px] md:text-[20px] leading-[normal] tracking-[-0.6px] text-black">
+                  <div className="flex flex-col font-suit font-thin text-[16px] md:text-[20px] leading-[normal] tracking-[-0.6px] text-black">
                     <p className="mb-0">
                       AI 기술과 로봇 공학의 융합으로 인류의 삶을 더욱 편리하고 안전하게 만드는 것이 우리의 사명입니다.
                     </p>
@@ -245,10 +245,10 @@ export default function AboutPage() {
                   transition={{ duration: 0.6, delay: 0.4 }}
                   className="flex flex-col gap-[16px] items-start px-[20px] w-full"
                 >
-                  <h3 className="font-suit font-semibold text-[28px] md:text-[36px] leading-[normal] text-black">
+                  <h3 className="font-suit font-medium text-[28px] md:text-[36px] leading-[normal] text-black">
                     Vision
                   </h3>
-                  <div className="flex flex-col font-suit font-extralight text-[16px] md:text-[20px] leading-[normal] tracking-[-0.6px] text-black">
+                  <div className="flex flex-col font-suit font-thin text-[16px] md:text-[20px] leading-[normal] tracking-[-0.6px] text-black">
                     <p className="mb-0">
                       2030년까지 글로벌 로봇 시장의 선도 기업이 되어,
                     </p>
@@ -267,7 +267,7 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="flex flex-col gap-[50px] items-center px-[20px] w-full"
           >
-            <h2 className="font-suit font-light text-[40px] md:text-[60px] leading-[normal] text-black w-full text-left">
+            <h2 className="font-suit font-extralight text-[40px] md:text-[60px] leading-[normal] text-black w-full text-left">
               Innovation
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[30px] md:gap-[40px] items-start w-full">
@@ -299,10 +299,10 @@ export default function AboutPage() {
                     </motion.div>
                   </div>
                   <div className="flex flex-col gap-[12px] items-start text-black w-full">
-                    <h3 className="font-suit font-medium text-[24px] md:text-[28px] leading-[normal]">
+                    <h3 className="font-suit font-normal text-[24px] md:text-[28px] leading-[normal]">
                       {card.title}
                     </h3>
-                    <p className="font-suit font-extralight text-[14px] md:text-[16px] leading-[normal]">
+                    <p className="font-suit font-thin text-[14px] md:text-[16px] leading-[normal]">
                       {card.description}
                     </p>
                   </div>
@@ -322,10 +322,10 @@ export default function AboutPage() {
           />
           <div className="relative z-10 flex flex-col gap-[21px] items-start px-[20px] md:px-[40px] lg:px-[143px] pt-[70px]">
             <div className="flex flex-col gap-[21px] items-start w-full max-w-[850px]">
-              <h2 className="font-suit font-semibold text-[32px] md:text-[45px] leading-[normal] text-[#1f2937]">
+              <h2 className="font-suit font-medium text-[32px] md:text-[45px] leading-[normal] text-[#1f2937]">
                 Detail
               </h2>
-              <div className="flex flex-col font-suit font-extralight text-[18px] md:text-[22px] leading-[normal] tracking-[-0.66px] text-[#1f2937]">
+              <div className="flex flex-col font-suit font-thin text-[18px] md:text-[22px] leading-[normal] tracking-[-0.66px] text-[#1f2937]">
                 <p className="mb-0">
                   Unicorn과 함께 로봇 기술의 새로운 가능성을 탐험해보세요.
                 </p>
@@ -338,13 +338,13 @@ export default function AboutPage() {
                 className="bg-[#1f2937] flex h-[49px] items-center justify-center gap-[8px] px-[32px] py-[12px] rounded-[8px] hover:opacity-90 transition-opacity"
               >
                 <EmailIcon width={16} height={16} fill="white" />
-                <p className="font-suit font-medium text-[16px] leading-[24px] text-white text-center whitespace-nowrap">
+                <p className="font-suit font-normal text-[16px] leading-[24px] text-white text-center whitespace-nowrap">
                   문의하기
                 </p>
               </Link>
               <button className="bg-white border-[0.5px] border-[#1f2937] flex h-[49px] items-center justify-center gap-[8px] px-[32px] py-[12px] rounded-[8px] hover:opacity-90 transition-opacity">
                 <DownloadIcon width={16} height={16} fill="#1f2937" />
-                <p className="font-suit font-medium text-[16px] leading-[24px] text-[#1f2937] text-center whitespace-nowrap">
+                <p className="font-suit font-normal text-[16px] leading-[24px] text-[#1f2937] text-center whitespace-nowrap">
                   회사소개서 다운로드
                 </p>
               </button>

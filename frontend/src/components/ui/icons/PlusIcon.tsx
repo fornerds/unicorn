@@ -1,4 +1,4 @@
-import { cn } from '@/utils/cn';
+import { cn } from "@/utils/cn";
 
 interface PlusIconProps {
   className?: string;
@@ -12,7 +12,7 @@ export const PlusIcon = ({
   className,
   width = 15,
   height = 15,
-  stroke = 'currentColor',
+  stroke = "currentColor",
   strokeWidth = 1.5,
 }: PlusIconProps) => {
   return (

@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { LogoIntroOverlay } from '@/components/layout/LogoIntroOverlay';
 import { HeaderProvider } from '@/contexts/HeaderContext';
 import { ROUTES } from '@/utils/constants';
 
@@ -41,6 +42,7 @@ export const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <HeaderProvider>
+      <LogoIntroOverlay />
       <div style={{ display: 'contents' }}>
         <Header />
         <div className="flex flex-col min-h-screen" style={{ overflow: 'visible' }}>

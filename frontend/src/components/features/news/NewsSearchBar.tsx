@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { withBasePath } from '@/utils/assets';
+import Image from "next/image";
+import { withBasePath } from "@/utils/assets";
 
 interface NewsSearchBarProps {
   value: string;
@@ -16,11 +16,11 @@ export const NewsSearchBar = ({ value, onChange }: NewsSearchBarProps) => {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="원하는 내용을 검색해 보세요."
-        className="flex-1 font-suit font-normal text-[18px] leading-[1.5] text-[#959ba9] bg-transparent border-none outline-none placeholder:text-[#959ba9]"
+        className="flex-1 font-suit font-normal text-[15px] leading-[1.5] text-[#959ba9] bg-transparent border-none outline-none placeholder:text-[#959ba9]"
       />
       <div className="flex items-center justify-center p-[2px] rounded-[8px] w-[24px] h-[24px]">
         <Image
-          src={withBasePath('/icons/search.svg')}
+          src={withBasePath("/icons/search.svg")}
           alt="검색"
           width={18}
           height={18}
