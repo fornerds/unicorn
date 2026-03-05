@@ -26,6 +26,10 @@ Thumbs.db
 .env.local
 .env*.local
 
+# 로컬 테스트용 폴더 (커밋 제외)
+*-test/
+*-test-*/
+
 # MySQL data (bind mount 시 사용)
 data/
 

@@ -57,6 +57,19 @@ app:
     domestic-pg-enabled: ${DOMESTIC_PG_ENABLED:true}
   payment:
     redirect-url-base: ${PAYMENT_REDIRECT_URL_BASE:https://pg.example.com/redirect}
+    # 토스페이먼츠: API 개별 연동 키(일반결제, 국내). 결제창 연동 시 사용.
+    toss:
+      client-key: ${TOSS_PAYMENTS_CLIENT_KEY:}
+      secret-key: ${TOSS_PAYMENTS_SECRET_KEY:}
+    # PayPal: 직접 연동 (토스 경유 없음). 개발자센터에서 Client ID, Secret 발급.
+    paypal:
+      client-id: ${PAYPAL_CLIENT_ID:}
+      client-secret: ${PAYPAL_CLIENT_SECRET:}
+      sandbox: ${PAYPAL_SANDBOX:true}
+    # 환율: 1 USD = ? KRW. 0이면 open.er-api.com 자동 조회(1시간 캐시).
+    exchange-rate:
+      krw-per-usd: ${EXCHANGE_RATE_KRW_PER_USD:0}
+      api-url: ${EXCHANGE_RATE_API_URL:https://open.er-api.com/v6/latest/USD}
   oauth:
     callback-base-url: ${OAUTH_CALLBACK_BASE_URL:http://localhost:18080/api/v1}
     frontend-redirect-url: ${OAUTH_FRONTEND_REDIRECT_URL:http://localhost:3000}

@@ -24,13 +24,14 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    /** 비로그인 조회 허용: 카테고리, 제품 목록/상세, 기분 질문 목록, 뉴스·태그 */
+    /** 비로그인 조회 허용: 카테고리, 제품 목록/상세, 기분 질문 목록, 뉴스·태그, 결제 위젯 설정 */
     private static final String[] PUBLIC_GET_PATHS = {
             "/categories", "/categories/**",
             "/products", "/products/**",
             "/ai/mood-questions",
             "/news", "/news/**",
-            "/tags"
+            "/tags",
+            "/payments/widget-config", "/payments/toss-client-key", "/payments/paypal-client-id", "/payments/exchange-rate"
     };
 
     /** 비로그인도 허용. POST /ai/chat 포함(추후 비로그인 사용자 횟수 제한 시 서비스/필터에서 처리). */
