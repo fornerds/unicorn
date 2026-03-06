@@ -1,39 +1,125 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { NewsCard } from "@/components/features/news/NewsCard";
-import { mockNewsData } from "@/data/mockNews";
+import { NewsCardSkeleton } from "@/components/features/news/NewsCardSkeleton";
+import { NewsItem } from "@/data/mockNews";
 import { ROUTES } from "@/utils/constants";
 import { withBasePath } from "@/utils/assets";
+import { apiFetch } from "@/lib/api";
 
-export async function generateStaticParams() {
-  return mockNewsData.map((news) => ({
-    id: news.id,
-  }));
+interface ApiTag {
+  id: number;
+  name: string;
 }
 
-export default function NewsDetailPage({ params }: { params: { id: string } }) {
-  const newsId = params.id;
+interface ApiRelatedArticle {
+  id: number;
+  imageUrl: string;
+  title: string;
+  content: string;
+  createdAt: string;
+}
 
-  const news = mockNewsData.find((item) => item.id === newsId);
+interface NewsDetailResponse {
+  data: {
+    id: number;
+    imageUrl: string;
+    title: string;
+    content: string;
+    viewCount: number;
+    publishedAt: string;
+    createdAt: string;
+    tags: ApiTag[];
+    relatedArticles: ApiRelatedArticle[];
+  };
+}
 
-  if (!news) {
-    notFound();
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function toNewsItem(item: ApiRelatedArticle): NewsItem {
+  return {
+    id: String(item.id),
+    title: item.title,
+    description: item.content,
+    date: formatDate(item.createdAt),
+    imageUrl: item.imageUrl || "/images/NEWS01.png",
+    tags: [],
+    views: 0,
+    likes: 0,
+  };
+}
+
+export default function NewsDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const newsId = params.id as string;
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [news, setNews] = useState<NewsDetailResponse["data"] | null>(null);
+  const [relatedNews, setRelatedNews] = useState<NewsItem[]>([]);
+
+  useEffect(() => {
+    const fetchNewsDetail = async () => {
+      setIsLoading(true);
+      try {
+        const res = await apiFetch<NewsDetailResponse>(`/news/${newsId}`);
+        setNews(res.data);
+        setRelatedNews(
+          (res.data.relatedArticles || []).slice(0, 4).map(toNewsItem),
+        );
+      } catch {
+        router.replace(ROUTES.NEWS);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchNewsDetail();
+  }, [newsId, router]);
+
+  if (isLoading) {
+    return (
+      <div className="bg-white min-h-screen">
+        <div className="flex flex-col gap-[188px] items-center pb-[75px] pt-[8px] w-full max-w-[1167px] mx-auto">
+          <div className="flex flex-col gap-[45px] items-start w-full max-w-[1167px]">
+            <div className="flex flex-col gap-[15px] items-start w-full">
+              <div className="h-[29px] w-[140px] bg-[#f3f4f6] rounded animate-pulse" />
+              <div className="h-[599.25px] w-full bg-[#f3f4f6] rounded-[9px] animate-pulse" />
+            </div>
+            <div className="flex items-start justify-between px-[3px] w-full">
+              <div className="flex flex-col gap-[15px] items-start shrink-0">
+                <div className="h-[36px] w-[300px] bg-[#f3f4f6] rounded animate-pulse" />
+                <div className="h-[22px] w-[200px] bg-[#f3f4f6] rounded animate-pulse" />
+              </div>
+              <div className="flex flex-col gap-[16px] w-[772.5px]">
+                <div className="h-[20px] w-full bg-[#f3f4f6] rounded animate-pulse" />
+                <div className="h-[20px] w-full bg-[#f3f4f6] rounded animate-pulse" />
+                <div className="h-[20px] w-[60%] bg-[#f3f4f6] rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-[15px] items-start w-full">
+            <div className="h-[27px] w-[100px] bg-[#f3f4f6] rounded animate-pulse" />
+            <div className="flex flex-wrap gap-[11px] items-start w-full">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="w-[283px]">
+                  <NewsCardSkeleton />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  const relatedNews = mockNewsData
-    .filter((item) => item.id !== newsId)
-    .slice(0, 4);
-
-  const defaultContent = `정밀도 99.9%를 자랑하는 차세대 의료용 수술 로봇이 출시되었습니다. AI 기반 실시간 분석 시스템과 3D 영상 기술을 탑재하여 더욱 안전하고 정확한 수술을 지원합니다. Unicorn은 지속적인 기술 혁신을 통해 로봇 산업의 새로운 기준을 제시하고 있습니다. 이번 발표는 우리의 기술력과 비전을 다시 한번 입증하는 중요한 이정표가 될 것입니다.
-
-최첨단 AI 기술과 정밀 제어 시스템을 결합하여 개발된 이 솔루션은 산업 현장의 생산성과 안전성을 동시에 향상시킬 수 있는 혁신적인 기술입니다. 특히 실시간 데이터 분석과 자율 학습 기능을 통해 지속적으로 성능이 개선됩니다. Unicorn의 연구개발팀은 앞으로도 고객의 니즈를 반영한 혁신적인 제품과 서비스를 지속적으로 선보일 예정입니다. 로봇 기술의 미래를 함께 만들어가겠습니다. 이번 발표를 시작으로 다양한 산업 분야로의 확대 적용을 계획하고 있습니다. 특히 의료, 물류, 제조 등 핵심 산업 분야에서의 실증 테스트를 진행하며, 고객 피드백을 적극 반영하여 제품을 고도화할 예정입니다.
-
-정밀도 99.9%를 자랑하는 차세대 의료용 수술 로봇이 출시되었습니다. AI 기반 실시간 분석 시스템과 3D 영상 기술을 탑재하여 더욱 안전하고 정확한 수술을 지원합니다. Unicorn은 지속적인 기술 혁신을 통해 로봇 산업의 새로운 기준을 제시하고 있습니다. 이번 발표는 우리의 기술력과 비전을 다시 한번 입증하는 중요한 이정표가 될 것입니다.
-
-최첨단 AI 기술과 정밀 제어 시스템을 결합하여 개발된 이 솔루션은 산업 현장의 생산성과 안전성을 동시에 향상시킬 수 있는 혁신적인 기술입니다. 특히 실시간 데이터 분석과 자율 학습 기능을 통해 지속적으로 성능이 개선됩니다. Unicorn의 연구개발팀은 앞으로도 고객의 니즈를 반영한 혁신적인 제품과 서비스를 지속적으로 선보일 예정입니다. 로봇 기술의 미래를 함께 만들어가겠습니다. 이번 발표를 시작으로 다양한 산업 분야로의 확대 적용을 계획하고 있습니다. 특히 의료, 물류, 제조 등 핵심 산업 분야에서의 실증 테스트를 진행하며, 고객 피드백을 적극 반영하여 제품을 고도화할 예정입니다. 정밀도 99.9%를 자랑하는 차세대 의료용 수술 로봇이 출시되었습니다. AI 기반 실시간 분석 시스템과 3D 영상 기술을 탑재하여 더욱 안전하고 정확한 수술을 지원합니다. Unicorn은 지속적인 기술 혁신을 통해 로봇 산업의 새로운 기준을 제시하고 있습니다. 이번 발표는 우리의 기술력과 비전을 다시 한번 입증하는 중요한 이정표가 될 것입니다.`;
-
-  const content = news.content || defaultContent;
+  if (!news) return null;
 
   return (
     <div className="bg-white min-h-screen">
@@ -55,8 +141,8 @@ export default function NewsDetailPage({ params }: { params: { id: string } }) {
                   <path
                     d="M22.9585 14.4997L6.04183 14.4997M6.04183 14.4997L12.2345 20.8438M6.04183 14.4997L12.2345 8.15625"
                     stroke="#374151"
-                    stroke-width="1.4"
-                    stroke-linejoin="round"
+                    strokeWidth="1.4"
+                    strokeLinejoin="round"
                   />
                 </svg>
                 <p className="font-suit font-medium ml-[6px] text-[20px] leading-[1.45] text-[#1f2937] whitespace-nowrap">
@@ -66,7 +152,11 @@ export default function NewsDetailPage({ params }: { params: { id: string } }) {
             </div>
             <div className="h-[599.25px] relative rounded-[9px] w-full overflow-hidden">
               <Image
-                src={withBasePath(news.imageUrl)}
+                src={
+                  news.imageUrl?.startsWith("http")
+                    ? news.imageUrl
+                    : withBasePath(news.imageUrl || "/images/NEWS01.png")
+                }
                 alt={news.title}
                 fill
                 className="object-cover rounded-[9px]"
@@ -85,55 +175,58 @@ export default function NewsDetailPage({ params }: { params: { id: string } }) {
                 ))}
               </div>
               <div className="flex font-suit font-medium gap-[19.5px] items-center leading-[1.5] text-[15px] text-[#6b7280] w-full">
-                <p className="leading-[1.5] whitespace-nowrap">{news.date}</p>
                 <p className="leading-[1.5] whitespace-nowrap">
-                  조회수 {news.views}
+                  {formatDate(news.publishedAt || news.createdAt)}
+                </p>
+                <p className="leading-[1.5] whitespace-nowrap">
+                  조회수 {news.viewCount.toLocaleString()}
                 </p>
               </div>
             </div>
 
             <div className="flex flex-col gap-[58.5px] items-start text-[18px] w-[772.5px]">
               <div className="font-suit font-normal leading-[1.7] min-w-full text-[#374151] whitespace-pre-wrap">
-                {content.split("\n").map((paragraph, index) => (
-                  <p
-                    key={index}
-                    className={paragraph.trim() === "" ? "mb-0" : "mb-0"}
-                  >
+                {news.content.split("\n").map((paragraph, index) => (
+                  <p key={index}>
                     {paragraph || "\u00A0"}
                   </p>
                 ))}
               </div>
-              <div className="flex flex-col font-suit font-medium leading-[1.5] text-[18px] text-[#b5b8c0]">
-                <p className="leading-[1.5] break-words">
-                  {news.tags.map((tag) => `#${tag}`).join("  ")}
-                </p>
-              </div>
+              {news.tags && news.tags.length > 0 && (
+                <div className="flex flex-col font-suit font-medium leading-[1.5] text-[18px] text-[#b5b8c0]">
+                  <p className="leading-[1.5] break-words">
+                    {news.tags.map((tag) => `#${tag.name}`).join("  ")}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-[15px] items-start w-full">
-          <div className="flex items-end justify-between px-[1.5px] w-full">
-            <div className="flex items-center justify-center px-[3px]">
-              <h3 className="font-suit font-semibold leading-[1.5] text-[18px] text-[#374151] whitespace-nowrap">
-                관련 아티클
-              </h3>
-            </div>
-            <Link
-              href={ROUTES.NEWS}
-              className="flex flex-col font-suit font-medium leading-[1.5] text-[12px] text-[#959ba9] whitespace-nowrap hover:opacity-80 transition-opacity"
-            >
-              <p className="leading-[1.5]">더보기</p>
-            </Link>
-          </div>
-          <div className="flex flex-wrap gap-[11px] items-start justify-between w-full max-w-[1167px]">
-            {relatedNews.map((item) => (
-              <div key={item.id} className="w-[283px]">
-                <NewsCard news={item} />
+        {relatedNews.length > 0 && (
+          <div className="flex flex-col gap-[15px] items-start w-full">
+            <div className="flex items-end justify-between px-[1.5px] w-full">
+              <div className="flex items-center justify-center px-[3px]">
+                <h3 className="font-suit font-semibold leading-[1.5] text-[18px] text-[#374151] whitespace-nowrap">
+                  관련 아티클
+                </h3>
               </div>
-            ))}
+              <Link
+                href={ROUTES.NEWS}
+                className="flex flex-col font-suit font-medium leading-[1.5] text-[12px] text-[#959ba9] whitespace-nowrap hover:opacity-80 transition-opacity"
+              >
+                <p className="leading-[1.5]">더보기</p>
+              </Link>
+            </div>
+            <div className="flex flex-wrap gap-[11px] items-start justify-between w-full max-w-[1167px]">
+              {relatedNews.map((item) => (
+                <div key={item.id} className="w-[283px]">
+                  <NewsCard news={item} />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

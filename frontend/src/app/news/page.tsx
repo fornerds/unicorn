@@ -1,88 +1,163 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { NewsCard } from "@/components/features/news/NewsCard";
 import { NewsCardSkeleton } from "@/components/features/news/NewsCardSkeleton";
 import { NewsSearchBar } from "@/components/features/news/NewsSearchBar";
-import { NewsTagFilter } from "@/components/features/news/NewsTagFilter";
 import { NewsSortDropdown } from "@/components/features/news/NewsSortDropdown";
 import { NewsPagination } from "@/components/features/news/NewsPagination";
-import { mockNewsData } from "@/data/mockNews";
+import { NewsItem } from "@/data/mockNews";
+import { apiFetch } from "@/lib/api";
 
 type SortOption = "latest" | "popular" | "recommended";
 
+interface ApiNewsItem {
+  id: number;
+  imageUrl: string;
+  title: string;
+  content: string;
+  createdAt: string;
+}
+
+interface NewsListResponse {
+  data: {
+    items: ApiNewsItem[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+}
+
+interface NewsSimpleResponse {
+  data: ApiNewsItem[];
+}
+
+function toNewsItem(item: ApiNewsItem): NewsItem {
+  const d = new Date(item.createdAt);
+  const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return {
+    id: String(item.id),
+    title: item.title,
+    description: item.content,
+    date,
+    imageUrl: item.imageUrl || "/images/NEWS01.png",
+    tags: [],
+    views: 0,
+    likes: 0,
+  };
+}
+
 export default function NewsPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTag, setSelectedTag] = useState("전체");
   const [sortOption, setSortOption] = useState<SortOption>("latest");
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFeaturedLoading, setIsFeaturedLoading] = useState(true);
+
+  const [newsList, setNewsList] = useState<NewsItem[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [featuredNews, setFeaturedNews] = useState<NewsItem[]>([]);
 
   const itemsPerPage = 12;
 
-  const filteredNews = useMemo(() => {
-    let filtered = [...mockNewsData];
-
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (news) =>
-          news.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          news.description.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-    }
-
-    if (selectedTag !== "전체") {
-      filtered = filtered.filter((news) => news.tags.includes(selectedTag));
-    }
-
-    switch (sortOption) {
-      case "popular":
-        filtered.sort((a, b) => b.views - a.views);
-        break;
-      case "recommended":
-        filtered.sort((a, b) => b.likes - a.likes);
-        break;
-      case "latest":
-      default:
-        filtered.sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  // 관리자 지정 인기글 조회 (GET /news/featured)
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      setIsFeaturedLoading(true);
+      try {
+        const res = await apiFetch<NewsSimpleResponse>(
+          "/news/featured?limit=3",
         );
-        break;
+        setFeaturedNews(res.data.map(toNewsItem));
+      } catch {
+        setFeaturedNews([]);
+      } finally {
+        setIsFeaturedLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
+  // 뉴스 목록 조회
+  const fetchNews = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      if (sortOption === "popular") {
+        // 조회수 순 인기글 (GET /news/popular)
+        const res = await apiFetch<NewsSimpleResponse>(
+          `/news/popular?limit=50`,
+        );
+        let items = res.data.map(toNewsItem);
+        // 클라이언트 검색 (popular 엔드포인트는 keyword 미지원)
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          items = items.filter(
+            (n) =>
+              n.title.toLowerCase().includes(q) ||
+              n.description.toLowerCase().includes(q),
+          );
+        }
+        setNewsList(items);
+        setTotalCount(items.length);
+        setTotalPages(1);
+      } else if (sortOption === "recommended") {
+        // 관리자 지정 인기글 (GET /news/featured)
+        const res = await apiFetch<NewsSimpleResponse>(
+          `/news/featured?limit=50`,
+        );
+        let items = res.data.map(toNewsItem);
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          items = items.filter(
+            (n) =>
+              n.title.toLowerCase().includes(q) ||
+              n.description.toLowerCase().includes(q),
+          );
+        }
+        setNewsList(items);
+        setTotalCount(items.length);
+        setTotalPages(1);
+      } else {
+        // 최신순 (GET /news) - 서버 페이지네이션 + 검색
+        const params = new URLSearchParams();
+        params.set("page", String(currentPage));
+        params.set("limit", String(itemsPerPage));
+        if (searchQuery) {
+          params.set("keyword", searchQuery);
+        }
+        const res = await apiFetch<NewsListResponse>(
+          `/news?${params.toString()}`,
+        );
+        setNewsList(res.data.items.map(toNewsItem));
+        setTotalCount(res.data.pagination.total);
+        setTotalPages(res.data.pagination.totalPages);
+      }
+    } catch {
+      setNewsList([]);
+      setTotalCount(0);
+      setTotalPages(1);
+    } finally {
+      setIsLoading(false);
     }
-
-    return filtered;
-  }, [searchQuery, selectedTag, sortOption]);
-
-  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
-  const paginatedNews = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredNews.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredNews, currentPage, itemsPerPage]);
-
-  const popularNews = useMemo(() => {
-    return [...mockNewsData].sort((a, b) => b.views - a.views).slice(0, 3);
-  }, []);
-
-  const allTags = useMemo(() => {
-    const tags = new Set<string>(["전체"]);
-    mockNewsData.forEach((news) => {
-      news.tags.forEach((tag) => tags.add(tag));
-    });
-    return Array.from(tags);
-  }, []);
+  }, [sortOption, currentPage, searchQuery, itemsPerPage]);
 
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, [searchQuery, selectedTag, sortOption, currentPage]);
+    fetchNews();
+  }, [fetchNews]);
+
+  // 정렬 또는 검색 변경 시 페이지 1로 리셋
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortOption, searchQuery]);
 
   return (
     <div className="bg-white min-h-screen">
       <div className="flex flex-col gap-[120px] items-center pb-[75px] pt-[100px] w-full max-w-[1167px] mx-auto">
-        {/* 상단 타이틀 + 검색 + 태그 */}
+        {/* 상단 타이틀 + 검색 */}
         <div className="flex flex-col gap-[60px] items-center w-full max-w-[1167px]">
           <div className="flex flex-col gap-[30px] items-center w-full">
             <div className="flex flex-col items-center">
@@ -101,22 +176,15 @@ export default function NewsPage() {
             <div className="w-full max-w-[344px]">
               <NewsSearchBar value={searchQuery} onChange={setSearchQuery} />
             </div>
-            <div className="flex items-center justify-center w-full">
-              <NewsTagFilter
-                tags={allTags}
-                selectedTag={selectedTag}
-                onTagSelect={setSelectedTag}
-              />
-            </div>
           </div>
 
-          {!searchQuery && (
+          {!searchQuery && sortOption === "latest" && (
             <div className="flex flex-col gap-[15px] items-start w-full">
               <h3 className="font-suit font-semibold text-[18px] leading-[1.5] text-[#374151]">
                 최신 인기글
               </h3>
               <div className="flex flex-wrap gap-[30px_10.5px] items-center w-full">
-                {isLoading ? (
+                {isFeaturedLoading ? (
                   <>
                     <div className="w-[283px]">
                       <NewsCardSkeleton />
@@ -128,12 +196,16 @@ export default function NewsPage() {
                       <NewsCardSkeleton />
                     </div>
                   </>
-                ) : (
-                  popularNews.map((news) => (
+                ) : featuredNews.length > 0 ? (
+                  featuredNews.map((news) => (
                     <div key={news.id} className="w-[283px]">
                       <NewsCard news={news} />
                     </div>
                   ))
+                ) : (
+                  <p className="font-suit text-[14px] text-[#959ba9] leading-[1.5]">
+                    등록된 인기글이 없습니다.
+                  </p>
                 )}
               </div>
             </div>
@@ -145,14 +217,16 @@ export default function NewsPage() {
           <div className="flex flex-col gap-[8px] items-start w-full">
             <div className="flex items-center justify-between px-[3px] py-[4.5px] w-full">
               <p className="font-suit font-medium text-[15px] leading-[1.5] text-[#6b7280]">
-                총 {filteredNews.length}개의 글
+                총 {totalCount}개의 글
               </p>
               <NewsSortDropdown value={sortOption} onChange={setSortOption} />
             </div>
-            {filteredNews.length === 0 && !isLoading ? (
+            {newsList.length === 0 && !isLoading ? (
               <div className="flex items-center justify-center w-full py-[100px]">
                 <p className="font-suit font-normal text-[24px] leading-[150%] text-[#6b7280] text-center">
-                  &apos;{searchQuery}&apos;와 관련된 내용을 찾을 수 없습니다.
+                  {searchQuery
+                    ? `'${searchQuery}'와 관련된 내용을 찾을 수 없습니다.`
+                    : "등록된 뉴스가 없습니다."}
                 </p>
               </div>
             ) : (
@@ -163,7 +237,7 @@ export default function NewsPage() {
                         <NewsCardSkeleton />
                       </div>
                     ))
-                  : paginatedNews.map((news) => (
+                  : newsList.map((news) => (
                       <div key={news.id} className="w-[283px]">
                         <NewsCard news={news} />
                       </div>
@@ -173,7 +247,7 @@ export default function NewsPage() {
           </div>
         </div>
 
-        {totalPages > 1 && (
+        {totalPages > 1 && sortOption === "latest" && (
           <div className="flex items-center justify-center w-full max-w-[1167px]">
             <NewsPagination
               currentPage={currentPage}
