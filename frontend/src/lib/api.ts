@@ -22,6 +22,11 @@ async function refreshToken(): Promise<boolean> {
       credentials: 'include',
     });
     if (!res.ok) return false;
+    const body = await res.json();
+    // refresh 응답에서 새 accessToken 저장
+    if (body?.data?.accessToken) {
+      useAuthStore.getState().setAccessToken(body.data.accessToken);
+    }
     return true;
   } catch {
     return false;
@@ -33,8 +38,11 @@ export async function apiFetch<T>(
   options: RequestInit = {},
   _isRetry = false,
 ): Promise<T> {
+  const accessToken = useAuthStore.getState().accessToken;
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     ...options.headers,
   };
 

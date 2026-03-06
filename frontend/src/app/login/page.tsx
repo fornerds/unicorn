@@ -17,6 +17,7 @@ import { LoginResponse } from '@/lib/types';
 export default function LoginPage() {
   const router = useRouter();
   const setUser = useAuthStore((state) => state.setUser);
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
   const [email, setEmail] = useState('');
   const [emailDomain, setEmailDomain] = useState('gmail.com');
@@ -50,7 +51,8 @@ export default function LoginPage() {
         body: JSON.stringify({ email: fullEmail, password }),
       });
 
-      // 토큰은 서버가 Set-Cookie로 자동 설정, Zustand에 사용자 정보만 저장
+      // accessToken은 Zustand에 저장, refresh_token은 서버가 Set-Cookie로 자동 설정
+      setAccessToken(res.data.accessToken);
       setUser({
         id: '',
         email: res.data.user.email,
