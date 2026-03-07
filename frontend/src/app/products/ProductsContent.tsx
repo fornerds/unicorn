@@ -1,119 +1,57 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { CategorySidebar } from '@/components/features/products/CategorySidebar';
 import { ProductCard } from '@/components/features/products/ProductCard';
 import { SearchIcon } from '@/components/ui/icons';
 import { ArrowDownIcon } from '@/components/ui/icons';
+import { apiFetch } from '@/lib/api';
+import { getCategoryDisplayName } from '@/utils/categoryMapping';
 
-const mockProducts = [
-  {
-    id: '1',
-    name: 'G1',
-    price: 890000,
-    imageUrl: '/images/product01.png',
-    category: 'HOME',
-    companyName: 'Unitree',
-    isLiked: true,
-  },
-  {
-    id: '2',
-    name: 'H1',
-    price: 1200000,
-    imageUrl: '/images/product02.png',
-    category: 'HOME',
-    companyName: 'Boston Dynamics',
-    isLiked: false,
-  },
-  {
-    id: '3',
-    name: 'Spot',
-    price: 74500,
-    imageUrl: '/images/product03.png',
-    category: 'HOME',
-    companyName: 'Boston Dynamics',
-    isLiked: false,
-  },
-  {
-    id: '4',
-    name: 'Go1',
-    price: 2700,
-    imageUrl: '/images/product04.png',
-    category: 'HOME',
-    companyName: 'Unitree',
-    isLiked: false,
-  },
-  {
-    id: '5',
-    name: 'UR5e',
-    price: 35000,
-    imageUrl: '/images/product05.png',
-    category: 'HOME',
-    companyName: 'Universal Robots',
-    isLiked: false,
-  },
-  {
-    id: '6',
-    name: 'FireBot X1',
-    price: 250000,
-    imageUrl: '/images/product06.png',
-    category: 'FIREFIGHTING',
-    companyName: 'FireTech',
-    isLiked: false,
-  },
-  {
-    id: '7',
-    name: 'RescueBot Pro',
-    price: 180000,
-    imageUrl: '/images/product07.png',
-    category: 'FIREFIGHTING',
-    companyName: 'RescueSystems',
-    isLiked: false,
-  },
-  {
-    id: '8',
-    name: 'Industrial Arm 3000',
-    price: 45000,
-    imageUrl: '/images/product08.png',
-    category: 'INDUSTRIAL',
-    companyName: 'IndustrialRobotics',
-    isLiked: false,
-  },
-  {
-    id: '9',
-    name: 'FactoryBot',
-    price: 32000,
-    imageUrl: '/images/product09.png',
-    category: 'INDUSTRIAL',
-    companyName: 'FactoryTech',
-    isLiked: false,
-  },
-  {
-    id: '10',
-    name: 'CareBot',
-    price: 150000,
-    imageUrl: '/images/product10.png',
-    category: 'MEDICAL',
-    companyName: 'MediCare Robotics',
-    isLiked: false,
-  },
-  {
-    id: '11',
-    name: 'LogiBot 5000',
-    price: 95000,
-    imageUrl: '/images/product11.png',
-    category: 'LOGISTICS',
-    companyName: 'LogiTech',
-    isLiked: false,
-  },
-];
+interface ApiCategory {
+  id: number;
+  name: string;
+}
+
+interface ApiProduct {
+  id: number;
+  name: string;
+  price: number;
+  isLiked: boolean;
+  imageUrl?: string;
+  parentCategory: ApiCategory;
+  category: ApiCategory;
+}
+
+interface ProductsListResponse {
+  data: {
+    items: ApiProduct[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+}
+
+interface ProductView {
+  id: string;
+  name: string;
+  price: number;
+  imageUrl?: string;
+  category: string;
+  companyName: string;
+  isLiked: boolean;
+  parentCategoryId: number;
+}
 
 const sortOptions = [
-  { label: '최신 순', value: 'latest' },
-  { label: '가격 낮은 순', value: 'price-asc' },
-  { label: '가격 높은 순', value: 'price-desc' },
-  { label: '인기 순', value: 'popular' },
+  { label: '최신 순', value: 'latest', sort: 'createdAt', order: 'desc' },
+  { label: '가격 낮은 순', value: 'price-asc', sort: 'price', order: 'asc' },
+  { label: '가격 높은 순', value: 'price-desc', sort: 'price', order: 'desc' },
+  { label: '이름 순', value: 'name-asc', sort: 'name', order: 'asc' },
 ];
 
 export const ProductsContent = () => {
@@ -124,14 +62,93 @@ export const ProductsContent = () => {
   const [showSortMenu, setShowSortMenu] = useState(false);
   const sortMenuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const category = searchParams.get('category');
+  const [products, setProducts] = useState<ProductView[]>([]);
+  const [categoryMap, setCategoryMap] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
 
-    if (!category) {
+  const category = searchParams.get('category') || '';
+
+  // 초기 로드: 전체 제품 가져와서 카테고리 이름→ID 맵 구축
+  useEffect(() => {
+    const initCategoryMap = async () => {
+      try {
+        const res = await apiFetch<ProductsListResponse>('/products?limit=100');
+        const map: Record<string, number> = {};
+        res.data.items.forEach((item) => {
+          if (item.parentCategory) {
+            map[item.parentCategory.name.toUpperCase()] = item.parentCategory.id;
+          }
+        });
+        setCategoryMap(map);
+      } catch {
+        // 맵 구축 실패해도 검색/정렬은 동작
+      }
+    };
+    initCategoryMap();
+
+    if (!searchParams.get('category')) {
       router.replace('/products?category=HOME');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 제품 목록 조회
+  const fetchProducts = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set('limit', '20');
+      params.set('page', '1');
+
+      // 카테고리 필터
+      if (category && categoryMap[category]) {
+        params.set('categoryId', String(categoryMap[category]));
+      }
+
+      // 검색어
+      if (searchQuery.trim()) {
+        params.set('keyword', searchQuery.trim());
+      }
+
+      // 정렬
+      const sortOpt = sortOptions.find((opt) => opt.value === sortBy);
+      if (sortOpt) {
+        params.set('sort', sortOpt.sort);
+        params.set('order', sortOpt.order);
+      }
+
+      const res = await apiFetch<ProductsListResponse>(
+        `/products?${params.toString()}`,
+      );
+
+      const mapped: ProductView[] = res.data.items.map((item) => ({
+        id: String(item.id),
+        name: item.name,
+        price: item.price,
+        imageUrl: item.imageUrl,
+        category: `${getCategoryDisplayName(item.parentCategory?.name || '')} > ${item.category?.name || ''}`,
+        companyName: 'Boston Dynamics',
+        isLiked: item.isLiked,
+        parentCategoryId: item.parentCategory?.id || 0,
+      }));
+
+      setProducts(mapped);
+      setTotalCount(res.data.pagination.total);
+    } catch {
+      setProducts([]);
+      setTotalCount(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [category, categoryMap, searchQuery, sortBy]);
+
+  useEffect(() => {
+    // categoryMap이 빌드된 후에만 fetch
+    if (Object.keys(categoryMap).length > 0 || !category) {
+      fetchProducts();
+    }
+  }, [fetchProducts, categoryMap, category]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -149,40 +166,11 @@ export const ProductsContent = () => {
     };
   }, [showSortMenu]);
 
-  const category = searchParams.get('category') || '';
-
-  const filteredProducts = useMemo(() => {
-    let filtered = [...mockProducts];
-
-    if (category) {
-      filtered = filtered.filter((product) => product.category === category);
-    }
-
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.companyName.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    switch (sortBy) {
-      case 'price-asc':
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case 'popular':
-        filtered.sort((a, b) => (b.isLiked ? 1 : 0) - (a.isLiked ? 1 : 0));
-        break;
-      case 'latest':
-      default:
-        break;
-    }
-
-    return filtered;
-  }, [category, searchQuery, sortBy]);
+  const handleLikeToggle = (id: string, liked: boolean) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, isLiked: liked } : p)),
+    );
+  };
 
   const selectedSortLabel = sortOptions.find((opt) => opt.value === sortBy)?.label || '최신 순';
 
@@ -239,19 +227,53 @@ export const ProductsContent = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-y-[12px] gap-x-[9px] items-center w-full max-w-[1119px]">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <ProductCard key={product.id} {...product} />
-                ))
-              ) : (
-                <div className="w-full text-center py-[60px]">
-                  <p className="font-suit font-normal text-[18px] text-[#959ba9]">
-                    검색 결과가 없습니다.
-                  </p>
-                </div>
-              )}
-            </div>
+            {isLoading ? (
+              <div className="flex flex-wrap gap-y-[12px] gap-x-[9px] items-center w-full max-w-[1119px]">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-[#f9fafb] flex flex-col items-center overflow-hidden pb-[36px] pt-[16px] px-[24px] rounded-[8px] shrink-0 w-[367px] h-[500px] animate-pulse"
+                  >
+                    <div className="w-full h-[20px] bg-[#e5e7eb] rounded mb-[20px]" />
+                    <div className="flex-1 w-[200px] bg-[#e5e7eb] rounded" />
+                    <div className="w-[150px] h-[42px] bg-[#e5e7eb] rounded mt-[20px]" />
+                    <div className="w-[100px] h-[33px] bg-[#e5e7eb] rounded mt-[10px]" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-y-[12px] gap-x-[9px] items-center w-full max-w-[1119px]">
+                {products.length > 0 ? (
+                  products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      id={product.id}
+                      name={product.name}
+                      price={product.price}
+                      imageUrl={product.imageUrl}
+                      category={product.category}
+                      companyName={product.companyName}
+                      isLiked={product.isLiked}
+                      onLikeToggle={handleLikeToggle}
+                    />
+                  ))
+                ) : (
+                  <div className="w-full text-center py-[60px]">
+                    <p className="font-suit font-normal text-[18px] text-[#959ba9]">
+                      {searchQuery ? '검색 결과가 없습니다.' : '등록된 제품이 없습니다.'}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {totalCount > 0 && !isLoading && (
+              <div className="flex items-center justify-center w-full pt-[20px]">
+                <p className="font-suit font-medium text-[14px] text-[#959ba9]">
+                  총 {totalCount}개의 제품
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
