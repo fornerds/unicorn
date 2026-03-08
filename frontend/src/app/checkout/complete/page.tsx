@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Divider } from '@/components/ui/Divider';
 import { ROUTES } from '@/utils/constants';
 import { withBasePath } from '@/utils/assets';
+import { apiFetch } from '@/lib/api';
 
 interface OrderItem {
   id: string;
@@ -13,19 +14,12 @@ interface OrderItem {
   name: string;
   price: number;
   quantity: number;
-  selectedColor: {
-    id: string;
-    name: string;
-    value: string;
-    borderColor: string;
-  };
+  color: string;
   imageUrl: string;
-  category: string;
-  subCategory: string;
-  companyName: string;
 }
 
 interface CheckoutData {
+  cartItemIds?: number[];
   items: OrderItem[];
   totalProductPrice: number;
   shippingFee: number;
@@ -39,32 +33,123 @@ interface CheckoutData {
   };
 }
 
+type ConfirmStatus = 'idle' | 'loading' | 'success' | 'error';
+
 export default function CheckoutCompletePage() {
   const router = useRouter();
   const [orderData, setOrderData] = useState<CheckoutData | null>(null);
-  const [orderNumber, setOrderNumber] = useState<string>('');
+  const [orderId, setOrderId] = useState<number | null>(null);
+  const [confirmStatus, setConfirmStatus] = useState<ConfirmStatus>('idle');
 
   useEffect(() => {
-    const checkoutDataStr = localStorage.getItem('checkoutData');
-    if (checkoutDataStr) {
-      try {
-        const checkoutData: CheckoutData = JSON.parse(checkoutDataStr);
-        setOrderData(checkoutData);
-        const orderNum = `23-${Math.floor(Math.random() * 1000000)}`;
-        setOrderNumber(orderNum);
-      } catch (error) {
-        console.error('Failed to parse checkout data:', error);
+    const handleMount = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const success = params.get('success');
+      const fail = params.get('fail');
+
+      if (fail === '1') {
+        history.replaceState({}, '', window.location.pathname);
+        router.push(ROUTES.CART);
+        return;
+      }
+
+      if (success === '1') {
+        const provider = params.get('provider');
+        const paymentKey = params.get('paymentKey');
+        const amountStr = params.get('amount');
+        history.replaceState({}, '', window.location.pathname);
+
+        if (provider && paymentKey && amountStr) {
+          setConfirmStatus('loading');
+          const amount = parseInt(amountStr, 10);
+          const prepareDataStr = localStorage.getItem('payPrepareData');
+          const prepareData = prepareDataStr ? JSON.parse(prepareDataStr) : null;
+
+          try {
+            const res = await apiFetch<{ data: { orderId: number; totalAmount: number } }>('/payments/confirm-and-create-order', {
+              method: 'POST',
+              body: JSON.stringify({
+                paymentProvider: provider,
+                paymentKey,
+                amount,
+                shippingAddress: prepareData?.shippingAddress,
+                paymentMethod: prepareData?.paymentMethod || provider,
+                cartItemIds: prepareData?.cartItemIds,
+              }),
+            });
+            setOrderId(res.data.orderId);
+            setConfirmStatus('success');
+            localStorage.removeItem('payPrepareData');
+
+            const checkoutDataStr = localStorage.getItem('checkoutData');
+            if (checkoutDataStr) {
+              try {
+                setOrderData(JSON.parse(checkoutDataStr));
+              } catch {}
+            }
+          } catch {
+            setConfirmStatus('error');
+          }
+          return;
+        }
+      }
+
+      // PayPal 결제 완료 후 직접 이동한 경우 (또는 일반 진입)
+      const prepareDataStr = localStorage.getItem('payPrepareData');
+      const prepareData = prepareDataStr ? JSON.parse(prepareDataStr) : null;
+
+      const checkoutDataStr = localStorage.getItem('checkoutData');
+      if (checkoutDataStr) {
+        try {
+          setOrderData(JSON.parse(checkoutDataStr));
+          if (prepareData?.confirmed && prepareData?.orderId) {
+            setOrderId(prepareData.orderId);
+            localStorage.removeItem('payPrepareData');
+          }
+          setConfirmStatus('success');
+        } catch {
+          router.push(ROUTES.HOME);
+        }
+      } else {
         router.push(ROUTES.HOME);
       }
-    } else {
-      router.push(ROUTES.HOME);
-    }
+    };
+
+    handleMount();
   }, [router]);
 
   const handleGoHome = () => {
     localStorage.removeItem('checkoutData');
     router.push(ROUTES.HOME);
   };
+
+  if (confirmStatus === 'loading') {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-[16px]">
+          <p className="font-suit font-normal text-[24px] text-[#1f2937]">결제 확인 중...</p>
+          <p className="font-suit font-light text-[16px] text-[#959ba9]">잠시만 기다려 주세요.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (confirmStatus === 'error') {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-[24px]">
+          <p className="font-suit font-medium text-[24px] text-[#1f2937]">결제 확인에 실패했습니다.</p>
+          <p className="font-suit font-light text-[16px] text-[#959ba9]">고객센터로 문의해 주세요.</p>
+          <button
+            onClick={() => router.push(ROUTES.CART)}
+            className="bg-[#1f2937] flex h-[48px] items-center justify-center px-[32px] rounded-[10px] hover:opacity-90 transition-opacity"
+          >
+            <p className="font-suit font-semibold text-[16px] text-white">장바구니로 돌아가기</p>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!orderData) {
     return (
@@ -75,7 +160,7 @@ export default function CheckoutCompletePage() {
   }
 
   const fullAddress = orderData.deliveryInfo
-    ? `${orderData.deliveryInfo.address} ${orderData.deliveryInfo.detailAddress}`
+    ? `${orderData.deliveryInfo.address} ${orderData.deliveryInfo.detailAddress}`.trim()
     : '';
 
   return (
@@ -93,25 +178,31 @@ export default function CheckoutCompletePage() {
               <h2 className="font-suit font-medium text-[24px] leading-[1.5] text-[#1f2937]">
                 주문 상품({orderData.items.length})
               </h2>
-              <p className="font-suit font-normal text-[16px] leading-[1.5] text-[#959ba9]">
-                주문번호 {orderNumber}
-              </p>
+              {orderId && (
+                <p className="font-suit font-normal text-[16px] leading-[1.5] text-[#959ba9]">
+                  주문번호 #{orderId}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-[16px] items-start w-full">
               {orderData.items.map((item, index) => (
                 <div key={item.id} className="w-full">
                   <div className="flex gap-[10px] items-center w-full">
-                    <div className="bg-[#f9fafb] flex items-center rounded-[12px] shrink-0 w-[104px] h-[104px]">
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={withBasePath(item.imageUrl)}
-                          alt={item.name}
-                          fill
-                          unoptimized
-                          className="object-cover rounded-[12px]"
-                        />
-                      </div>
+                    <div className="bg-[#f9fafb] flex items-center justify-center rounded-[12px] shrink-0 w-[104px] h-[104px]">
+                      {item.imageUrl ? (
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={item.imageUrl.startsWith('http') ? item.imageUrl : withBasePath(item.imageUrl)}
+                            alt={item.name}
+                            fill
+                            unoptimized
+                            className="object-cover rounded-[12px]"
+                          />
+                        </div>
+                      ) : (
+                        <span className="font-cardo font-medium text-[12px] text-[#1f2937]">UNICORN</span>
+                      )}
                     </div>
                     <div className="flex flex-1 flex-col h-[104px] items-start justify-between min-w-0">
                       <div className="flex flex-col items-start w-full">
@@ -126,7 +217,7 @@ export default function CheckoutCompletePage() {
                           </p>
                           <Divider orientation="vertical" />
                           <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
-                            {item.selectedColor.name.split('/')[0]}
+                            {item.color?.split('/')[0] ?? ''}
                           </p>
                         </div>
                       </div>
@@ -150,9 +241,6 @@ export default function CheckoutCompletePage() {
               <h2 className="font-suit font-medium text-[24px] leading-[1.5] text-[#1f2937]">
                 배송지
               </h2>
-              <button className="font-suit font-normal text-[16px] leading-[1.5] text-[#959ba9] underline hover:opacity-80 transition-opacity">
-                배송지 변경
-              </button>
             </div>
             <div className="flex flex-col gap-[10px] items-start w-full">
               {orderData.deliveryInfo ? (

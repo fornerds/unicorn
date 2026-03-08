@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { AtIcon, ArrowDownIcon } from '@/components/ui/icons';
@@ -8,6 +8,7 @@ import { Divider } from '@/components/ui/Divider';
 import { cn } from '@/utils/cn';
 import { ROUTES } from '@/utils/constants';
 import { withBasePath } from '@/utils/assets';
+import { apiFetch } from '@/lib/api';
 
 interface PaymentMethod {
   id: string;
@@ -28,19 +29,12 @@ interface OrderItem {
   name: string;
   price: number;
   quantity: number;
-  selectedColor: {
-    id: string;
-    name: string;
-    value: string;
-    borderColor: string;
-  };
+  color: string;
   imageUrl: string;
-  category: string;
-  subCategory: string;
-  companyName: string;
 }
 
 interface CheckoutData {
+  cartItemIds?: number[];
   items: OrderItem[];
   totalProductPrice: number;
   shippingFee: number;
@@ -60,6 +54,7 @@ export default function CheckoutPage() {
     recipientName: '',
     contact: '',
     address: '',
+    zipCode: '',
     detailAddress: '',
     shippingRequest: '',
     email: '',
@@ -71,11 +66,19 @@ export default function CheckoutPage() {
     cvv: '',
     password: '',
   });
-  const [showExpiryDropdown, setShowExpiryDropdown] = useState(false);
-  const [showCvvDropdown, setShowCvvDropdown] = useState(false);
   const [showEmailDomainDropdown, setShowEmailDomainDropdown] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [addressKeyword, setAddressKeyword] = useState('');
+  const [addressResults, setAddressResults] = useState<{ zipCode: string; roadAddress: string; jibunAddress: string }[]>([]);
+  const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+  const [isAddressSearching, setIsAddressSearching] = useState(false);
+  const [tossClientKey, setTossClientKey] = useState('');
+  const [showPaypalSection, setShowPaypalSection] = useState(false);
   const emailDomainRef = useRef<HTMLDivElement>(null);
-  const postcodeRef = useRef<HTMLDivElement>(null);
+  const addressDropdownRef = useRef<HTMLDivElement>(null);
+  const paypalContainerRef = useRef<HTMLDivElement>(null);
+  const paypalButtonsRenderedRef = useRef(false);
+  const paypalAmountUsdRef = useRef(0);
 
   const emailDomains = ['gmail.com', 'naver.com', 'daum.net', 'hanmail.net', '직접 입력'];
 
@@ -94,48 +97,47 @@ export default function CheckoutPage() {
       }
     }
 
-    // 다음 Postcode API 스크립트 로드
-    const script = document.createElement('script');
-    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      // 컴포넌트 언마운트 시 스크립트 제거
-      const existingScript = document.querySelector('script[src*="postcode.v2.js"]');
-      if (existingScript) {
-        document.body.removeChild(existingScript);
-      }
-    };
+    if (!document.querySelector('script[src*="tosspayments"]')) {
+      const tossScript = document.createElement('script');
+      tossScript.src = 'https://js.tosspayments.com/v2/standard';
+      tossScript.async = true;
+      document.head.appendChild(tossScript);
+    }
   }, []);
 
   const handlePaymentMethodChange = (methodId: string) => {
     setSelectedPaymentMethod(methodId);
   };
 
-  const handleAddressSearch = () => {
-    if (typeof window === 'undefined' || !(window as any).daum) {
-      alert('주소 검색 서비스를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+  const handleAddressSearch = async () => {
+    if (!addressKeyword.trim()) {
+      alert('검색할 주소를 입력해 주세요.');
       return;
     }
+    setIsAddressSearching(true);
+    try {
+      const res = await apiFetch<{
+        data: { zipCode: string; roadAddress: string; jibunAddress: string }[];
+        pagination: { page: number; limit: number; total: number; totalPages: number };
+      }>(`/addresses/search?keyword=${encodeURIComponent(addressKeyword.trim())}&page=1&limit=20`);
+      setAddressResults(res.data);
+      setShowAddressDropdown(true);
+    } catch {
+      alert('주소 검색 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsAddressSearching(false);
+    }
+  };
 
-    new (window as any).daum.Postcode({
-      oncomplete: (data: any) => {
-        let addr = '';
-        if (data.userSelectedType === 'R') {
-          addr = data.roadAddress;
-        } else {
-          addr = data.jibunAddress;
-        }
-
-        setDeliveryInfo((prev) => ({
-          ...prev,
-          address: addr,
-        }));
-      },
-      width: '100%',
-      height: '100%',
-    }).open();
+  const handleAddressSelect = (result: { zipCode: string; roadAddress: string; jibunAddress: string }) => {
+    setDeliveryInfo((prev) => ({
+      ...prev,
+      address: result.roadAddress || result.jibunAddress,
+      zipCode: result.zipCode,
+    }));
+    setAddressKeyword(result.roadAddress || result.jibunAddress);
+    setShowAddressDropdown(false);
+    setAddressResults([]);
   };
 
   useEffect(() => {
@@ -153,6 +155,183 @@ export default function CheckoutPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showEmailDomainDropdown]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (addressDropdownRef.current && !addressDropdownRef.current.contains(event.target as Node)) {
+        setShowAddressDropdown(false);
+      }
+    };
+
+    if (showAddressDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showAddressDropdown]);
+
+  const loadPaypalSdk = (clientId: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if ((window as any).paypal) { resolve(); return; }
+      const existing = document.querySelector('script[src*="paypal.com/sdk"]');
+      if (existing) { existing.addEventListener('load', () => resolve()); return; }
+      const script = document.createElement('script');
+      script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=USD`;
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('PayPal SDK 로드 실패'));
+      document.head.appendChild(script);
+    });
+  };
+
+  const handlePayment = async () => {
+    if (!deliveryInfo.recipientName.trim()) { alert('받는 분 이름을 입력해 주세요.'); return; }
+    if (!deliveryInfo.contact.trim()) { alert('연락처를 입력해 주세요.'); return; }
+    if (!deliveryInfo.address.trim()) { alert('주소를 입력해 주세요.'); return; }
+
+    const checkoutDataStr = localStorage.getItem('checkoutData');
+    if (!checkoutDataStr) { alert('주문 정보를 찾을 수 없습니다. 장바구니로 돌아가 주세요.'); return; }
+
+    let checkoutData: CheckoutData;
+    try { checkoutData = JSON.parse(checkoutDataStr); } catch { alert('주문 정보를 불러오는 데 실패했습니다.'); return; }
+
+    const cartItemIds: number[] = checkoutData.cartItemIds ?? [];
+    if (cartItemIds.length === 0) { alert('주문할 상품이 없습니다.'); return; }
+
+    const shippingAddress = {
+      recipient: deliveryInfo.recipientName,
+      phone: deliveryInfo.contact,
+      address: [deliveryInfo.address, deliveryInfo.detailAddress].filter(Boolean).join(' '),
+      zipCode: deliveryInfo.zipCode,
+    };
+
+    // 결제완료 페이지에서 배송지 표시를 위해 checkoutData에 deliveryInfo 저장
+    localStorage.setItem('checkoutData', JSON.stringify({
+      ...checkoutData,
+      deliveryInfo: {
+        recipientName: deliveryInfo.recipientName,
+        contact: deliveryInfo.contact,
+        address: deliveryInfo.address,
+        detailAddress: deliveryInfo.detailAddress,
+      },
+    }));
+
+    setIsSubmitting(true);
+    try {
+      const prepareRes = await apiFetch<{ data: { paymentOrderId: string; totalAmount: number } }>('/orders/prepare', {
+        method: 'POST',
+        body: JSON.stringify({ cartItemIds, shippingAddress, paymentMethod: selectedPaymentMethod }),
+      });
+      const { paymentOrderId, totalAmount } = prepareRes.data;
+
+      localStorage.setItem('payPrepareData', JSON.stringify({
+        paymentOrderId, totalAmount, shippingAddress,
+        paymentMethod: selectedPaymentMethod, cartItemIds,
+      }));
+
+      if (selectedPaymentMethod === 'paypal') {
+        let amountUsd = totalAmount / 1300;
+        try {
+          const rateRes = await apiFetch<{ data: { krwPerUsd: number } }>('/payments/exchange-rate');
+          if (rateRes.data.krwPerUsd > 0) amountUsd = totalAmount / rateRes.data.krwPerUsd;
+        } catch {}
+        paypalAmountUsdRef.current = amountUsd;
+
+        const paypalCfgRes = await apiFetch<{ data: { paypalClientId: string } }>('/payments/paypal-client-id');
+        const { paypalClientId } = paypalCfgRes.data;
+        if (!paypalClientId) { alert('PayPal 결제 설정이 없습니다.'); return; }
+
+        await loadPaypalSdk(paypalClientId);
+        paypalButtonsRenderedRef.current = false;
+        setShowPaypalSection(true);
+
+        setTimeout(() => {
+          if (paypalButtonsRenderedRef.current || !(window as any).paypal || !paypalContainerRef.current) return;
+          paypalContainerRef.current.innerHTML = '';
+
+          (window as any).paypal.Buttons({
+            createOrder: async () => {
+              const res = await apiFetch<{ data: { paypalOrderId: string; amountUsd?: number } }>('/payments/paypal/create-order', {
+                method: 'POST',
+                body: JSON.stringify({ amountKrw: totalAmount }),
+              });
+              if (res.data.amountUsd != null) paypalAmountUsdRef.current = res.data.amountUsd;
+              return res.data.paypalOrderId;
+            },
+            onApprove: async (data: { orderID: string }) => {
+              const amountCents = Math.round(paypalAmountUsdRef.current * 100);
+              try {
+                const confirmRes = await apiFetch<{ data: { orderId: number } }>('/payments/confirm-and-create-order', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    paymentProvider: 'paypal',
+                    paymentKey: data.orderID,
+                    amount: amountCents,
+                    shippingAddress,
+                    paymentMethod: 'paypal',
+                    cartItemIds,
+                  }),
+                });
+                const prev = JSON.parse(localStorage.getItem('payPrepareData') || '{}');
+                localStorage.setItem('payPrepareData', JSON.stringify({ ...prev, orderId: confirmRes.data.orderId, confirmed: true }));
+                router.push(ROUTES.CHECKOUT_COMPLETE);
+              } catch {
+                alert('PayPal 결제 확인 중 오류가 발생했습니다.');
+              }
+            },
+            onError: () => { alert('PayPal 결제 중 오류가 발생했습니다.'); },
+          }).render(paypalContainerRef.current);
+          paypalButtonsRenderedRef.current = true;
+        }, 100);
+
+      } else {
+        let key = tossClientKey;
+        if (!key) {
+          try {
+            const cfgRes = await apiFetch<{ data: { tossClientKey: string } }>('/payments/toss-client-key');
+            key = cfgRes.data.tossClientKey;
+            setTossClientKey(key);
+          } catch {}
+        }
+        if (!key) { alert('결제 키를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'); return; }
+
+        if (typeof (window as any).TossPayments === 'undefined') {
+          alert('결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해 주세요.');
+          return;
+        }
+
+        const base = window.location.href.replace(/\/checkout.*/, '');
+        const successUrl = `${base}/checkout/complete?success=1&provider=toss`;
+        const failUrl = `${base}/checkout/complete?fail=1`;
+
+        try {
+          const tossPayments = (window as any).TossPayments(key);
+          const payment = tossPayments.payment({ customerKey: (window as any).TossPayments.ANONYMOUS });
+          await payment.requestPayment({
+            method: 'CARD',
+            amount: { currency: 'KRW', value: Math.round(Number(totalAmount)) },
+            orderId: paymentOrderId,
+            orderName: '유니콘 로봇 결제',
+            successUrl,
+            failUrl,
+            customerName: deliveryInfo.recipientName,
+            customerMobilePhone: deliveryInfo.contact.replace(/-/g, ''),
+            card: { useEscrow: false, flowMode: 'DEFAULT', useCardPoint: false, useAppCardOnly: false },
+          });
+        } catch (e: any) {
+          if (e?.code !== 'USER_CANCEL') {
+            alert('결제창 열기에 실패했습니다. 다시 시도해 주세요.');
+          }
+        }
+      }
+    } catch {
+      alert('결제 준비 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="bg-white min-h-screen">
@@ -220,25 +399,66 @@ export default function CheckoutPage() {
                       주소
                     </p>
                   </label>
-                  <div className="flex gap-[10px] h-[48px] items-center w-full">
-                    <div className="flex flex-1 flex-col gap-[6px] items-start min-w-0">
-                      <input
-                        type="text"
-                        value={deliveryInfo.address}
-                        onChange={(e) => setDeliveryInfo({ ...deliveryInfo, address: e.target.value })}
-                        placeholder="주소를 검색해 주세요"
-                        className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-normal text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
-                      />
+                  <div className="relative w-full" ref={addressDropdownRef}>
+                    <div className="flex gap-[10px] h-[48px] items-center w-full">
+                      <div className="flex flex-1 flex-col gap-[6px] items-start min-w-0">
+                        <input
+                          type="text"
+                          value={addressKeyword}
+                          onChange={(e) => setAddressKeyword(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') handleAddressSearch(); }}
+                          placeholder="주소를 검색해 주세요"
+                          className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-normal text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
+                        />
+                      </div>
+                      <button
+                        onClick={handleAddressSearch}
+                        disabled={isAddressSearching}
+                        className="bg-white border border-[#3f7bfc] flex h-[48px] items-center justify-center px-[16px] py-[10px] rounded-[4px] shrink-0 hover:opacity-80 transition-opacity disabled:opacity-50"
+                      >
+                        <p className="font-suit font-semibold text-[14px] leading-[1.35] text-[#3f7bfc] whitespace-nowrap">
+                          {isAddressSearching ? '검색 중...' : '주소 검색'}
+                        </p>
+                      </button>
                     </div>
-                    <button
-                      onClick={handleAddressSearch}
-                      className="bg-white border border-[#3f7bfc] flex h-[48px] items-center justify-center px-[16px] py-[10px] rounded-[4px] shrink-0 hover:opacity-80 transition-opacity"
-                    >
-                      <p className="font-suit font-semibold text-[14px] leading-[1.35] text-[#3f7bfc] whitespace-nowrap">
-                        주소 검색
-                      </p>
-                    </button>
+                    {showAddressDropdown && addressResults.length > 0 && (
+                      <div className="absolute top-full left-0 mt-[4px] bg-white border border-[#e5e7eb] rounded-[6px] shadow-lg z-20 w-full max-h-[240px] overflow-y-auto">
+                        {addressResults.map((result, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleAddressSelect(result)}
+                            className="w-full flex flex-col items-start px-[16px] py-[10px] hover:bg-[#f3f4f6] transition-colors border-b border-[#e5e7eb] last:border-b-0 first:rounded-t-[6px] last:rounded-b-[6px]"
+                          >
+                            <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#374151] text-left">
+                              {result.roadAddress}
+                            </p>
+                            {result.jibunAddress && result.jibunAddress !== result.roadAddress && (
+                              <p className="font-suit font-normal text-[12px] leading-[1.5] text-[#9ca3af] text-left">
+                                {result.jibunAddress}
+                              </p>
+                            )}
+                            {result.zipCode && (
+                              <p className="font-suit font-normal text-[12px] leading-[1.5] text-[#6b7280]">
+                                우편번호: {result.zipCode}
+                              </p>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {showAddressDropdown && addressResults.length === 0 && !isAddressSearching && (
+                      <div className="absolute top-full left-0 mt-[4px] bg-white border border-[#e5e7eb] rounded-[6px] shadow-lg z-20 w-full px-[16px] py-[12px]">
+                        <p className="font-suit font-normal text-[14px] text-[#9ca3af]">검색 결과가 없습니다.</p>
+                      </div>
+                    )}
                   </div>
+                  {deliveryInfo.address && (
+                    <div className="flex items-center gap-[8px] w-full px-[4px]">
+                      <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#6b7280]">
+                        {deliveryInfo.zipCode && `[${deliveryInfo.zipCode}] `}{deliveryInfo.address}
+                      </p>
+                    </div>
+                  )}
                   <div className="flex flex-col gap-[6px] items-start w-full">
                     <input
                       type="text"
@@ -557,33 +777,22 @@ export default function CheckoutPage() {
                 </p>
               </div>
               <button
-                onClick={() => {
-                  const checkoutDataStr = localStorage.getItem('checkoutData');
-                  if (checkoutDataStr) {
-                    try {
-                      const checkoutData = JSON.parse(checkoutDataStr);
-                      const updatedCheckoutData = {
-                        ...checkoutData,
-                        deliveryInfo: {
-                          recipientName: deliveryInfo.recipientName,
-                          contact: deliveryInfo.contact,
-                          address: deliveryInfo.address,
-                          detailAddress: deliveryInfo.detailAddress,
-                        },
-                      };
-                      localStorage.setItem('checkoutData', JSON.stringify(updatedCheckoutData));
-                      router.push(ROUTES.CHECKOUT_COMPLETE);
-                    } catch (error) {
-                      console.error('Failed to update checkout data:', error);
-                    }
-                  }
-                }}
-                className="bg-[#1f2937] flex h-[65px] items-center justify-center px-[32px] py-[12px] rounded-[10px] w-full hover:opacity-90 transition-opacity"
+                disabled={isSubmitting}
+                onClick={handlePayment}
+                className="bg-[#1f2937] flex h-[65px] items-center justify-center px-[32px] py-[12px] rounded-[10px] w-full hover:opacity-90 transition-opacity disabled:opacity-50"
               >
                 <p className="font-suit font-semibold text-[24px] leading-[1.5] text-white text-center whitespace-nowrap">
-                  {new Intl.NumberFormat('ko-KR').format(totalPrice)}원 결제하기
+                  {isSubmitting ? '결제 준비 중...' : `${new Intl.NumberFormat('ko-KR').format(totalPrice)}원 결제하기`}
                 </p>
               </button>
+              {showPaypalSection && (
+                <div className="flex flex-col gap-[12px] w-full pt-[4px]">
+                  <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#6b7280]">
+                    아래 PayPal 버튼을 클릭하여 결제를 완료해 주세요.
+                  </p>
+                  <div ref={paypalContainerRef} />
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col gap-[22px] items-start w-full">
@@ -595,16 +804,20 @@ export default function CheckoutPage() {
                   orderItems.map((item, index) => (
                     <div key={item.id} className='w-full'>
                       <div className="flex gap-[10px] items-center w-full">
-                        <div className="bg-[#f9fafb] flex items-center rounded-[12px] shrink-0 w-[104px] h-[104px]">
-                          <div className="relative w-full h-full">
-                            <Image
-                              src={withBasePath(item.imageUrl)}
-                              alt={item.name}
-                              fill
-                              unoptimized
-                              className="object-cover rounded-[12px]"
-                            />
-                          </div>
+                        <div className="bg-[#f9fafb] flex items-center justify-center rounded-[12px] shrink-0 w-[104px] h-[104px]">
+                          {item.imageUrl ? (
+                            <div className="relative w-full h-full">
+                              <Image
+                                src={item.imageUrl.startsWith('http') ? item.imageUrl : withBasePath(item.imageUrl)}
+                                alt={item.name}
+                                fill
+                                unoptimized
+                                className="object-cover rounded-[12px]"
+                              />
+                            </div>
+                          ) : (
+                            <span className="font-cardo font-medium text-[12px] text-[#1f2937]">UNICORN</span>
+                          )}
                         </div>
                         <div className="flex flex-1 flex-col h-[104px] items-start justify-between min-w-0">
                           <div className="flex flex-col items-start w-full">
@@ -619,7 +832,7 @@ export default function CheckoutPage() {
                               </p>
                               <Divider orientation="vertical" />
                               <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
-                                {item.selectedColor.name.split('/')[0]}
+                                {item.color?.split('/')[0] ?? ''}
                               </p>
                             </div>
                           </div>

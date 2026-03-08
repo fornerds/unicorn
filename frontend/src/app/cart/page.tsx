@@ -488,6 +488,7 @@ export default function CartPage() {
                   return;
                 }
                 const orderData = {
+                  cartItemIds: checkedItems.map((item) => parseInt(item.id)),
                   items: checkedItems.map((item) => ({
                     id: item.id,
                     productId: item.productId,

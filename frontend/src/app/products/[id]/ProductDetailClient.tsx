@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { LikeIcon, LikeIconFilled } from "@/components/ui/icons";
 import { MinusIcon, PlusIcon } from "@/components/ui/icons";
@@ -14,6 +15,7 @@ import {
 import { withBasePath } from "@/utils/assets";
 import { apiFetch } from "@/lib/api";
 import { getCategoryDisplayName } from "@/utils/categoryMapping";
+import { ROUTES } from "@/utils/constants";
 
 interface ApiCategory {
   id: number;
@@ -55,6 +57,7 @@ interface ProductDetailResponse {
 }
 
 export const ProductDetailClient = ({ id }: { id: string }) => {
+  const router = useRouter();
   const [product, setProduct] = useState<ApiProduct | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -63,6 +66,7 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [isCartLoading, setIsCartLoading] = useState(false);
+  const [isBuyLoading, setIsBuyLoading] = useState(false);
   const [cartMessage, setCartMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showColorDropdown, setShowColorDropdown] = useState(false);
   const colorDropdownRef = useRef<HTMLDivElement>(null);
@@ -160,6 +164,59 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
     } finally {
       setIsCartLoading(false);
       setTimeout(() => setCartMessage(null), 3000);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (isBuyLoading || !product) return;
+    setIsBuyLoading(true);
+    try {
+      const res = await apiFetch<{
+        data: {
+          id: number;
+          productId: number;
+          color: string;
+          product: { id: number; name: string; price: number; imageUrl: string };
+          quantity: number;
+          price: number;
+        };
+      }>("/cart/items", {
+        method: "POST",
+        body: JSON.stringify({
+          productId: product.id,
+          color: selectedColor || "",
+          quantity,
+        }),
+      });
+
+      const cartItem = res.data;
+      const unitPrice = product.price;
+      const shippingFee = 100000;
+      const checkoutData = {
+        cartItemIds: [cartItem.id],
+        items: [
+          {
+            id: String(cartItem.id),
+            productId: String(product.id),
+            name: product.name,
+            price: unitPrice,
+            quantity,
+            color: selectedColor || "",
+            imageUrl: product.imageUrl || "",
+          },
+        ],
+        totalProductPrice: unitPrice * quantity,
+        shippingFee,
+        discount: 0,
+        totalPrice: unitPrice * quantity + shippingFee,
+      };
+      localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
+      router.push(ROUTES.CHECKOUT);
+    } catch {
+      setCartMessage({ type: "error", text: "구매 처리 중 오류가 발생했습니다." });
+      setTimeout(() => setCartMessage(null), 3000);
+    } finally {
+      setIsBuyLoading(false);
     }
   };
 
@@ -461,9 +518,13 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
                       {isCartLoading ? "추가 중..." : "장바구니"}
                     </p>
                   </button>
-                  <button className="flex flex-1 h-[48.75px] items-center justify-center px-[24px] sm:px-[24px] py-[9px] bg-black rounded-[7.5px] hover:opacity-90 transition-opacity">
+                  <button
+                    onClick={handleBuyNow}
+                    disabled={isBuyLoading}
+                    className="flex flex-1 h-[48.75px] items-center justify-center px-[24px] sm:px-[24px] py-[9px] bg-black rounded-[7.5px] hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
                     <p className="font-suit font-medium text-[15px] leading-[1.3] text-white text-center whitespace-nowrap">
-                      구매하기
+                      {isBuyLoading ? "처리 중..." : "구매하기"}
                     </p>
                   </button>
                 </div>
