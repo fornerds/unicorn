@@ -1,12 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRightIcon, LikeIcon, ArrowRightWhiteIcon } from '@/components/ui/icons';
-import { ROUTES } from '@/utils/constants';
-import { useAuthStore } from '@/stores/authStore';
-import { apiFetch } from '@/lib/api';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  ArrowRightIcon,
+  LikeIcon,
+  LikeIconFilled,
+  ArrowRightWhiteIcon,
+} from "@/components/ui/icons";
+import { getCategoryDisplayName } from "@/utils/categoryMapping";
+import { ROUTES } from "@/utils/constants";
+import { useAuthStore } from "@/stores/authStore";
+import { apiFetch } from "@/lib/api";
 
 interface OrderItem {
   productId: number;
@@ -37,14 +43,24 @@ interface LikedProduct {
 interface OrdersResponse {
   data: {
     items: Order[];
-    pagination: { page: number; limit: number; total: number; totalPages: number };
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
   };
 }
 
 interface LikesResponse {
   data: {
     items: LikedProduct[];
-    pagination: { page: number; limit: number; total: number; totalPages: number };
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
   };
 }
 
@@ -56,22 +72,25 @@ export default function MyPage() {
   const [likesTotal, setLikesTotal] = useState(0);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [isLoadingLikes, setIsLoadingLikes] = useState(true);
+  const [likesLoadingIds, setLikesLoadingIds] = useState<Set<number>>(
+    new Set(),
+  );
 
   const [basePath, setBasePath] = useState(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const path = window.location.pathname;
-      if (path.startsWith('/unicorn')) {
-        return '/unicorn';
+      if (path.startsWith("/unicorn")) {
+        return "/unicorn";
       }
     }
-    return process.env.NEXT_PUBLIC_BASE_PATH || '';
+    return process.env.NEXT_PUBLIC_BASE_PATH || "";
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const path = window.location.pathname;
-      if (path.startsWith('/unicorn')) {
-        setBasePath('/unicorn');
+      if (path.startsWith("/unicorn")) {
+        setBasePath("/unicorn");
       }
     }
   }, []);
@@ -79,7 +98,9 @@ export default function MyPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await apiFetch<OrdersResponse>('/users/me/orders?page=1&limit=3');
+        const res = await apiFetch<OrdersResponse>(
+          "/users/me/orders?page=1&limit=3",
+        );
         setOrders(res.data.items);
       } catch {
         setOrders([]);
@@ -90,7 +111,9 @@ export default function MyPage() {
 
     const fetchLikes = async () => {
       try {
-        const res = await apiFetch<LikesResponse>('/users/me/likes?page=1&limit=6');
+        const res = await apiFetch<LikesResponse>(
+          "/users/me/likes?page=1&limit=6",
+        );
         setLikes(res.data.items);
         setLikesTotal(res.data.pagination.total);
       } catch {
@@ -104,8 +127,39 @@ export default function MyPage() {
     fetchLikes();
   }, []);
 
+  const handleLikeToggle = async (e: React.MouseEvent, productId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (likesLoadingIds.has(productId)) return;
+
+    const prevLikes = likes;
+    const prevTotal = likesTotal;
+    setLikes((prev) => prev.filter((p) => p.id !== productId));
+    setLikesTotal((prev) => prev - 1);
+    setLikesLoadingIds((prev) => new Set(prev).add(productId));
+
+    try {
+      const res = await apiFetch<{
+        data: { likesCount: number; liked: boolean };
+      }>(`/products/${productId}/like`, { method: "POST" });
+      if (res.data.liked) {
+        setLikes(prevLikes);
+        setLikesTotal(prevTotal);
+      }
+    } catch {
+      setLikes(prevLikes);
+      setLikesTotal(prevTotal);
+    } finally {
+      setLikesLoadingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(productId);
+        return next;
+      });
+    }
+  };
+
   const getImagePath = (path: string) => {
-    if (basePath && path.startsWith('/')) {
+    if (basePath && path.startsWith("/")) {
       return `${basePath}${path}`;
     }
     return path;
@@ -113,15 +167,15 @@ export default function MyPage() {
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
-    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ko-KR').format(price);
+    return new Intl.NumberFormat("ko-KR").format(price);
   };
 
   const getOrderDisplayName = (order: Order) => {
-    if (order.items.length === 0) return '-';
+    if (order.items.length === 0) return "-";
     const firstName = order.items[0].product.name;
     if (order.items.length === 1) return firstName;
     return `${firstName} 외 ${order.items.length - 1}건`;
@@ -148,13 +202,20 @@ export default function MyPage() {
             <div className="bg-[#f9fafb] flex items-center justify-between px-[30px] py-[34px] rounded-[20px] w-full">
               <div className="flex flex-1 flex-col gap-[2px] items-start">
                 <div className="flex flex-col font-suit font-medium justify-center text-[#2a313f] text-[30px] w-full">
-                  <p className="leading-[1.35] whitespace-pre-wrap">{user?.name || '-'}</p>
+                  <p className="leading-[1.35] whitespace-pre-wrap">
+                    {user?.name || "-"}
+                  </p>
                 </div>
                 <div className="flex flex-col font-suit font-normal justify-center text-[#6b7280] text-[18px] w-full">
-                  <p className="leading-[20px] whitespace-pre-wrap">{user?.email || '-'}</p>
+                  <p className="leading-[20px] whitespace-pre-wrap">
+                    {user?.email || "-"}
+                  </p>
                 </div>
               </div>
-              <Link href={ROUTES.MY_PROFILE} className="h-[45px] w-[40px] flex items-center justify-center">
+              <Link
+                href={ROUTES.MY_PROFILE}
+                className="h-[45px] w-[40px] flex items-center justify-center"
+              >
                 <ArrowRightIcon width={20} height={20} stroke="#1f2937" />
               </Link>
             </div>
@@ -179,11 +240,15 @@ export default function MyPage() {
               <div className="flex flex-col gap-[20px] items-start w-full">
                 {isLoadingOrders ? (
                   <div className="flex items-center justify-center w-full py-[40px]">
-                    <p className="font-suit font-normal text-[16px] text-[#959ba9]">불러오는 중...</p>
+                    <p className="font-suit font-normal text-[16px] text-[#959ba9]">
+                      불러오는 중...
+                    </p>
                   </div>
                 ) : orders.length === 0 ? (
                   <div className="flex items-center justify-center w-full py-[40px]">
-                    <p className="font-suit font-normal text-[16px] text-[#959ba9]">아직 구매한 제품이 없습니다.</p>
+                    <p className="font-suit font-normal text-[16px] text-[#959ba9]">
+                      아직 구매한 제품이 없습니다.
+                    </p>
                   </div>
                 ) : (
                   orders.map((order) => (
@@ -202,7 +267,9 @@ export default function MyPage() {
                             <p className="leading-[1.5]">|</p>
                           </div>
                           <div className="flex flex-col font-suit font-medium justify-center text-[#959ba9] whitespace-nowrap">
-                            <p className="leading-[1.5]">{formatDate(order.createdAt)}</p>
+                            <p className="leading-[1.5]">
+                              {formatDate(order.createdAt)}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -227,12 +294,16 @@ export default function MyPage() {
                             <div className="flex flex-col items-start w-full">
                               <div className="flex items-center w-full">
                                 <div className="flex flex-1 flex-col font-suit font-normal justify-center overflow-hidden text-[20px] text-[#1f2937] text-ellipsis whitespace-nowrap">
-                                  <p className="leading-[1.5] overflow-hidden">{getOrderDisplayName(order)}</p>
+                                  <p className="leading-[1.5] overflow-hidden">
+                                    {getOrderDisplayName(order)}
+                                  </p>
                                 </div>
                               </div>
                               <div className="flex gap-[8px] items-center">
                                 <div className="flex flex-col font-suit font-normal justify-center text-[14px] text-[#959ba9] whitespace-nowrap">
-                                  <p className="leading-[1.5]">수량 {getOrderTotalQuantity(order)}</p>
+                                  <p className="leading-[1.5]">
+                                    수량 {getOrderTotalQuantity(order)}
+                                  </p>
                                 </div>
                               </div>
                             </div>
@@ -245,11 +316,15 @@ export default function MyPage() {
                                 </div>
                                 <div className="flex gap-[3px] items-end justify-center">
                                   <div className="flex flex-col font-suit font-semibold justify-center text-[22px] text-[#1f2937] whitespace-nowrap">
-                                    <p className="leading-[1.5]">{formatPrice(order.totalAmount)}</p>
+                                    <p className="leading-[1.5]">
+                                      {formatPrice(order.totalAmount)}
+                                    </p>
                                   </div>
                                   <div className="flex flex-col items-center justify-center py-[3px] w-[14px]">
                                     <div className="flex flex-col font-suit font-medium justify-center text-[18px] text-[#1f2937] w-full">
-                                      <p className="leading-[1.5] whitespace-pre-wrap">원</p>
+                                      <p className="leading-[1.5] whitespace-pre-wrap">
+                                        원
+                                      </p>
                                     </div>
                                   </div>
                                 </div>
@@ -284,49 +359,75 @@ export default function MyPage() {
               </div>
               {isLoadingLikes ? (
                 <div className="flex items-center justify-center w-full py-[40px]">
-                  <p className="font-suit font-normal text-[16px] text-[#959ba9]">불러오는 중...</p>
+                  <p className="font-suit font-normal text-[16px] text-[#959ba9]">
+                    불러오는 중...
+                  </p>
                 </div>
               ) : likes.length === 0 ? (
                 <div className="flex items-center justify-center w-full py-[40px]">
-                  <p className="font-suit font-normal text-[16px] text-[#959ba9]">아직 찜한 상품이 없습니다.</p>
+                  <p className="font-suit font-normal text-[16px] text-[#959ba9]">
+                    아직 찜한 상품이 없습니다.
+                  </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-3 gap-[12px] w-full">
                   {likes.map((product) => (
-                    <Link
+                    <div
                       key={product.id}
-                      href={ROUTES.PRODUCT_DETAIL(product.id)}
-                      className="bg-[#f9fafb] border border-[#eeeff1] flex flex-col h-[362px] items-center overflow-clip pb-[14px] rounded-[9.863px] w-[284px] hover:opacity-95 transition-opacity"
+                      className="relative"
+                      style={{ width: "284px" }}
                     >
-                      <div className="flex gap-[10px] h-[48px] items-center justify-end px-[18px] py-[6px] w-full">
-                        <div className="flex flex-1 items-center">
-                          <div className="flex flex-col font-suit font-normal justify-center text-[16px] text-[#959ba9] whitespace-nowrap">
-                            <p className="leading-[1.5]">{product.parentCategory?.name || product.category?.name || ''}</p>
-                          </div>
+                      <Link
+                        href={ROUTES.PRODUCT_DETAIL(product.id)}
+                        className="bg-[#f9fafb] border border-[#eeeff1] flex flex-col h-[362px] overflow-hidden pb-[14px] rounded-[9.863px] w-full hover:opacity-95 transition-opacity"
+                      >
+                        <div className="flex items-center justify-between h-[48px] px-[18px] py-[6px] w-full shrink-0">
+                          <p className="font-suit font-normal text-[16px] leading-[1.5] text-[#959ba9]">
+                            {getCategoryDisplayName(
+                              product.parentCategory?.name ||
+                                product.category?.name ||
+                                "",
+                            )}
+                          </p>
+                          <div className="w-[28px] shrink-0" />
                         </div>
-                        <div className="flex items-center justify-center shrink-0 w-[22px] h-[22px]">
+                        <div className="flex-1 flex items-center justify-center bg-[#f3f4f6] w-full">
+                          <span className="font-cardo font-medium text-[14px] text-[#1f2937]">
+                            UNICORN
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-[6px] px-[20px] pt-[10px] w-full shrink-0 items-center">
+                          <p className="font-suit font-normal text-[20px] leading-[1.5] text-black truncate">
+                            {product.name}
+                          </p>
+                          <p className="font-suit font-normal text-[16px] leading-[1.5] text-[#6b7280]">
+                            {formatPrice(product.price)}원
+                          </p>
+                        </div>
+                      </Link>
+                      <button
+                        onClick={(e) => handleLikeToggle(e, product.id)}
+                        disabled={likesLoadingIds.has(product.id)}
+                        className="absolute top-[10px] right-[14px] z-10 flex items-center justify-center w-[32px] h-[32px] hover:opacity-70 transition-opacity disabled:opacity-40"
+                        aria-label="찜 취소"
+                      >
+                        {likesLoadingIds.has(product.id) ? (
                           <LikeIcon
+                            width={20}
+                            height={18}
+                            stroke="#1F2937"
+                            strokeWidth={0.6875}
+                          />
+                        ) : (
+                          <LikeIconFilled
                             width={20}
                             height={18}
                             fill="#1F2937"
                             stroke="#1F2937"
-                            strokeWidth={0.6875}
-                            isLiked={true}
                           />
-                        </div>
-                      </div>
-                      <div className="flex flex-col h-[227px] items-center justify-end w-full">
-                        <div className="aspect-square flex-1 relative w-full bg-[#f3f4f6]" />
-                      </div>
-                      <div className="flex flex-col font-suit font-normal gap-[6px] items-start px-[20px] py-[10px] text-center w-full">
-                        <div className="flex flex-col justify-center overflow-hidden text-[20px] text-black text-ellipsis w-full whitespace-nowrap">
-                          <p className="leading-[1.5] overflow-hidden">{product.name}</p>
-                        </div>
-                        <div className="flex flex-col justify-center text-[16px] text-[#6b7280] w-full">
-                          <p className="leading-[1.5] whitespace-pre-wrap">{formatPrice(product.price)}원</p>
-                        </div>
-                      </div>
-                    </Link>
+                        )}
+                      </button>
+                    </div>
                   ))}
                 </div>
               )}
@@ -335,7 +436,7 @@ export default function MyPage() {
             <div className="bg-[#f6faff] h-[177px] overflow-clip relative rounded-[20px] w-full">
               <div className="absolute h-[177px] left-0 top-0 w-full">
                 <Image
-                  src={getImagePath('/images/mypageBanner.png')}
+                  src={getImagePath("/images/mypageBanner.png")}
                   alt="Life Changing Robots"
                   fill
                   className="object-cover"
@@ -345,7 +446,9 @@ export default function MyPage() {
               <div className="absolute flex items-end justify-between left-[43px] top-[50px] w-[800px]">
                 <div className="flex flex-col gap-[10px] items-start text-white w-[395px]">
                   <div className="flex flex-col font-suit font-extralight justify-center text-[36px] w-full">
-                    <p className="leading-[normal] whitespace-pre-wrap">Life Changing Robots</p>
+                    <p className="leading-[normal] whitespace-pre-wrap">
+                      Life Changing Robots
+                    </p>
                   </div>
                   <div className="flex flex-col font-suit font-thin justify-center text-[18px] tracking-[-0.54px] w-full">
                     <p className="leading-[normal] whitespace-pre-wrap">
