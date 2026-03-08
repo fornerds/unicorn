@@ -46,4 +46,26 @@ public class EmailService {
             throw new IllegalStateException("이메일 발송에 실패했습니다: " + e.getMessage());
         }
     }
+
+    /**
+     * 문의 답변 메일 발송 (1차 답변). 이후 추가 대화는 메일에서 진행.
+     */
+    public void sendInquiryReply(String toEmail, String inquirerName, String inquiryContent, String replyMessage) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(toEmail);
+        message.setSubject("[Unicorn] 문의하신 내용에 대한 답변입니다");
+        String body = inquirerName + "님,\n\n문의해 주셔서 감사합니다.\n\n"
+                + "■ 문의 내용\n" + (inquiryContent != null ? inquiryContent : "") + "\n\n"
+                + "■ 답변\n" + (replyMessage != null ? replyMessage : "") + "\n\n"
+                + "추가로 궁금하신 점이 있으시면 이 메일에 답장 주시면 됩니다.\n\n— Unicorn";
+        message.setText(body);
+        try {
+            mailSender.send(message);
+            log.info("Inquiry reply email sent to {}", toEmail);
+        } catch (Exception e) {
+            log.warn("Failed to send inquiry reply to {}: {}", toEmail, e.getMessage());
+            throw new IllegalStateException("답변 메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        }
+    }
 }

@@ -229,10 +229,13 @@ CREATE TABLE IF NOT EXISTS inquiries (
   product_id BIGINT,
   inquiry_type VARCHAR(50) NOT NULL,
   content TEXT NOT NULL,
+  status VARCHAR(30) NOT NULL DEFAULT 'pending',
+  replied_at DATETIME(6) NULL,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,
   deleted_at DATETIME(6) NULL,
   INDEX idx_inquiries_created_at (created_at),
   INDEX idx_inquiries_inquiry_type (inquiry_type),
+  INDEX idx_inquiries_status (status),
   FOREIGN KEY (product_id) REFERENCES products(id)
 );

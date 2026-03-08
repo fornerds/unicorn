@@ -18,6 +18,8 @@ public class AdminInquiryDetailResponse {
     private String productName;
     private String inquiryType;
     private String content;
+    private String status;
+    private Instant repliedAt;
     private Instant createdAt;
     private Instant updatedAt;
 }

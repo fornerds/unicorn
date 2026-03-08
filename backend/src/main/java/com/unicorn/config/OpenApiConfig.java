@@ -75,10 +75,16 @@ public class OpenApiConfig {
                                         .description("Authorization Bearer 또는 access_token 쿠키")));
     }
 
-    /**
-     * 사용자용 API만 노출하는 그룹. Swagger UI에서 "user" 선택 시 관리자 API(/admin/**)가 조회되지 않음.
-     * 기본 노출 그룹은 application-dev.yml의 springdoc.swagger-ui.defaultGroup=user 로 설정 가능.
-     */
+    /** 전체 API(관리자 포함). Swagger UI 그룹에서 "default" 선택 시 표시. */
+    @Bean
+    public GroupedOpenApi defaultApi() {
+        return GroupedOpenApi.builder()
+                .group("default")
+                .pathsToMatch("/**")
+                .build();
+    }
+
+    /** 사용자용 API만 노출. "user" 선택 시 관리자 API(/admin/**) 제외. */
     @Bean
     public GroupedOpenApi userApi() {
         return GroupedOpenApi.builder()

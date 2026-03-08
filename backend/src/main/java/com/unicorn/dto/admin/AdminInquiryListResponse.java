@@ -16,5 +16,7 @@ public class AdminInquiryListResponse {
     private String inquiryType;
     private Long productId;
     private String productName;
+    private String status;
+    private Instant repliedAt;
     private Instant createdAt;
 }
