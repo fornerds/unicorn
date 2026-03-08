@@ -1,111 +1,51 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import {
   CheckIcon,
   DeleteIcon,
   MinusIcon,
   PlusIcon,
-  ArrowDownIcon,
 } from "@/components/ui/icons";
 import { cn } from "@/utils/cn";
 import { ROUTES } from "@/utils/constants";
 import { withBasePath } from "@/utils/assets";
+import { apiFetch } from "@/lib/api";
+
+interface ApiCartItem {
+  id: number;
+  productId: number;
+  color: string;
+  product: {
+    id: number;
+    name: string;
+    price: number;
+    imageUrl: string;
+  };
+  quantity: number;
+  price: number;
+}
+
+interface CartApiResponse {
+  data: {
+    items: ApiCartItem[];
+    totalAmount: number;
+  };
+}
 
 interface CartItem {
   id: string;
   productId: string;
   name: string;
-  price: number;
+  unitPrice: number;
   imageUrl: string;
-  category: string;
-  subCategory: string;
-  companyName: string;
+  color: string;
   quantity: number;
-  selectedColor: {
-    id: string;
-    name: string;
-    value: string;
-    borderColor: string;
-  };
   isChecked: boolean;
 }
-
-const mockCartItems: CartItem[] = [
-  {
-    id: "cart-1",
-    productId: "1",
-    name: "AURA_AI 가사 휴머노이드",
-    price: 85000000,
-    imageUrl: "/images/product01.png",
-    category: "HOME",
-    subCategory: "Human",
-    companyName: "Unitree",
-    quantity: 100,
-    selectedColor: {
-      id: "1",
-      name: "라이트블루/Light Blue",
-      value: "#e6edfc",
-      borderColor: "#c2c9d9",
-    },
-    isChecked: true,
-  },
-  {
-    id: "cart-2",
-    productId: "2",
-    name: "H1",
-    price: 1200000,
-    imageUrl: "/images/product02.png",
-    category: "HOME",
-    subCategory: "Human",
-    companyName: "Boston Dynamics",
-    quantity: 50,
-    selectedColor: {
-      id: "2",
-      name: "다크그레이/Dark Gray",
-      value: "#4b5563",
-      borderColor: "#374151",
-    },
-    isChecked: true,
-  },
-  {
-    id: "cart-3",
-    productId: "3",
-    name: "Spot",
-    price: 74500,
-    imageUrl: "/images/product03.png",
-    category: "HOME",
-    subCategory: "Quadruped",
-    companyName: "Boston Dynamics",
-    quantity: 200,
-    selectedColor: {
-      id: "3",
-      name: "화이트/White",
-      value: "#ffffff",
-      borderColor: "#e5e7eb",
-    },
-    isChecked: false,
-  },
-];
-
-const availableColors = [
-  {
-    id: "1",
-    name: "라이트블루/Light Blue",
-    value: "#e6edfc",
-    borderColor: "#c2c9d9",
-  },
-  {
-    id: "2",
-    name: "다크그레이/Dark Gray",
-    value: "#4b5563",
-    borderColor: "#374151",
-  },
-  { id: "3", name: "화이트/White", value: "#ffffff", borderColor: "#e5e7eb" },
-  { id: "4", name: "아이보리/Ivory", value: "#fefefe", borderColor: "#dedede" },
-];
 
 interface CheckboxProps {
   checked: boolean;
@@ -134,16 +74,46 @@ const Checkbox = ({ checked, onChange, className }: CheckboxProps) => {
   );
 };
 
+function toCartItem(api: ApiCartItem): CartItem {
+  return {
+    id: String(api.id),
+    productId: String(api.productId),
+    name: api.product.name,
+    unitPrice: api.product.price,
+    imageUrl: api.product.imageUrl,
+    color: api.color,
+    quantity: api.quantity,
+    isChecked: true,
+  };
+}
+
 export default function CartPage() {
   const router = useRouter();
-  const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems);
-  const [showColorDropdowns, setShowColorDropdowns] = useState<
-    Record<string, boolean>
-  >({});
-  const colorDropdownRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set());
+  const quantityTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {},
+  );
+
+  const fetchCart = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await apiFetch<CartApiResponse>("/cart");
+      setCartItems(res.data.items.map(toCartItem));
+    } catch {
+      setCartItems([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
   const allChecked = useMemo(
-    () => cartItems.every((item) => item.isChecked),
+    () => cartItems.length > 0 && cartItems.every((item) => item.isChecked),
     [cartItems],
   );
   const checkedItems = useMemo(
@@ -152,58 +122,76 @@ export default function CartPage() {
   );
 
   const handleSelectAll = (checked: boolean) => {
-    setCartItems((prev) =>
-      prev.map((item) => ({ ...item, isChecked: checked })),
-    );
+    setCartItems((prev) => prev.map((item) => ({ ...item, isChecked: checked })));
   };
 
   const handleItemCheck = (id: string, checked: boolean) => {
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, isChecked: checked } : item,
-      ),
+      prev.map((item) => (item.id === id ? { ...item, isChecked: checked } : item)),
     );
   };
+
+  const updateQuantityApi = useCallback(async (id: string, quantity: number) => {
+    setUpdatingIds((prev) => new Set(prev).add(id));
+    try {
+      await apiFetch(`/cart/items/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ quantity }),
+      });
+    } catch {
+      // 실패 시 서버 데이터로 복원
+      await fetchCart();
+    } finally {
+      setUpdatingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  }, [fetchCart]);
 
   const handleQuantityChange = (id: string, delta: number) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item,
-      ),
-    );
-  };
-
-  const handleQuantityInput = (id: string, value: string) => {
-    // 숫자만 허용
-    const numericValue = value.replace(/[^0-9]/g, "");
+    let nextQty = 1;
     setCartItems((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          if (numericValue === "") {
-            return { ...item, quantity: 0 };
-          } else {
-            const numValue = parseInt(numericValue, 10);
-            if (!isNaN(numValue) && numValue >= 1) {
-              return { ...item, quantity: numValue };
-            }
-          }
+          nextQty = Math.max(1, item.quantity + delta);
+          return { ...item, quantity: nextQty };
         }
         return item;
+      }),
+    );
+    clearTimeout(quantityTimers.current[id]);
+    quantityTimers.current[id] = setTimeout(() => {
+      updateQuantityApi(id, nextQty);
+    }, 400);
+  };
+
+  const handleQuantityInput = (id: string, value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setCartItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        if (numericValue === "") return { ...item, quantity: 0 };
+        const num = parseInt(numericValue, 10);
+        return !isNaN(num) && num >= 1 ? { ...item, quantity: num } : item;
       }),
     );
   };
 
   const handleQuantityBlur = (id: string) => {
+    let finalQty = 1;
     setCartItems((prev) =>
       prev.map((item) => {
-        if (item.id === id && (item.quantity < 1 || item.quantity === 0)) {
-          return { ...item, quantity: 1 };
+        if (item.id === id) {
+          finalQty = item.quantity < 1 || item.quantity === 0 ? 1 : item.quantity;
+          return { ...item, quantity: finalQty };
         }
         return item;
       }),
     );
+    clearTimeout(quantityTimers.current[id]);
+    updateQuantityApi(id, finalQty);
   };
 
   const handleQuantityFocus = (id: string) => {
@@ -212,77 +200,66 @@ export default function CartPage() {
     );
   };
 
-  const handleColorChange = (
-    id: string,
-    color: (typeof availableColors)[0],
-  ) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, selectedColor: color } : item,
-      ),
-    );
-    setShowColorDropdowns((prev) => ({ ...prev, [id]: false }));
-  };
-
-  const handleDeleteItem = (id: string) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const handleDeleteAll = () => {
-    setCartItems((prev) => prev.filter((item) => !item.isChecked));
-  };
-
-  const toggleColorDropdown = (id: string) => {
-    setShowColorDropdowns((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      Object.entries(colorDropdownRefs.current).forEach(([id, ref]) => {
-        if (
-          ref &&
-          !ref.contains(event.target as Node) &&
-          showColorDropdowns[id]
-        ) {
-          setShowColorDropdowns((prev) => ({ ...prev, [id]: false }));
-        }
-      });
-    };
-
-    if (Object.values(showColorDropdowns).some((open) => open)) {
-      document.addEventListener("mousedown", handleClickOutside);
+  const handleDeleteItem = async (id: string) => {
+    const prev = cartItems;
+    setCartItems((items) => items.filter((item) => item.id !== id));
+    try {
+      await apiFetch(`/cart/items/${id}`, { method: "DELETE" });
+    } catch {
+      setCartItems(prev);
     }
+  };
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showColorDropdowns]);
+  const handleDeleteAll = async () => {
+    const targets = cartItems.filter((item) => item.isChecked);
+    if (targets.length === 0) return;
+    const prev = cartItems;
+    setCartItems((items) => items.filter((item) => !item.isChecked));
+    try {
+      await Promise.all(
+        targets.map((item) =>
+          apiFetch(`/cart/items/${item.id}`, { method: "DELETE" }),
+        ),
+      );
+    } catch {
+      setCartItems(prev);
+    }
+  };
 
-  const totalProductPrice = useMemo(() => {
-    return checkedItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0,
-    );
-  }, [checkedItems]);
+  const totalProductPrice = useMemo(
+    () => checkedItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
+    [checkedItems],
+  );
 
   const shippingFee = checkedItems.length > 0 ? 100000 : 0;
   const discount = 0;
   const totalPrice = totalProductPrice + shippingFee - discount;
 
-  const categoryDisplayMap: Record<string, string> = {
-    HOME: "가정용",
-    FIREFIGHTING: "화재진압",
-    INDUSTRIAL: "산업용",
-    MEDICAL: "의료용",
-    LOGISTICS: "물류용",
-  };
-
-  const subCategoryDisplayMap: Record<string, string> = {
-    Human: "가사 및 보조 휴머노이드",
-    Quadruped: "4족보행",
-    Manipulator: "매니퓰레이터",
-    Wheeled: "바퀴형",
-  };
+  if (isLoading) {
+    return (
+      <div className="bg-white min-h-screen">
+        <div className="flex flex-col gap-[52px] items-start pb-[150px] pt-[100px] px-[20px] md:px-[40px] lg:px-[60px] w-full max-w-[1800px] mx-auto">
+          <div className="flex flex-col gap-[10px]">
+            <div className="h-[48px] w-[300px] bg-[#f3f4f6] rounded animate-pulse" />
+            <div className="h-[24px] w-[200px] bg-[#f3f4f6] rounded animate-pulse" />
+          </div>
+          <div className="flex flex-col gap-[20px] w-full lg:w-[886px]">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex gap-[20px] items-center w-full animate-pulse">
+                <div className="size-[22px] bg-[#f3f4f6] rounded" />
+                <div className="w-[140px] h-[140px] bg-[#f3f4f6] rounded-[12px] shrink-0" />
+                <div className="flex flex-col gap-[12px] flex-1">
+                  <div className="h-[20px] bg-[#f3f4f6] rounded w-[80%]" />
+                  <div className="h-[20px] bg-[#f3f4f6] rounded w-[60%]" />
+                  <div className="h-[36px] bg-[#f3f4f6] rounded w-[120px]" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white min-h-screen">
@@ -298,211 +275,170 @@ export default function CartPage() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-[38px] items-start w-full">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex gap-[20px] items-center py-[4px]">
-                  <div className="flex items-center p-[10px] shrink-0">
-                    <Checkbox checked={allChecked} onChange={handleSelectAll} />
-                  </div>
-                  <p className="font-suit font-normal text-[14px] leading-[1.35] text-[#374151]">
-                    전체 선택
-                  </p>
-                </div>
+            {cartItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center w-full py-[80px] gap-[16px]">
+                <p className="font-suit font-normal text-[20px] text-[#959ba9]">
+                  장바구니가 비어있습니다.
+                </p>
                 <button
-                  onClick={handleDeleteAll}
-                  className="font-suit font-normal text-[18px] leading-[1.35] text-[#959ba9] underline hover:opacity-80 transition-opacity"
+                  onClick={() => router.push(ROUTES.PRODUCTS)}
+                  className="font-suit font-medium text-[16px] text-[#1f2937] underline hover:opacity-80 transition-opacity"
                 >
-                  모두 삭제
+                  쇼핑 계속하기
                 </button>
               </div>
+            ) : (
+              <div className="flex flex-col gap-[38px] items-start w-full">
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex gap-[20px] items-center py-[4px]">
+                    <div className="flex items-center p-[10px] shrink-0">
+                      <Checkbox checked={allChecked} onChange={handleSelectAll} />
+                    </div>
+                    <p className="font-suit font-normal text-[14px] leading-[1.35] text-[#374151]">
+                      전체 선택
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleDeleteAll}
+                    className="font-suit font-normal text-[18px] leading-[1.35] text-[#959ba9] underline hover:opacity-80 transition-opacity"
+                  >
+                    모두 삭제
+                  </button>
+                </div>
 
-              <div className="flex flex-col gap-[20px] items-start w-full">
-                {cartItems.map((item, index) => (
-                  <div key={item.id} className="w-full">
-                    <div className="flex items-center justify-between w-full gap-[20px]">
-                      <div className="flex items-center p-[10px] shrink-0">
-                        <Checkbox
-                          checked={item.isChecked}
-                          onChange={(checked) =>
-                            handleItemCheck(item.id, checked)
-                          }
-                        />
-                      </div>
-                      <div className="bg-[#f9fafb] flex items-center rounded-[12px] shrink-0 w-[140px] h-[140px]">
-                        <div className="relative w-full h-full">
-                          <Image
-                            src={withBasePath(item.imageUrl)}
-                            alt={item.name}
-                            fill
-                            unoptimized
-                            className="object-cover rounded-[12px]"
+                <div className="flex flex-col gap-[20px] items-start w-full">
+                  {cartItems.map((item, index) => (
+                    <div key={item.id} className="w-full">
+                      <div className="flex items-center justify-between w-full gap-[20px]">
+                        <div className="flex items-center p-[10px] shrink-0">
+                          <Checkbox
+                            checked={item.isChecked}
+                            onChange={(checked) => handleItemCheck(item.id, checked)}
                           />
                         </div>
-                      </div>
-                      <div className="flex flex-col gap-[37px] items-start w-full max-w-[660px]">
-                        <div className="flex flex-col items-start w-full">
-                          <div className="flex items-center justify-between w-full">
-                            <div className="flex gap-[11px] items-center">
-                              <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
-                                {categoryDisplayMap[item.category] ||
-                                  item.category}
-                              </p>
-                              <div className="w-[13px] h-[13px] flex items-center justify-center">
-                                <svg
-                                  width="13"
-                                  height="13"
-                                  viewBox="0 0 13 13"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M5 4L10 8L5 12"
-                                    stroke="#959ba9"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </div>
-                              <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
-                                {subCategoryDisplayMap[item.subCategory] ||
-                                  item.subCategory}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => handleDeleteItem(item.id)}
-                              className="flex items-center justify-center p-[2.333px] rounded-[9.333px] w-[28px] h-[28px] hover:opacity-80 transition-opacity shrink-0"
-                            >
-                              <DeleteIcon
-                                width={18.667}
-                                height={21}
-                                stroke="#374151"
-                                strokeWidth={1}
-                              />
-                            </button>
-                          </div>
-                          <div className="flex items-center w-full">
-                            <h3 className="flex-1 font-suit font-normal text-[20px] leading-[1.5] text-[#1f2937] truncate">
-                              {item.name}
-                            </h3>
-                          </div>
-                        </div>
-                        <div className="flex items-end justify-between w-full">
-                          <div className="flex flex-1 gap-[10px] items-center min-w-0">
-                            <div className="border border-[#e5e7eb] flex h-[36px] items-center justify-between rounded-[8px] overflow-hidden w-[100px] shrink-0">
-                              <button
-                                onClick={() =>
-                                  handleQuantityChange(item.id, -1)
+                        <Link
+                          href={ROUTES.PRODUCT_DETAIL(item.productId)}
+                          className="bg-[#f9fafb] flex items-center rounded-[12px] shrink-0 w-[140px] h-[140px] hover:opacity-80 transition-opacity"
+                        >
+                          <div className="relative w-full h-full">
+                            {item.imageUrl ? (
+                              <Image
+                                src={
+                                  item.imageUrl.startsWith("http")
+                                    ? item.imageUrl
+                                    : withBasePath(item.imageUrl)
                                 }
-                                className="flex items-center justify-center w-[28px] h-full bg-[#f9fafb] shrink-0 hover:opacity-80 transition-opacity"
-                              >
-                                <MinusIcon
-                                  width={12}
-                                  height={1}
-                                  stroke="#6b7280"
-                                  strokeWidth={1.3}
+                                alt={item.name}
+                                fill
+                                unoptimized
+                                className="object-cover rounded-[12px]"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center rounded-[12px]">
+                                <span className="font-cardo font-medium text-[14px] text-[#1f2937]">
+                                  UNICORN
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </Link>
+                        <div className="flex flex-col gap-[37px] items-start w-full max-w-[660px]">
+                          <div className="flex flex-col items-start w-full">
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex gap-[8px] items-center">
+                                <div
+                                  className="rounded-full w-[14px] h-[14px] border border-[#d1d5db] shrink-0"
+                                  style={{ backgroundColor: item.color }}
                                 />
-                              </button>
-                              <div className="flex-1 h-full bg-white border-x border-[#e5e7eb] flex items-center justify-center">
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  value={
-                                    item.quantity === 0 ? "" : item.quantity
-                                  }
-                                  onChange={(e) =>
-                                    handleQuantityInput(item.id, e.target.value)
-                                  }
-                                  onFocus={() => handleQuantityFocus(item.id)}
-                                  onBlur={() => handleQuantityBlur(item.id)}
-                                  className="font-suit font-medium text-[16px] leading-[1.35] text-[#6b7280] text-center bg-transparent border-none outline-none w-full"
-                                />
+                                <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#959ba9] whitespace-nowrap">
+                                  {item.color}
+                                </p>
                               </div>
                               <button
-                                onClick={() => handleQuantityChange(item.id, 1)}
-                                className="flex items-center justify-center w-[28px] h-full bg-[#f9fafb] shrink-0 hover:opacity-80 transition-opacity"
+                                onClick={() => handleDeleteItem(item.id)}
+                                className="flex items-center justify-center p-[2.333px] rounded-[9.333px] w-[28px] h-[28px] hover:opacity-80 transition-opacity shrink-0"
                               >
-                                <PlusIcon
-                                  width={15}
-                                  height={15}
-                                  stroke="#6b7280"
-                                  strokeWidth={1.3}
+                                <DeleteIcon
+                                  width={18.667}
+                                  height={21}
+                                  stroke="#374151"
+                                  strokeWidth={1}
                                 />
                               </button>
                             </div>
-                            <div
-                              className="relative"
-                              ref={(el) => {
-                                colorDropdownRefs.current[item.id] = el;
-                              }}
-                            >
-                              <button
-                                onClick={() => toggleColorDropdown(item.id)}
-                                className="bg-[#f9fafb] border border-[#e5e7eb] flex gap-[12px] h-[36px] items-center px-[12px] py-[10px] rounded-[8px] shrink-0 hover:opacity-80 transition-opacity"
+                            <div className="flex items-center w-full">
+                              <Link
+                                href={ROUTES.PRODUCT_DETAIL(item.productId)}
+                                className="flex-1 min-w-0 hover:opacity-70 transition-opacity"
                               >
-                                <div
-                                  className="rounded-full shrink-0 w-[19px] h-[19px] border"
-                                  style={{
-                                    backgroundColor: item.selectedColor.value,
-                                    borderColor: item.selectedColor.borderColor,
-                                  }}
-                                />
-                                <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#6b7280] whitespace-nowrap leading-[1]">
-                                  {item.selectedColor.name.split("/")[0]}
-                                </p>
-                                <div className="flex items-center justify-center p-px rounded-[4px] w-[12px] h-[12px] shrink-0">
-                                  <ArrowDownIcon
-                                    width={9}
-                                    height={5}
-                                    fill="#6b7280"
-                                    className={`transition-transform ${showColorDropdowns[item.id] ? "rotate-180" : ""}`}
-                                  />
-                                </div>
-                              </button>
-                              {showColorDropdowns[item.id] && (
-                                <div className="absolute top-full left-0 mt-[8px] bg-white border border-[#e5e7eb] rounded-[8px] shadow-lg z-10 min-w-[200px]">
-                                  {availableColors.map((color) => (
-                                    <button
-                                      key={color.id}
-                                      onClick={() =>
-                                        handleColorChange(item.id, color)
-                                      }
-                                      className="w-full bg-[#f9fafb] border-b border-[#e5e7eb] last:border-b-0 flex items-center gap-[12px] px-[12px] py-[10px] hover:bg-[#f3f4f6] transition-colors first:rounded-t-[8px] last:rounded-b-[8px]"
-                                    >
-                                      <div
-                                        className="rounded-full shrink-0 w-[19px] h-[19px] border"
-                                        style={{
-                                          backgroundColor: color.value,
-                                          borderColor: color.borderColor,
-                                        }}
-                                      />
-                                      <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#6b7280] whitespace-nowrap">
-                                        {color.name.split("/")[0]}
-                                      </p>
-                                    </button>
-                                  ))}
-                                </div>
-                              )}
+                                <h3 className="font-suit font-normal text-[20px] leading-[1.5] text-[#1f2937] truncate">
+                                  {item.name}
+                                </h3>
+                              </Link>
                             </div>
                           </div>
-                          <div className="flex items-center shrink-0">
-                            <p className="font-suit font-semibold text-[24px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
-                              {new Intl.NumberFormat("ko-KR").format(
-                                item.price * item.quantity,
-                              )}
-                              원
-                            </p>
+                          <div className="flex items-end justify-between w-full">
+                            <div className="flex flex-1 gap-[10px] items-center min-w-0">
+                              <div className="border border-[#e5e7eb] flex h-[36px] items-center justify-between rounded-[8px] overflow-hidden w-[100px] shrink-0">
+                                <button
+                                  onClick={() => handleQuantityChange(item.id, -1)}
+                                  disabled={updatingIds.has(item.id)}
+                                  className="flex items-center justify-center w-[28px] h-full bg-[#f9fafb] shrink-0 hover:opacity-80 transition-opacity disabled:opacity-40"
+                                >
+                                  <MinusIcon
+                                    width={12}
+                                    height={1}
+                                    stroke="#6b7280"
+                                    strokeWidth={1.3}
+                                  />
+                                </button>
+                                <div className="flex-1 h-full bg-white border-x border-[#e5e7eb] flex items-center justify-center">
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={item.quantity === 0 ? "" : item.quantity}
+                                    onChange={(e) =>
+                                      handleQuantityInput(item.id, e.target.value)
+                                    }
+                                    onFocus={() => handleQuantityFocus(item.id)}
+                                    onBlur={() => handleQuantityBlur(item.id)}
+                                    disabled={updatingIds.has(item.id)}
+                                    className="font-suit font-medium text-[16px] leading-[1.35] text-[#6b7280] text-center bg-transparent border-none outline-none w-full disabled:opacity-40"
+                                  />
+                                </div>
+                                <button
+                                  onClick={() => handleQuantityChange(item.id, 1)}
+                                  disabled={updatingIds.has(item.id)}
+                                  className="flex items-center justify-center w-[28px] h-full bg-[#f9fafb] shrink-0 hover:opacity-80 transition-opacity disabled:opacity-40"
+                                >
+                                  <PlusIcon
+                                    width={15}
+                                    height={15}
+                                    stroke="#6b7280"
+                                    strokeWidth={1.3}
+                                  />
+                                </button>
+                              </div>
+                            </div>
+                            <div className="flex items-center shrink-0">
+                              <p className="font-suit font-semibold text-[24px] leading-[1.5] text-[#1f2937] whitespace-nowrap">
+                                {new Intl.NumberFormat("ko-KR").format(
+                                  item.unitPrice * item.quantity,
+                                )}
+                                원
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
+                      {index < cartItems.length - 1 && (
+                        <div className="h-[1px] w-full bg-[#e5e7eb] mt-[20px]" />
+                      )}
                     </div>
-                    {index < cartItems.length - 1 && (
-                      <div className="h-[1px] w-full bg-[#e5e7eb] mt-[20px]" />
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-[26px] items-start rounded-[16px] shrink-0 w-full lg:w-[457px]">
@@ -556,13 +492,10 @@ export default function CartPage() {
                     id: item.id,
                     productId: item.productId,
                     name: item.name,
-                    price: item.price,
+                    price: item.unitPrice,
                     quantity: item.quantity,
-                    selectedColor: item.selectedColor,
+                    color: item.color,
                     imageUrl: item.imageUrl,
-                    category: item.category,
-                    subCategory: item.subCategory,
-                    companyName: item.companyName,
                   })),
                   totalProductPrice,
                   shippingFee,

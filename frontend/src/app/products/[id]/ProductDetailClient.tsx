@@ -62,6 +62,8 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const [isCartLoading, setIsCartLoading] = useState(false);
+  const [cartMessage, setCartMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showColorDropdown, setShowColorDropdown] = useState(false);
   const colorDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -136,6 +138,28 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
       if (!isNaN(numValue) && numValue >= 1) {
         setQuantity(numValue);
       }
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (isCartLoading || !product) return;
+    setIsCartLoading(true);
+    setCartMessage(null);
+    try {
+      await apiFetch("/cart/items", {
+        method: "POST",
+        body: JSON.stringify({
+          productId: product.id,
+          color: selectedColor || "",
+          quantity,
+        }),
+      });
+      setCartMessage({ type: "success", text: "장바구니에 추가되었습니다." });
+    } catch {
+      setCartMessage({ type: "error", text: "장바구니 추가에 실패했습니다." });
+    } finally {
+      setIsCartLoading(false);
+      setTimeout(() => setCartMessage(null), 3000);
     }
   };
 
@@ -428,9 +452,13 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
                       />
                     </button>
                   </div>
-                  <button className="flex flex-1 h-[48.75px] items-center justify-center px-[24px] sm:px-[24px] py-[9px] bg-[#f9fafb] border-[0.5px] border-[#e5e7eb] rounded-[7.5px] hover:opacity-80 transition-opacity">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isCartLoading}
+                    className="flex flex-1 h-[48.75px] items-center justify-center px-[24px] sm:px-[24px] py-[9px] bg-[#f9fafb] border-[0.5px] border-[#e5e7eb] rounded-[7.5px] hover:opacity-80 transition-opacity disabled:opacity-50"
+                  >
                     <p className="font-suit font-light text-[15px] leading-[1.3] text-[#6c6c6c] text-center whitespace-nowrap">
-                      장바구니
+                      {isCartLoading ? "추가 중..." : "장바구니"}
                     </p>
                   </button>
                   <button className="flex flex-1 h-[48.75px] items-center justify-center px-[24px] sm:px-[24px] py-[9px] bg-black rounded-[7.5px] hover:opacity-90 transition-opacity">
@@ -439,6 +467,11 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
                     </p>
                   </button>
                 </div>
+                {cartMessage && (
+                  <p className={`font-suit font-light text-[13px] text-right w-full ${cartMessage.type === "success" ? "text-[#059669]" : "text-[#dc2626]"}`}>
+                    {cartMessage.text}
+                  </p>
+                )}
                 <div className="flex flex-col md:flex-row font-suit font-extralight items-start md:items-end justify-between px-[3px] w-full text-[13.5px] text-[#959ba9] gap-[10px] md:gap-0">
                   <div className="flex flex-col gap-[3.75px] items-start w-full md:w-[223.5px]">
                     <p className="leading-[normal] whitespace-pre-wrap">
