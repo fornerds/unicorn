@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useChat } from "@ai-sdk/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
@@ -12,8 +11,9 @@ import {
   PlusIcon,
   UploadIcon,
 } from "@/components/ui/icons";
+import { apiFetch } from "@/lib/api";
 
-const suggestedQuestions = [
+const FALLBACK_QUESTIONS = [
   "몸이 불편한 가족을 케어할 로봇이 필요해요",
   "산업현장용 로봇이 필요해요",
   "공장에 인력대신 투입할 로봇이 필요해요",
@@ -23,253 +23,118 @@ interface ChatMessage {
   id: string;
   type: "user" | "ai";
   content: string;
-  products?: Array<{
-    id: string;
-    name: string;
-    price: string;
-    category: string;
-    image: string;
-  }>;
+}
+
+interface MoodQuestion {
+  id: number;
+  question: string;
+  sortOrder: number;
+}
+
+interface MoodQuestionsResponse {
+  data: {
+    items: MoodQuestion[];
+  };
+}
+
+interface ChatResponse {
+  data: {
+    reply: string;
+    conversationId: string;
+  };
 }
 
 export const AIChatSection = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [suggestedQuestions, setSuggestedQuestions] =
+    useState<string[]>(FALLBACK_QUESTIONS);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const { messages, sendMessage, status, error, setMessages } = useChat({
-    transport: {
-      async sendMessages({ messages, abortSignal }) {
-        // basePath를 고려한 API 경로
-        const basePath =
-          typeof window !== "undefined" &&
-          window.location.pathname.startsWith("/unicorn")
-            ? "/unicorn"
-            : "";
-        const apiPath = `${basePath}/api/chat`;
-
-        const response = await fetch(apiPath, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages }),
-          signal: abortSignal,
-        });
-
-        // 405 Method Not Allowed는 정적 export 환경에서 발생 (API 라우트 미지원)
-        if (response.status === 405) {
-          throw new Error(
-            "정적 사이트에서는 AI 채팅 기능을 사용할 수 없습니다. 개발 서버에서만 사용 가능합니다.",
-          );
-        }
-
-        if (!response.ok) {
-          throw new Error(
-            `Failed to send message: ${response.status} ${response.statusText}`,
-          );
-        }
-        if (!response.body) throw new Error("No response body");
-
-        // @tanstack/ai의 toHttpResponse는 newline-delimited JSON 형식으로 스트림을 반환
-        // 각 라인은 JSON 객체로 파싱되어야 함
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        return new ReadableStream({
-          async start(controller) {
-            let isClosed = false;
-            let currentMessageId: string | null = null;
-            let hasSentTextStart = false;
-
-            const safeEnqueue = (chunk: any) => {
-              if (!isClosed) {
-                try {
-                  controller.enqueue(chunk);
-                } catch (e) {
-                  // 스트림이 이미 닫혔으면 무시
-                  isClosed = true;
-                }
-              }
-            };
-
-            try {
-              while (true) {
-                const { done, value } = await reader.read();
-
-                if (done) {
-                  // 남은 버퍼 처리 (스트림을 닫기 전에)
-                  if (buffer.trim() && !isClosed) {
-                    const lines = buffer.split("\n").filter(Boolean);
-                    for (const line of lines) {
-                      if (isClosed) break;
-                      try {
-                        const chunk = JSON.parse(line);
-                        // @tanstack/ai의 StreamChunk 형식을 @ai-sdk/react의 UIMessageChunk 형식으로 변환
-                        if (chunk.type === "content" && chunk.delta) {
-                          const messageId = chunk.id || "temp";
-
-                          // 첫 번째 content chunk인 경우 text-start 전송
-                          if (
-                            !hasSentTextStart ||
-                            currentMessageId !== messageId
-                          ) {
-                            safeEnqueue({
-                              type: "text-start",
-                              id: messageId,
-                            });
-                            hasSentTextStart = true;
-                            currentMessageId = messageId;
-                          }
-
-                          safeEnqueue({
-                            type: "text-delta",
-                            delta: chunk.delta,
-                            id: messageId,
-                          });
-                        } else if (chunk.type === "done") {
-                          safeEnqueue({
-                            type: "finish",
-                            finishReason: chunk.finishReason || "stop",
-                          });
-                          // 메시지 완료 후 상태 리셋
-                          hasSentTextStart = false;
-                          currentMessageId = null;
-                        }
-                      } catch (e) {
-                        // 파싱 오류는 무시하고 계속 진행
-                        console.warn("Parse warning:", e, line);
-                      }
-                    }
-                  }
-                  // 모든 데이터 처리 후 스트림 닫기
-                  if (!isClosed) {
-                    controller.close();
-                    isClosed = true;
-                  }
-                  break;
-                }
-
-                if (isClosed) break;
-
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split("\n");
-                buffer = lines.pop() || ""; // 마지막 불완전한 라인은 버퍼에 보관
-
-                for (const line of lines) {
-                  if (isClosed || !line.trim()) continue;
-                  try {
-                    const chunk = JSON.parse(line);
-                    // @tanstack/ai의 StreamChunk 형식을 @ai-sdk/react의 UIMessageChunk 형식으로 변환
-                    if (chunk.type === "content" && chunk.delta) {
-                      const messageId = chunk.id || "temp";
-
-                      // 첫 번째 content chunk인 경우 text-start 전송
-                      if (!hasSentTextStart || currentMessageId !== messageId) {
-                        safeEnqueue({
-                          type: "text-start",
-                          id: messageId,
-                        });
-                        hasSentTextStart = true;
-                        currentMessageId = messageId;
-                      }
-
-                      safeEnqueue({
-                        type: "text-delta",
-                        delta: chunk.delta,
-                        id: messageId,
-                      });
-                    } else if (chunk.type === "done") {
-                      safeEnqueue({
-                        type: "finish",
-                        finishReason: chunk.finishReason || "stop",
-                      });
-                      // 메시지 완료 후 상태 리셋
-                      hasSentTextStart = false;
-                      currentMessageId = null;
-                    }
-                  } catch (e) {
-                    // 파싱 오류는 무시하고 계속 진행
-                    console.warn("Parse warning:", e, line);
-                  }
-                }
-              }
-            } catch (error) {
-              if (!isClosed) {
-                try {
-                  controller.error(error);
-                } catch (e) {
-                  // 이미 닫힌 스트림에 대한 오류는 무시
-                }
-              }
-            }
-          },
-        });
-      },
-      async reconnectToStream({ chatId }) {
-        // 재연결 기능은 필요시 구현
-        throw new Error("Reconnect not implemented");
-      },
-    },
-    onError: (error: Error) => {
-      console.error("Chat error:", error);
-      // 정적 사이트 환경에서의 에러를 사용자에게 표시
-      if (
-        error.message.includes("정적 사이트") ||
-        error.message.includes("405")
-      ) {
-        setMessages([
-          ...messages,
-          {
-            id: `error-${Date.now()}`,
-            role: "assistant",
-            parts: [
-              {
-                type: "text",
-                text: "죄송합니다. 현재 정적 사이트 환경에서는 AI 채팅 기능을 사용할 수 없습니다. 이 기능은 개발 서버에서만 작동합니다.",
-              },
-            ],
-          },
-        ]);
-      }
-    },
-  });
-
-  // 새로고침 시 메시지 초기화
   useEffect(() => {
-    if (setMessages) {
-      setMessages([]);
-    }
-  }, [setMessages]);
+    const fetchQuestions = async () => {
+      try {
+        const res =
+          await apiFetch<MoodQuestionsResponse>("/ai/mood-questions");
+        const questions = res.data.items.map((q) => q.question);
+        if (questions.length > 0) {
+          setSuggestedQuestions(questions);
+        }
+      } catch {
+        // fallback questions already set as default state
+      }
+    };
+    fetchQuestions();
+  }, []);
 
   useEffect(() => {
     if (chatEndRef.current) {
-      // 내부 스크롤 컨테이너 찾기
       const scrollContainer = chatEndRef.current.closest(
         '[class*="overflow-y-auto"]',
       ) as HTMLElement;
       if (scrollContainer) {
-        // 내부 스크롤만 수행
         scrollContainer.scrollTo({
           top: scrollContainer.scrollHeight,
           behavior: "smooth",
         });
       }
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
   };
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!input.trim() || status === "streaming" || status === "submitted")
-      return;
-    sendMessage({ role: "user", parts: [{ type: "text", text: input }] });
+    if (!input.trim() || isLoading) return;
+
+    const messageText = input.trim();
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      type: "user",
+      content: messageText,
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setIsLoading(true);
+
+    try {
+      const res = await apiFetch<ChatResponse>("/ai/chat", {
+        method: "POST",
+        body: JSON.stringify({
+          message: messageText,
+          ...(conversationId && { conversationId }),
+        }),
+      });
+
+      setConversationId(res.data.conversationId);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `ai-${Date.now()}`,
+          type: "ai",
+          content: res.data.reply,
+        },
+      ]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `ai-error-${Date.now()}`,
+          type: "ai",
+          content: "죄송합니다. 응답을 불러오는 중 오류가 발생했습니다.",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const isLoading = status === "streaming" || status === "submitted";
   const hasChatHistory = messages.length > 0;
 
   return (
@@ -365,7 +230,6 @@ export const AIChatSection = () => {
                       stroke="#959BA9"
                       strokeWidth={2}
                     />
-
                     <p className="font-suit font-medium text-[20px] leading-[1.3] text-[#959BA9]">
                       Add File
                     </p>
@@ -373,7 +237,7 @@ export const AIChatSection = () => {
                   <button
                     onClick={handleSubmit}
                     disabled={isLoading || !input.trim()}
-                    className="bg-white border border-[#d1d5db] rounded-full w-[44px] h-[44px] flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity"
+                    className="bg-white border border-[#d1d5db] rounded-full w-[44px] h-[44px] flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <div className="w-[28px] h-[28px] relative shrink-0 flex items-center justify-center">
                       <UploadIcon
@@ -402,131 +266,109 @@ export const AIChatSection = () => {
                     element.scrollTop + element.clientHeight >=
                     element.scrollHeight - 1;
 
-                  // 스크롤이 맨 위에 있고 위로 스크롤하려는 경우
-                  if (isScrollingUp && isAtTop) {
-                    // 외부 스크롤로 전파 허용
-                    return;
-                  }
+                  if (isScrollingUp && isAtTop) return;
+                  if (isScrollingDown && isAtBottom) return;
 
-                  // 스크롤이 맨 아래에 있고 아래로 스크롤하려는 경우
-                  if (isScrollingDown && isAtBottom) {
-                    // 외부 스크롤로 전파 허용
-                    return;
-                  }
-
-                  // 내부 스크롤 중에는 외부 스크롤 전파 방지
                   e.preventDefault();
                   e.stopPropagation();
-
-                  // 내부 스크롤 수행
                   element.scrollTop += e.deltaY;
                 }}
               >
-                {messages.length === 0 ? (
-                  <div className="w-full text-center text-[#6b7280]">
-                    메시지가 없습니다.
-                  </div>
-                ) : (
-                  messages.map((msg) => {
-                    const textParts =
-                      msg.parts?.filter((part: any) => part.type === "text") ||
-                      [];
-                    const content = textParts
-                      .map((part: any) => part.text)
-                      .join("");
-                    return (
-                      <div key={msg.id} className="w-full">
-                        {msg.role === "user" ? (
-                          <div className="flex flex-col items-end justify-center w-full">
-                            <div className="bg-[#f3f4f6] border border-[#eaebef] rounded-[999px] flex items-center justify-end px-[20px] py-[6px] shrink-0 max-w-[80%]">
-                              <p className="font-suit font-medium text-[16px] leading-[1.6] text-[#374151] text-right whitespace-pre-wrap break-words">
-                                {content}
-                              </p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex flex-col gap-[20px] items-start w-full">
-                            <div className="font-suit font-medium text-[16px] leading-[1.6] text-[#374151] prose prose-sm max-w-none">
-                              <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                components={{
-                                  h1: ({ children }) => (
-                                    <h1 className="font-suit font-bold text-[20px] leading-[1.5] text-[#374151] mb-[12px] mt-[16px] first:mt-0">
-                                      {children}
-                                    </h1>
-                                  ),
-                                  h2: ({ children }) => (
-                                    <h2 className="font-suit font-bold text-[18px] leading-[1.5] text-[#374151] mb-[10px] mt-[14px] first:mt-0">
-                                      {children}
-                                    </h2>
-                                  ),
-                                  h3: ({ children }) => (
-                                    <h3 className="font-suit font-semibold text-[17px] leading-[1.5] text-[#374151] mb-[8px] mt-[12px] first:mt-0">
-                                      {children}
-                                    </h3>
-                                  ),
-                                  p: ({ children }) => (
-                                    <p className="font-suit font-medium text-[16px] leading-[1.6] text-[#374151] mb-[8px] last:mb-0">
-                                      {children}
-                                    </p>
-                                  ),
-                                  ul: ({ children }) => (
-                                    <ul className="list-disc list-outside mb-[8px] space-y-[4px] ml-[20px] pl-[20px]">
-                                      {children}
-                                    </ul>
-                                  ),
-                                  ol: ({ children }) => (
-                                    <ol className="list-decimal list-outside mb-[8px] space-y-[4px] ml-[20px] pl-[20px]">
-                                      {children}
-                                    </ol>
-                                  ),
-                                  li: ({ children }) => (
-                                    <li className="font-suit font-medium text-[16px] leading-[1.6] text-[#374151]">
-                                      {children}
-                                    </li>
-                                  ),
-                                  strong: ({ children }) => (
-                                    <strong className="font-suit font-semibold text-[#374151]">
-                                      {children}
-                                    </strong>
-                                  ),
-                                  em: ({ children }) => (
-                                    <em className="font-suit font-medium italic text-[#374151]">
-                                      {children}
-                                    </em>
-                                  ),
-                                  code: ({ children, className }) => {
-                                    const isInline = !className;
-                                    return isInline ? (
-                                      <code className="bg-[#f3f4f6] px-[4px] py-[2px] rounded text-[14px] font-mono text-[#374151]">
-                                        {children}
-                                      </code>
-                                    ) : (
-                                      <code className="block bg-[#f3f4f6] p-[12px] rounded-[8px] text-[14px] font-mono text-[#374151] overflow-x-auto mb-[8px]">
-                                        {children}
-                                      </code>
-                                    );
-                                  },
-                                  blockquote: ({ children }) => (
-                                    <blockquote className="border-l-[4px] border-[#d1d5db] pl-[16px] my-[8px] italic text-[#6b7280]">
-                                      {children}
-                                    </blockquote>
-                                  ),
-                                }}
-                              >
-                                {content}
-                              </ReactMarkdown>
-                              {isLoading &&
-                                msg.id ===
-                                  messages[messages.length - 1]?.id && (
-                                  <span className="inline-block w-2 h-4 bg-[#374151] ml-1 animate-pulse" />
-                                )}
-                            </div>
-                          </div>
-                        )}
+                {messages.map((msg) => (
+                  <div key={msg.id} className="w-full">
+                    {msg.type === "user" ? (
+                      <div className="flex flex-col items-end justify-center w-full">
+                        <div className="bg-[#f3f4f6] border border-[#eaebef] rounded-[999px] flex items-center justify-end px-[20px] py-[6px] shrink-0 max-w-[80%]">
+                          <p className="font-suit font-medium text-[16px] leading-[1.6] text-[#374151] text-right whitespace-pre-wrap break-words">
+                            {msg.content}
+                          </p>
+                        </div>
                       </div>
-                    );
-                  })
+                    ) : (
+                      <div className="flex flex-col gap-[20px] items-start w-full">
+                        <div className="font-suit font-medium text-[16px] leading-[1.6] text-[#374151] prose prose-sm max-w-none">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              h1: ({ children }) => (
+                                <h1 className="font-suit font-bold text-[20px] leading-[1.5] text-[#374151] mb-[12px] mt-[16px] first:mt-0">
+                                  {children}
+                                </h1>
+                              ),
+                              h2: ({ children }) => (
+                                <h2 className="font-suit font-bold text-[18px] leading-[1.5] text-[#374151] mb-[10px] mt-[14px] first:mt-0">
+                                  {children}
+                                </h2>
+                              ),
+                              h3: ({ children }) => (
+                                <h3 className="font-suit font-semibold text-[17px] leading-[1.5] text-[#374151] mb-[8px] mt-[12px] first:mt-0">
+                                  {children}
+                                </h3>
+                              ),
+                              p: ({ children }) => (
+                                <p className="font-suit font-medium text-[16px] leading-[1.6] text-[#374151] mb-[8px] last:mb-0">
+                                  {children}
+                                </p>
+                              ),
+                              ul: ({ children }) => (
+                                <ul className="list-disc list-outside mb-[8px] space-y-[4px] ml-[20px] pl-[20px]">
+                                  {children}
+                                </ul>
+                              ),
+                              ol: ({ children }) => (
+                                <ol className="list-decimal list-outside mb-[8px] space-y-[4px] ml-[20px] pl-[20px]">
+                                  {children}
+                                </ol>
+                              ),
+                              li: ({ children }) => (
+                                <li className="font-suit font-medium text-[16px] leading-[1.6] text-[#374151]">
+                                  {children}
+                                </li>
+                              ),
+                              strong: ({ children }) => (
+                                <strong className="font-suit font-semibold text-[#374151]">
+                                  {children}
+                                </strong>
+                              ),
+                              em: ({ children }) => (
+                                <em className="font-suit font-medium italic text-[#374151]">
+                                  {children}
+                                </em>
+                              ),
+                              code: ({ children, className }) => {
+                                const isInline = !className;
+                                return isInline ? (
+                                  <code className="bg-[#f3f4f6] px-[4px] py-[2px] rounded text-[14px] font-mono text-[#374151]">
+                                    {children}
+                                  </code>
+                                ) : (
+                                  <code className="block bg-[#f3f4f6] p-[12px] rounded-[8px] text-[14px] font-mono text-[#374151] overflow-x-auto mb-[8px]">
+                                    {children}
+                                  </code>
+                                );
+                              },
+                              blockquote: ({ children }) => (
+                                <blockquote className="border-l-[4px] border-[#d1d5db] pl-[16px] my-[8px] italic text-[#6b7280]">
+                                  {children}
+                                </blockquote>
+                              ),
+                            }}
+                          >
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="w-full">
+                    <div className="flex gap-[6px] items-center">
+                      <span className="w-2 h-2 bg-[#d1d5db] rounded-full animate-bounce [animation-delay:0ms]" />
+                      <span className="w-2 h-2 bg-[#d1d5db] rounded-full animate-bounce [animation-delay:150ms]" />
+                      <span className="w-2 h-2 bg-[#d1d5db] rounded-full animate-bounce [animation-delay:300ms]" />
+                    </div>
+                  </div>
                 )}
                 <div ref={chatEndRef} />
               </div>

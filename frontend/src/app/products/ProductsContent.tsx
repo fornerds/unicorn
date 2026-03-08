@@ -176,7 +176,7 @@ export const ProductsContent = () => {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="flex gap-[60px] items-start pb-[150px] pt-[100px] px-[45px] w-full max-w-[1440px] mx-auto">
+      <div className="flex gap-[45px] items-start pb-[150px] pt-[100px] px-[45px] w-full max-w-[1440px] mx-auto">
         <CategorySidebar />
 
         <div className="flex flex-1 flex-col gap-[20px] items-start min-h-0 min-w-0 max-w-[1119px]">
