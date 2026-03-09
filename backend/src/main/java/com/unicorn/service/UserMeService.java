@@ -27,6 +27,14 @@ public class UserMeService {
     @Transactional
     public UserMeResponse updateMe(Long userId, UpdateUserMeRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            if (!request.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(request.getEmail())) {
+                throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+            }
+            user.setEmail(request.getEmail());
+        }
+        
         if (request.getName() != null) user.setName(request.getName());
         if (request.getPhone() != null) user.setPhone(request.getPhone());
         if (request.getMarketingAgreed() != null) user.setMarketingAgreed(request.getMarketingAgreed());
