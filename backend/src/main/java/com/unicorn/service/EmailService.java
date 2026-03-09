@@ -47,6 +47,36 @@ public class EmailService {
         }
     }
 
+    public void sendTempPasswordEmail(String toEmail, String tempPassword) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(toEmail);
+        message.setSubject("[Unicorn] 임시 비밀번호 안내");
+        message.setText("요청하신 임시 비밀번호는 다음과 같습니다.\n\n[" + tempPassword + "]\n\n로그인 후 반드시 비밀번호를 변경해 주세요.");
+        try {
+            mailSender.send(message);
+            log.info("Temp password email sent to {}", toEmail);
+        } catch (Exception e) {
+            log.warn("Failed to send temp password email to {}: {}", toEmail, e.getMessage());
+            throw new IllegalStateException("이메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        }
+    }
+
+    public void sendVerificationCodeEmail(String toEmail, String code, String purposeText) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(toEmail);
+        message.setSubject("[Unicorn] " + purposeText + " 인증번호 안내");
+        message.setText("요청하신 인증번호는 [" + code + "] 입니다.\n\n해당 인증번호는 3분 동안 유효합니다.");
+        try {
+            mailSender.send(message);
+            log.info("Verification code email sent to {}", toEmail);
+        } catch (Exception e) {
+            log.warn("Failed to send verification code email to {}: {}", toEmail, e.getMessage());
+            throw new IllegalStateException("인증 메일 발송에 실패했습니다. 이메일 주소를 확인하거나 잠시 후 다시 시도해 주세요.");
+        }
+    }
+
     /**
      * 문의 답변 메일 발송 (1차 답변). 이후 추가 대화는 메일에서 진행.
      */

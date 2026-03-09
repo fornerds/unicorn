@@ -9,4 +9,5 @@ public class PasswordFindEmailResponse {
 
     private Boolean sent;
     private Boolean success;
+    private String resetToken;
 }

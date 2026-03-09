@@ -5,6 +5,8 @@ import com.unicorn.entity.PasswordResetToken;
 import com.unicorn.entity.RefreshToken;
 import com.unicorn.entity.SnsAccount;
 import com.unicorn.entity.User;
+import com.unicorn.entity.EmailVerification;
+import com.unicorn.repository.EmailVerificationRepository;
 import com.unicorn.repository.PasswordResetTokenRepository;
 import com.unicorn.repository.RefreshTokenRepository;
 import com.unicorn.repository.SnsAccountRepository;
@@ -27,6 +29,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final EmailVerificationRepository emailVerificationRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final SnsAccountRepository snsAccountRepository;
     private final PasswordEncoder passwordEncoder;
@@ -77,6 +80,19 @@ public class AuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
+
+        EmailVerification verification = emailVerificationRepository
+                .findFirstByEmailAndPurposeOrderByCreatedAtDesc(request.getEmail(), "SIGNUP")
+                .orElseThrow(() -> new IllegalArgumentException("이메일 인증 내역이 없습니다."));
+
+        if (!Boolean.TRUE.equals(verification.getVerified())) {
+            throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다.");
+        }
+
+        // 인증된 상태라면 만료 시간은 체크하지 않거나,
+        // 필요하다면 인증 완료 후 일정 시간(예: 30분) 내에만 가입 가능하도록 별도의 만료 로직을 둘 수 있습니다.
+        // 현재는 인증만 완료되었다면 가입을 허용합니다.
+
         User user = User.builder()
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
@@ -86,6 +102,9 @@ public class AuthService {
                 .status("active")
                 .build();
         userRepository.save(user);
+
+        // 사용 완료된 인증 정보는 삭제
+        emailVerificationRepository.delete(verification);
     }
 
     @Transactional
@@ -241,6 +260,49 @@ public class AuthService {
                 .build();
     }
 
+    @Transactional
+    public void sendEmailVerificationCode(String email, String purpose) {
+        if ("SIGNUP".equals(purpose) && userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
+        if ("FIND_PASSWORD".equals(purpose) && !userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("가입되지 않은 이메일입니다.");
+        }
+
+        String code = String.format("%06d", (int)(Math.random() * 1000000));
+        Instant expiresAt = Instant.now().plusSeconds(3 * 60L); // 3분 유효
+
+        EmailVerification verification = EmailVerification.builder()
+                .email(email)
+                .verificationCode(code)
+                .purpose(purpose)
+                .expiresAt(expiresAt)
+                .verified(false)
+                .build();
+        emailVerificationRepository.save(verification);
+
+        String purposeText = "SIGNUP".equals(purpose) ? "회원가입" : "비밀번호 찾기";
+        emailService.sendVerificationCodeEmail(email, code, purposeText);
+    }
+
+    @Transactional
+    public void verifyEmailCode(String email, String code, String purpose) {
+        EmailVerification verification = emailVerificationRepository
+                .findFirstByEmailAndPurposeOrderByCreatedAtDesc(email, purpose)
+                .orElseThrow(() -> new IllegalArgumentException("인증 내역이 없습니다. 인증번호를 다시 요청해 주세요."));
+
+        if (Instant.now().isAfter(verification.getExpiresAt())) {
+            throw new IllegalArgumentException("인증번호가 만료되었습니다.");
+        }
+
+        if (!verification.getVerificationCode().equals(code)) {
+            throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
+        }
+
+        verification.setVerified(true);
+        emailVerificationRepository.save(verification);
+    }
+
     @Transactional(readOnly = true)
     public PasswordFindPhoneResponse requestPasswordResetByPhone(String phone) {
         return PasswordFindPhoneResponse.builder().sent(true).build();
@@ -252,25 +314,44 @@ public class AuthService {
     }
 
     @Transactional
-    public PasswordFindEmailResponse requestPasswordResetByEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElse(null);
-        if (user == null || user.getPasswordHash() == null) {
-            return PasswordFindEmailResponse.builder().sent(true).build();
+    public PasswordFindEmailResponse verifyPasswordFindCode(String email, String code) {
+        EmailVerification verification = emailVerificationRepository
+                .findFirstByEmailAndPurposeOrderByCreatedAtDesc(email, "FIND_PASSWORD")
+                .orElseThrow(() -> new IllegalArgumentException("인증 내역이 없습니다."));
+
+        if (!verification.getVerificationCode().equals(code)) {
+             throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }
+        
+        if (Instant.now().isAfter(verification.getExpiresAt())) {
+             throw new IllegalArgumentException("인증번호가 만료되었습니다.");
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 인증 확인됨 (사용 완료 처리)
+        emailVerificationRepository.delete(verification);
+
+        // 이전 재설정 토큰들 삭제
         passwordResetTokenRepository.deleteByUserId(user.getId());
+
+        // 새로운 1회용 재설정 토큰 발급 (30분 유효)
         String rawToken = UUID.randomUUID().toString() + "-" + UUID.randomUUID().toString().replace("-", "");
         String tokenHash = TokenHashUtil.hash(rawToken);
-        Instant expiresAt = Instant.now().plusSeconds(tokenValidityMinutes * 60L);
+        Instant expiresAt = Instant.now().plusSeconds(30 * 60L);
+        
         PasswordResetToken prt = PasswordResetToken.builder()
                 .user(user)
                 .tokenHash(tokenHash)
                 .expiresAt(expiresAt)
                 .build();
         passwordResetTokenRepository.save(prt);
-        String resetLink = passwordResetBaseUrl + "/password-reset?token=" + rawToken;
-        emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
-        return PasswordFindEmailResponse.builder().sent(true).build();
+
+        return PasswordFindEmailResponse.builder()
+                .success(true)
+                .resetToken(rawToken) // 이 토큰을 프론트에 내려줌
+                .build();
     }
 
     @Transactional

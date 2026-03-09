@@ -103,19 +103,43 @@ public class AuthController {
         return new RedirectView(url);
     }
 
-    @Operation(summary = "이메일 비밀번호 찾기", description = "인증: 이메일 발송 / 재설정: token + newPassword")
-    @PostMapping("/password/find/email")
-    public ApiResponse<PasswordFindEmailResponse> passwordFindEmail(@RequestBody PasswordFindEmailRequest request) {
-        if (request.getToken() != null && !request.getToken().isBlank()
-                && request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
-            PasswordFindEmailResponse data = authService.resetPasswordWithToken(request.getToken(), request.getNewPassword());
-            return ApiResponse.success(data, "비밀번호가 변경되었습니다.");
+    @Operation(summary = "회원가입 이메일 인증번호 발송", description = "회원가입 목적의 인증번호 6자리를 이메일로 발송합니다.")
+    @PostMapping("/signup/email/send-code")
+    public ApiResponse<Void> sendSignupEmailVerificationCode(@Valid @RequestBody EmailVerificationRequest request) {
+        authService.sendEmailVerificationCode(request.getEmail(), "SIGNUP");
+        return ApiResponse.success(null, "회원가입 인증번호가 발송되었습니다.");
+    }
+
+    @Operation(summary = "회원가입 이메일 인증번호 확인", description = "이메일로 받은 6자리 인증번호를 확인합니다.")
+    @PostMapping("/signup/email/verify-code")
+    public ApiResponse<Void> verifySignupEmailCode(@Valid @RequestBody EmailVerificationVerifyRequest request) {
+        authService.verifyEmailCode(request.getEmail(), request.getCode(), "SIGNUP");
+        return ApiResponse.success(null, "이메일 인증이 완료되었습니다.");
+    }
+
+    @Operation(summary = "비밀번호 찾기 이메일 인증번호 발송", description = "비밀번호 찾기 목적의 인증번호 6자리를 이메일로 발송합니다.")
+    @PostMapping("/password/find/email/send-code")
+    public ApiResponse<Void> sendPasswordFindEmailVerificationCode(@Valid @RequestBody EmailVerificationRequest request) {
+        authService.sendEmailVerificationCode(request.getEmail(), "FIND_PASSWORD");
+        return ApiResponse.success(null, "비밀번호 찾기 인증번호가 발송되었습니다.");
+    }
+
+    @Operation(summary = "비밀번호 찾기 인증번호 확인 및 토큰 발급", description = "이메일로 받은 인증번호가 맞으면, 비밀번호 재설정에 필요한 일회용 토큰(resetToken)을 반환합니다.")
+    @PostMapping("/password/find/email/verify-code")
+    public ApiResponse<PasswordFindEmailResponse> verifyPasswordFindCode(@Valid @RequestBody EmailVerificationVerifyRequest request) {
+        PasswordFindEmailResponse data = authService.verifyPasswordFindCode(request.getEmail(), request.getCode());
+        return ApiResponse.success(data, "인증이 완료되었습니다. 비밀번호를 재설정해 주세요.");
+    }
+
+    @Operation(summary = "새 비밀번호 설정", description = "인증번호 확인 후 받은 resetToken과 새로운 비밀번호를 전송하여 비밀번호를 변경합니다.")
+    @PostMapping("/password/find/email/reset")
+    public ApiResponse<PasswordFindEmailResponse> resetPassword(@RequestBody PasswordFindEmailRequest request) {
+        if (request.getToken() == null || request.getToken().isBlank()
+                || request.getNewPassword() == null || request.getNewPassword().isBlank()) {
+            throw new IllegalArgumentException("토큰과 새 비밀번호를 입력하세요.");
         }
-        if (request.getEmail() != null && !request.getEmail().isBlank()) {
-            PasswordFindEmailResponse data = authService.requestPasswordResetByEmail(request.getEmail());
-            return ApiResponse.success(data, "이메일로 인증 링크를 발송했습니다.");
-        }
-        throw new IllegalArgumentException("이메일을 입력하거나, 재설정 시 토큰과 새 비밀번호를 입력하세요.");
+        PasswordFindEmailResponse data = authService.resetPasswordWithToken(request.getToken(), request.getNewPassword());
+        return ApiResponse.success(data, "비밀번호가 변경되었습니다.");
     }
 
     @Operation(summary = "전화번호 비밀번호 찾기", description = "인증: 인증번호 발송 / 재설정: SMS 연동 후 지원")
