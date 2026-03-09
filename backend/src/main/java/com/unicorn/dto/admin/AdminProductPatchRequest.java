@@ -23,4 +23,12 @@ public class AdminProductPatchRequest {
     private Integer stock;
 
     private java.util.List<String> images;
+
+    private String weight;
+    private String totalHeight;
+    private String operatingTime;
+    private String battery;
+    private String speed;
+    private String shortDescription;
+    private String content;
 }

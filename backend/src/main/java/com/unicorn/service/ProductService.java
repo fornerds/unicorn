@@ -90,12 +90,6 @@ public class ProductService {
     }
 
     private static ProductDetailResponse.ProductDetail buildProductDetail(Product p) {
-        boolean hasAny = (p.getWeight() != null && !p.getWeight().isBlank())
-                || (p.getTotalHeight() != null && !p.getTotalHeight().isBlank())
-                || (p.getOperatingTime() != null && !p.getOperatingTime().isBlank())
-                || (p.getBattery() != null && !p.getBattery().isBlank())
-                || (p.getSpeed() != null && !p.getSpeed().isBlank());
-        if (!hasAny) return null;
         return ProductDetailResponse.ProductDetail.builder()
                 .weight(p.getWeight())
                 .totalHeight(p.getTotalHeight())

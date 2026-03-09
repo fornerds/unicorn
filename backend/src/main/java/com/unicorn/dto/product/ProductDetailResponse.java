@@ -1,6 +1,5 @@
 package com.unicorn.dto.product;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +8,6 @@ import java.util.List;
 
 @Data
 @Builder
-@JsonInclude(JsonInclude.Include.ALWAYS)
 public class ProductDetailResponse {
 
     private Long id;
@@ -43,7 +41,6 @@ public class ProductDetailResponse {
 
     @Data
     @Builder
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     public static class ProductDetail {
         private String weight;
         private String totalHeight;

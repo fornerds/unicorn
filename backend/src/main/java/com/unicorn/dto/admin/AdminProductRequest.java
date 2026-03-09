@@ -29,4 +29,12 @@ public class AdminProductRequest {
     private Integer stock;
 
     private List<String> images;
+    
+    private String weight;
+    private String totalHeight;
+    private String operatingTime;
+    private String battery;
+    private String speed;
+    private String shortDescription;
+    private String content;
 }

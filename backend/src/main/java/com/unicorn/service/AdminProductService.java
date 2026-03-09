@@ -47,6 +47,13 @@ public class AdminProductService {
                 .imageUrl(imageUrl)
                 .images(request.getImages())
                 .stock(request.getStock())
+                .weight(request.getWeight())
+                .totalHeight(request.getTotalHeight())
+                .operatingTime(request.getOperatingTime())
+                .battery(request.getBattery())
+                .speed(request.getSpeed())
+                .shortDescription(request.getShortDescription())
+                .content(request.getContent())
                 .build();
         p = productRepository.save(p);
         return toResponse(p);
@@ -63,6 +70,14 @@ public class AdminProductService {
         if (request.getImages() != null && !request.getImages().isEmpty() && p.getImageUrl() == null) {
             p.setImageUrl(request.getImages().get(0));
         }
+        if (request.getWeight() != null) p.setWeight(request.getWeight());
+        if (request.getTotalHeight() != null) p.setTotalHeight(request.getTotalHeight());
+        if (request.getOperatingTime() != null) p.setOperatingTime(request.getOperatingTime());
+        if (request.getBattery() != null) p.setBattery(request.getBattery());
+        if (request.getSpeed() != null) p.setSpeed(request.getSpeed());
+        if (request.getShortDescription() != null) p.setShortDescription(request.getShortDescription());
+        if (request.getContent() != null) p.setContent(request.getContent());
+        
         p = productRepository.save(p);
         return toResponse(p);
     }
@@ -90,6 +105,13 @@ public class AdminProductService {
                 .parentCategoryId(parent != null ? parent.getId() : null)
                 .parentCategoryName(parent != null ? parent.getName() : null)
                 .images(p.getImages())
+                .weight(p.getWeight())
+                .totalHeight(p.getTotalHeight())
+                .operatingTime(p.getOperatingTime())
+                .battery(p.getBattery())
+                .speed(p.getSpeed())
+                .shortDescription(p.getShortDescription())
+                .content(p.getContent())
                 .createdAt(p.getCreatedAt())
                 .updatedAt(p.getUpdatedAt())
                 .build();

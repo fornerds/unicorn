@@ -1,4 +1,6 @@
 spring:
+  jackson:
+    default-property-inclusion: always
   application:
     name: backend
   profiles:
