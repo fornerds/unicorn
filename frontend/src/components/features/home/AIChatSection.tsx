@@ -8,7 +8,6 @@ import { cn } from "@/utils/cn";
 import {
   AiIcon,
   ArrowDiagonalIcon,
-  PlusIcon,
   UploadIcon,
 } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
@@ -222,18 +221,7 @@ export const AIChatSection = () => {
                     disabled={isLoading}
                   />
                 </div>
-                <div className="flex h-[43px] items-center justify-between pl-[30px]">
-                  <button className="flex gap-[10px] items-center p-[6px] rounded-[10px] hover:bg-[#374151] transition-colors">
-                    <PlusIcon
-                      width={20}
-                      height={20}
-                      stroke="#959BA9"
-                      strokeWidth={2}
-                    />
-                    <p className="font-suit font-medium text-[20px] leading-[1.3] text-[#959BA9]">
-                      Add File
-                    </p>
-                  </button>
+                <div className="flex h-[43px] items-center justify-end pl-[30px]">
                   <button
                     onClick={handleSubmit}
                     disabled={isLoading || !input.trim()}
@@ -395,20 +383,7 @@ export const AIChatSection = () => {
                   disabled={isLoading}
                 />
               </div>
-              <div className="flex h-[43px] items-center justify-between pl-[30px]">
-                <button className="flex gap-[10px] items-center p-[6px] rounded-[10px] hover:bg-[#374151] transition-colors">
-                  <div className="w-[20px] h-[20px] relative shrink-0 flex items-center justify-center">
-                    <PlusIcon
-                      width={20}
-                      height={20}
-                      stroke="#959BA9"
-                      strokeWidth={2}
-                    />
-                  </div>
-                  <p className="font-suit font-medium text-[20px] leading-[1.3] text-[#959BA9]">
-                    Add File
-                  </p>
-                </button>
+              <div className="flex h-[43px] items-center justify-end pl-[30px]">
                 <button
                   onClick={handleSubmit}
                   disabled={isLoading || !input.trim()}
