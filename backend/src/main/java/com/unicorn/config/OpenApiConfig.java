@@ -33,12 +33,15 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI openAPI() {
         List<Server> servers = new ArrayList<>();
-        String localFull = localServerUrl + contextPath;
-        String productionFull = productionServerUrl + contextPath;
-        if ("prod".equalsIgnoreCase(activeProfile)) {
-            servers.add(new Server().url(productionFull).description("Production"));
-        } else {
-            servers.add(new Server().url(localFull).description("Local"));
+        
+        // 프로필에 상관없이 현재 접속한 주소(상대 경로)를 기본 서버로 설정
+        servers.add(new Server().url(contextPath).description("Default Server"));
+
+        // 외부에서 주입받은 URL이 있으면 추가 (Swagger UI 셀렉트 박스에 표시)
+        if (productionServerUrl != null && !productionServerUrl.isBlank() && !productionServerUrl.equals("https://api.example.com")) {
+            servers.add(new Server().url(productionServerUrl + contextPath).description("Production Server"));
+        } else if (localServerUrl != null && !localServerUrl.isBlank() && !localServerUrl.equals("http://localhost:8080")) {
+            servers.add(new Server().url(localServerUrl + contextPath).description("Local Server"));
         }
 
         return new OpenAPI()

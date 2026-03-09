@@ -63,3 +63,20 @@ services:
     depends_on:
       - backend
 
+  nginx:
+    image: nginx:alpine
+    container_name: unicorn-nginx
+    profiles:
+      - prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/prod.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - frontend
+      - backend
+      - frontend-admin
+
+
