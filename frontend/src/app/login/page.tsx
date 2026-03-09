@@ -26,6 +26,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState<'google' | 'naver' | 'kakao' | null>(null);
 
   const emailDomains = ['gmail.com', 'naver.com', 'daum.net', 'kakao.com'];
 
@@ -75,8 +76,19 @@ export default function LoginPage() {
     }
   };
 
-  const handleSocialLogin = (provider: 'google' | 'naver' | 'kakao') => {
-    console.log(`Social login: ${provider}`);
+  const handleSocialLogin = async (provider: 'google' | 'naver' | 'kakao') => {
+    if (socialLoading) return;
+    setSocialLoading(provider);
+    setError('');
+    try {
+      const res = await apiFetch<{ data: { url: string; state: string } }>(
+        `/auth/oauth/${provider}/authorize-url`,
+      );
+      window.location.href = res.data.url;
+    } catch {
+      setError('소셜 로그인을 시작할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+      setSocialLoading(null);
+    }
   };
 
   return (
@@ -202,6 +214,7 @@ export default function LoginPage() {
               <SocialLoginButton
                 provider="google"
                 onClick={() => handleSocialLogin('google')}
+                disabled={!!socialLoading}
                 icon={
                   <Image
                     src="/icons/google.svg"
@@ -212,21 +225,23 @@ export default function LoginPage() {
                   />
                 }
               >
-                구글로 로그인
+                {socialLoading === 'google' ? '연결 중...' : '구글로 로그인'}
               </SocialLoginButton>
               <SocialLoginButton
                 provider="naver"
                 onClick={() => handleSocialLogin('naver')}
+                disabled={!!socialLoading}
                 icon={<NaverIcon width={16} height={16} />}
               >
-                네이버 로그인
+                {socialLoading === 'naver' ? '연결 중...' : '네이버 로그인'}
               </SocialLoginButton>
               <SocialLoginButton
                 provider="kakao"
                 onClick={() => handleSocialLogin('kakao')}
+                disabled={!!socialLoading}
                 icon={<KakaoIcon width={18} height={18} />}
               >
-                카카오로 로그인
+                {socialLoading === 'kakao' ? '연결 중...' : '카카오로 로그인'}
               </SocialLoginButton>
             </div>
           </div>

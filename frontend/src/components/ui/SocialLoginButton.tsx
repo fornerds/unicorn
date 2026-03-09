@@ -18,7 +18,7 @@ export const SocialLoginButton = ({ provider, icon, className, children, ...prop
       className={cn(
         'flex gap-[16px] h-[45px] items-center justify-center overflow-hidden px-[35px] rounded-[4px] w-full',
         'font-suit font-semibold text-[16px] leading-[1.5] whitespace-nowrap',
-        'transition-opacity hover:opacity-90',
+        'transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed',
         providerStyles[provider],
         className
       )}
