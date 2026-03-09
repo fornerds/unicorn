@@ -133,11 +133,7 @@ public class AuthController {
 
     @Operation(summary = "새 비밀번호 설정", description = "인증번호 확인 후 받은 resetToken과 새로운 비밀번호를 전송하여 비밀번호를 변경합니다.")
     @PostMapping("/password/find/email/reset")
-    public ApiResponse<PasswordFindEmailResponse> resetPassword(@RequestBody PasswordFindEmailRequest request) {
-        if (request.getToken() == null || request.getToken().isBlank()
-                || request.getNewPassword() == null || request.getNewPassword().isBlank()) {
-            throw new IllegalArgumentException("토큰과 새 비밀번호를 입력하세요.");
-        }
+    public ApiResponse<PasswordFindEmailResponse> resetPassword(@Valid @RequestBody PasswordFindEmailRequest request) {
         PasswordFindEmailResponse data = authService.resetPasswordWithToken(request.getToken(), request.getNewPassword());
         return ApiResponse.success(data, "비밀번호가 변경되었습니다.");
     }
