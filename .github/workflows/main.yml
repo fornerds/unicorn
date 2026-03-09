@@ -1,0 +1,32 @@
+name: Deploy to Production AWS VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PEM_KEY_DEV }}" > ~/.ssh/deploy.pem
+          chmod 600 ~/.ssh/deploy.pem
+          ssh-keyscan -H ${{ secrets.SSH_HOST_DEV }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH
+        run: |
+          ssh -i ~/.ssh/deploy.pem ${{ secrets.SSH_USER_DEV }}@${{ secrets.SSH_HOST_DEV }} << 'EOF'
+            cd unicorn/
+            git pull origin main
+            docker compose --env-file .env.prod rm -fsv backend frontend frontend-admin nginx
+            docker compose --env-file .env.prod --profile prod up --build -d backend frontend frontend-admin nginx
+            docker system prune -af
+            docker builder prune -af
+          EOF
