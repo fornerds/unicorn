@@ -30,6 +30,9 @@ public class OrderItem {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Column(length = 100)
+    private String color;
+
     @Column(nullable = false)
     private Integer quantity;
 

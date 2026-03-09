@@ -3,7 +3,7 @@ package com.unicorn.controller;
 import com.unicorn.dto.ApiResponse;
 import com.unicorn.dto.order.CreateOrderRequest;
 import com.unicorn.dto.order.OrderDetailResponse;
-import com.unicorn.dto.order.PrepareOrderResponse;
+import com.unicorn.dto.order.CreateOrderResponse;
 import com.unicorn.security.JwtPrincipal;
 import com.unicorn.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,13 +21,14 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @Operation(summary = "결제 준비 (주문 미생성)", description = "장바구니 기준 금액·결제용 orderId만 반환. 결제 성공 시 POST /payments/confirm-and-create-order 호출.")
-    @PostMapping("/prepare")
-    public ApiResponse<PrepareOrderResponse> prepareOrder(
+    @Operation(summary = "주문 생성 (결제 전)", description = "장바구니나 상품에서 주문을 생성하고 pending 상태로 둡니다. 반환된 orderId로 결제를 진행합니다.")
+    @PostMapping
+    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
+    public ApiResponse<CreateOrderResponse> createOrder(
             @AuthenticationPrincipal JwtPrincipal principal,
             @Valid @RequestBody CreateOrderRequest request) {
-        PrepareOrderResponse data = orderService.prepareOrder(principal.subjectId(), request);
-        return ApiResponse.success(data);
+        CreateOrderResponse data = orderService.createOrder(principal.subjectId(), request);
+        return ApiResponse.created(data);
     }
 
     @Operation(summary = "주문 상세 조회")

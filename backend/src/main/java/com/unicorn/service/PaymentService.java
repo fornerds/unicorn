@@ -2,13 +2,13 @@ package com.unicorn.service;
 
 import com.unicorn.client.PayPalClient;
 import com.unicorn.client.TossPaymentsClient;
-import com.unicorn.dto.order.CreateOrderRequest;
-import com.unicorn.dto.order.CreateOrderResponse;
-import com.unicorn.dto.payment.ConfirmAndCreateOrderRequest;
+import com.unicorn.dto.payment.ConfirmPaymentRequest;
 import com.unicorn.dto.payment.ConfirmPaymentResponse;
 import com.unicorn.dto.payment.PayPalCreateOrderRequest;
 import com.unicorn.dto.payment.PayPalCreateOrderResponse;
 import com.unicorn.entity.Order;
+import com.unicorn.entity.OrderItem;
+import com.unicorn.repository.CartItemRepository;
 import com.unicorn.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,31 +17,38 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
     private final OrderRepository orderRepository;
-    private final OrderService orderService;
     private final TossPaymentsClient tossPaymentsClient;
     private final PayPalClient payPalClient;
     private final ExchangeRateService exchangeRateService;
+    private final CartItemRepository cartItemRepository;
 
     @Transactional(readOnly = true)
     public PayPalCreateOrderResponse createPayPalOrder(Long userId, PayPalCreateOrderRequest request) {
-        BigDecimal usd;
-        if (request.getAmountKrw() != null && request.getAmountKrw().compareTo(BigDecimal.ZERO) > 0) {
-            usd = exchangeRateService.krwToUsd(request.getAmountKrw());
-            if (usd.compareTo(BigDecimal.ZERO) < 0) usd = BigDecimal.ZERO;
-        } else if (request.getAmountUsd() != null && request.getAmountUsd().compareTo(BigDecimal.ZERO) > 0) {
-            usd = request.getAmountUsd();
-        } else {
-            throw new IllegalArgumentException("결제 금액(USD 또는 KRW)이 필요합니다.");
+        Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
+        if (!order.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("권한이 없습니다.");
         }
+        if (!"pending".equals(order.getStatus())) {
+            throw new IllegalArgumentException("결제 대기 중인 주문이 아닙니다.");
+        }
+
+        BigDecimal usd = exchangeRateService.krwToUsd(order.getTotalAmount());
+        if (usd.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("달러 환산 금액이 잘못되었습니다.");
+        }
+
         String amountUsdStr = usd.setScale(2, RoundingMode.HALF_UP).toPlainString();
-        String referenceId = "temp-" + java.util.UUID.randomUUID().toString().replace("-", "");
+        String referenceId = "order-" + order.getId();
         String paypalOrderId = payPalClient.createOrder(amountUsdStr, referenceId);
+        
         return PayPalCreateOrderResponse.builder()
                 .paypalOrderId(paypalOrderId)
                 .amountUsd(usd)
@@ -49,18 +56,16 @@ public class PaymentService {
     }
 
     /**
-     * 결제 성공 시 주문 생성 + PG 승인 + 장바구니 삭제. (prepare 흐름: 주문은 결제 후에만 생성)
+     * 결제 승인 + 장바구니 항목 삭제
      */
     @Transactional
-    public ConfirmPaymentResponse confirmAndCreateOrder(Long userId, ConfirmAndCreateOrderRequest request) {
-        CreateOrderRequest orderRequest = new CreateOrderRequest();
-        orderRequest.setShippingAddress(request.getShippingAddress());
-        orderRequest.setPaymentMethod(request.getPaymentMethod());
-        orderRequest.setCartItemIds(request.getCartItemIds());
+    public ConfirmPaymentResponse confirmPayment(Long userId, ConfirmPaymentRequest request) {
+        Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
 
-        CreateOrderResponse created = orderService.createFromCart(userId, orderRequest);
-        Order order = orderRepository.findById(created.getOrderId())
-                .orElseThrow(() -> new IllegalStateException("주문 생성 후 조회 실패"));
+        if (!order.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
 
         String provider = request.getPaymentProvider() != null ? request.getPaymentProvider().trim().toLowerCase() : "";
         if (request.getPaymentKey() == null || request.getPaymentKey().isBlank()) {
@@ -68,12 +73,10 @@ public class PaymentService {
         }
 
         if ("toss".equals(provider)) {
-            if (request.getTempOrderId() == null || request.getTempOrderId().isBlank()) {
-                throw new IllegalArgumentException("토스 결제 시 tempOrderId가 필요합니다.");
-            }
+            String paymentOrderId = "order-" + order.getId();
             tossPaymentsClient.confirm(
                     request.getPaymentKey(),
-                    request.getTempOrderId(),
+                    paymentOrderId,
                     request.getAmount());
         } else if ("paypal".equals(provider)) {
             payPalClient.captureOrder(request.getPaymentKey());
@@ -83,6 +86,14 @@ public class PaymentService {
         order.setPaidAt(Instant.now());
         order.setPaymentId(request.getPaymentKey());
         orderRepository.save(order);
+
+        // 주문에 포함된 상품들을 장바구니에서 찾아 삭제
+        for (OrderItem oi : order.getItems()) {
+            String color = oi.getColor() != null ? oi.getColor() : "";
+            cartItemRepository.findByUserIdAndProductIdAndColor(userId, oi.getProduct().getId(), color)
+                    .ifPresent(cartItemRepository::delete);
+        }
+
         return ConfirmPaymentResponse.builder()
                 .orderId(order.getId())
                 .status("paid")

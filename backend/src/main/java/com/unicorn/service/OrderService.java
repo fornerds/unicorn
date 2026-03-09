@@ -28,65 +28,37 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     @Value("${app.payment.redirect-url-base:https://pg.example.com/redirect}")
     private String paymentRedirectUrlBase;
 
-    /**
-     * 결제 전 준비. 주문을 생성하지 않고 금액·결제용 orderId만 반환. 장바구니는 유지.
-     * 결제 성공 시 confirm-and-create-order 로 주문 생성.
-     */
-    @Transactional(readOnly = true)
-    public PrepareOrderResponse prepareOrder(Long userId, CreateOrderRequest request) {
-        userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        List<CartItem> cartItems = request.getCartItemIds() == null || request.getCartItemIds().isEmpty()
-                ? cartItemRepository.findByUserIdOrderByCreatedAtDesc(userId)
-                : cartItemRepository.findAllById(request.getCartItemIds()).stream()
-                .filter(ci -> ci.getUser().getId().equals(userId))
-                .collect(Collectors.toList());
-        if (cartItems.isEmpty()) {
-            throw new IllegalArgumentException("장바구니가 비어 있습니다.");
-        }
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        for (CartItem ci : cartItems) {
-            Product p = ci.getProduct();
-            if (p.getStock() < ci.getQuantity()) {
-                throw new IllegalArgumentException("제품 " + p.getName() + " 재고가 부족합니다.");
-            }
-            totalAmount = totalAmount.add(p.getPrice().multiply(BigDecimal.valueOf(ci.getQuantity())));
-        }
-        String tempOrderId = "order-temp-" + UUID.randomUUID().toString().replace("-", "");
-        return PrepareOrderResponse.builder()
-                .totalAmount(totalAmount)
-                .paymentOrderId(tempOrderId)
-                .paymentMethod(request.getPaymentMethod())
-                .build();
-    }
-
     @Transactional
-    public CreateOrderResponse createFromCart(Long userId, CreateOrderRequest request) {
+    public CreateOrderResponse createOrder(Long userId, CreateOrderRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        List<CartItem> cartItems = request.getCartItemIds() == null || request.getCartItemIds().isEmpty()
-                ? cartItemRepository.findByUserIdOrderByCreatedAtDesc(userId)
-                : cartItemRepository.findAllById(request.getCartItemIds()).stream()
-                .filter(ci -> ci.getUser().getId().equals(userId))
-                .collect(Collectors.toList());
-        if (cartItems.isEmpty()) {
-            throw new IllegalArgumentException("장바구니가 비어 있습니다.");
+
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw new IllegalArgumentException("주문할 항목이 없습니다.");
         }
 
         BigDecimal totalAmount = BigDecimal.ZERO;
         List<OrderItem> orderItems = new ArrayList<>();
-        for (CartItem ci : cartItems) {
-            Product p = ci.getProduct();
-            if (p.getStock() < ci.getQuantity()) {
+        
+        for (CreateOrderRequest.OrderItemRequest itemReq : request.getItems()) {
+            Product p = productRepository.findById(itemReq.getProductId())
+                    .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다. ID: " + itemReq.getProductId()));
+            
+            if (p.getStock() < itemReq.getQuantity()) {
                 throw new IllegalArgumentException("제품 " + p.getName() + " 재고가 부족합니다.");
             }
-            BigDecimal lineTotal = p.getPrice().multiply(BigDecimal.valueOf(ci.getQuantity()));
+            
+            BigDecimal lineTotal = p.getPrice().multiply(BigDecimal.valueOf(itemReq.getQuantity()));
             totalAmount = totalAmount.add(lineTotal);
+            
             OrderItem oi = OrderItem.builder()
                     .product(p)
-                    .quantity(ci.getQuantity())
+                    .color(itemReq.getColor())
+                    .quantity(itemReq.getQuantity())
                     .price(p.getPrice())
                     .build();
             orderItems.add(oi);
@@ -100,18 +72,16 @@ public class OrderService {
                 .phone(request.getShippingAddress().getPhone())
                 .address(request.getShippingAddress().getAddress())
                 .zipCode(request.getShippingAddress().getZipCode())
+                .deliveryRequest(request.getShippingAddress().getDeliveryRequest())
                 .paymentProvider(request.getPaymentMethod())
                 .build();
+        
         order = orderRepository.save(order);
         for (OrderItem oi : orderItems) {
             oi.setOrder(order);
         }
         order.getItems().addAll(orderItems);
         orderRepository.save(order);
-
-        for (CartItem ci : cartItems) {
-            cartItemRepository.delete(ci);
-        }
 
         String paymentOrderId = "order-" + order.getId();
         return CreateOrderResponse.builder()

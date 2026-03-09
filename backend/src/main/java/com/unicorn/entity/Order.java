@@ -51,6 +51,9 @@ public class Order extends BaseEntity {
     @Column(name = "zip_code", length = 20)
     private String zipCode;
 
+    @Column(name = "delivery_request", length = 255)
+    private String deliveryRequest;
+
     @Column(name = "payment_provider", length = 30)
     private String paymentProvider;
 

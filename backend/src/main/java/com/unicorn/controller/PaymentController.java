@@ -2,7 +2,7 @@ package com.unicorn.controller;
 
 import com.unicorn.client.PayPalClient;
 import com.unicorn.dto.ApiResponse;
-import com.unicorn.dto.payment.ConfirmAndCreateOrderRequest;
+import com.unicorn.dto.payment.ConfirmPaymentRequest;
 import com.unicorn.dto.payment.ConfirmPaymentResponse;
 import com.unicorn.dto.payment.PaymentWidgetConfigResponse;
 import com.unicorn.dto.payment.PayPalCreateOrderRequest;
@@ -66,12 +66,12 @@ public class PaymentController {
         return ApiResponse.success(data);
     }
 
-    @Operation(summary = "결제 성공 시 주문 생성 및 승인", description = "prepare 흐름: 결제 완료 후 호출. 주문 생성 + PG 승인 + 장바구니 삭제.")
-    @PostMapping("/confirm-and-create-order")
-    public ApiResponse<ConfirmPaymentResponse> confirmAndCreateOrder(
+    @Operation(summary = "결제 승인", description = "결제 완료 후 호출. PG 승인 + 상태 변경 + 장바구니 삭제.")
+    @PostMapping("/confirm")
+    public ApiResponse<ConfirmPaymentResponse> confirmPayment(
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.unicorn.security.JwtPrincipal principal,
-            @Valid @RequestBody ConfirmAndCreateOrderRequest request) {
-        ConfirmPaymentResponse data = paymentService.confirmAndCreateOrder(principal.subjectId(), request);
+            @Valid @RequestBody ConfirmPaymentRequest request) {
+        ConfirmPaymentResponse data = paymentService.confirmPayment(principal.subjectId(), request);
         return ApiResponse.success(data);
     }
 
