@@ -68,14 +68,9 @@ export default function CheckoutPage() {
   });
   const [showEmailDomainDropdown, setShowEmailDomainDropdown] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [addressKeyword, setAddressKeyword] = useState('');
-  const [addressResults, setAddressResults] = useState<{ zipCode: string; roadAddress: string; jibunAddress: string }[]>([]);
-  const [showAddressDropdown, setShowAddressDropdown] = useState(false);
-  const [isAddressSearching, setIsAddressSearching] = useState(false);
   const [tossClientKey, setTossClientKey] = useState('');
   const [showPaypalSection, setShowPaypalSection] = useState(false);
   const emailDomainRef = useRef<HTMLDivElement>(null);
-  const addressDropdownRef = useRef<HTMLDivElement>(null);
   const paypalContainerRef = useRef<HTMLDivElement>(null);
   const paypalButtonsRenderedRef = useRef(false);
   const paypalAmountUsdRef = useRef(0);
@@ -103,41 +98,31 @@ export default function CheckoutPage() {
       tossScript.async = true;
       document.head.appendChild(tossScript);
     }
+
+    if (!document.querySelector('script[src*="kakaocdn.net/mapjsapi"]')) {
+      const postcodeScript = document.createElement('script');
+      postcodeScript.src = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+      postcodeScript.async = true;
+      document.head.appendChild(postcodeScript);
+    }
   }, []);
 
   const handlePaymentMethodChange = (methodId: string) => {
     setSelectedPaymentMethod(methodId);
   };
 
-  const handleAddressSearch = async () => {
-    if (!addressKeyword.trim()) {
-      alert('검색할 주소를 입력해 주세요.');
+  const handleAddressSearch = () => {
+    const PostcodeClass = (window as any).kakao?.Postcode ?? (window as any).daum?.Postcode;
+    if (!PostcodeClass) {
+      alert('주소 검색 서비스를 불러오는 중입니다. 잠시 후 다시 시도해 주세요.');
       return;
     }
-    setIsAddressSearching(true);
-    try {
-      const res = await apiFetch<{
-        data: { zipCode: string; roadAddress: string; jibunAddress: string }[];
-        pagination: { page: number; limit: number; total: number; totalPages: number };
-      }>(`/addresses/search?keyword=${encodeURIComponent(addressKeyword.trim())}&page=1&limit=20`);
-      setAddressResults(res.data);
-      setShowAddressDropdown(true);
-    } catch {
-      alert('주소 검색 중 오류가 발생했습니다. 다시 시도해 주세요.');
-    } finally {
-      setIsAddressSearching(false);
-    }
-  };
-
-  const handleAddressSelect = (result: { zipCode: string; roadAddress: string; jibunAddress: string }) => {
-    setDeliveryInfo((prev) => ({
-      ...prev,
-      address: result.roadAddress || result.jibunAddress,
-      zipCode: result.zipCode,
-    }));
-    setAddressKeyword(result.roadAddress || result.jibunAddress);
-    setShowAddressDropdown(false);
-    setAddressResults([]);
+    new PostcodeClass({
+      oncomplete: (data: { roadAddress: string; jibunAddress: string; zonecode: string }) => {
+        const address = data.roadAddress || data.jibunAddress;
+        setDeliveryInfo((prev) => ({ ...prev, address, zipCode: data.zonecode }));
+      },
+    }).open();
   };
 
   useEffect(() => {
@@ -155,22 +140,6 @@ export default function CheckoutPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showEmailDomainDropdown]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (addressDropdownRef.current && !addressDropdownRef.current.contains(event.target as Node)) {
-        setShowAddressDropdown(false);
-      }
-    };
-
-    if (showAddressDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showAddressDropdown]);
 
   const loadPaypalSdk = (clientId: string): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -399,66 +368,24 @@ export default function CheckoutPage() {
                       주소
                     </p>
                   </label>
-                  <div className="relative w-full" ref={addressDropdownRef}>
-                    <div className="flex gap-[10px] h-[48px] items-center w-full">
-                      <div className="flex flex-1 flex-col gap-[6px] items-start min-w-0">
-                        <input
-                          type="text"
-                          value={addressKeyword}
-                          onChange={(e) => setAddressKeyword(e.target.value)}
-                          onKeyDown={(e) => { if (e.key === 'Enter') handleAddressSearch(); }}
-                          placeholder="주소를 검색해 주세요"
-                          className="bg-[#f9fafb] flex h-[48px] items-center p-[16px] rounded-[6px] w-full font-suit font-normal text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none"
-                        />
-                      </div>
-                      <button
-                        onClick={handleAddressSearch}
-                        disabled={isAddressSearching}
-                        className="bg-white border border-[#3f7bfc] flex h-[48px] items-center justify-center px-[16px] py-[10px] rounded-[4px] shrink-0 hover:opacity-80 transition-opacity disabled:opacity-50"
-                      >
-                        <p className="font-suit font-semibold text-[14px] leading-[1.35] text-[#3f7bfc] whitespace-nowrap">
-                          {isAddressSearching ? '검색 중...' : '주소 검색'}
-                        </p>
-                      </button>
-                    </div>
-                    {showAddressDropdown && addressResults.length > 0 && (
-                      <div className="absolute top-full left-0 mt-[4px] bg-white border border-[#e5e7eb] rounded-[6px] shadow-lg z-20 w-full max-h-[240px] overflow-y-auto">
-                        {addressResults.map((result, index) => (
-                          <button
-                            key={index}
-                            onClick={() => handleAddressSelect(result)}
-                            className="w-full flex flex-col items-start px-[16px] py-[10px] hover:bg-[#f3f4f6] transition-colors border-b border-[#e5e7eb] last:border-b-0 first:rounded-t-[6px] last:rounded-b-[6px]"
-                          >
-                            <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#374151] text-left">
-                              {result.roadAddress}
-                            </p>
-                            {result.jibunAddress && result.jibunAddress !== result.roadAddress && (
-                              <p className="font-suit font-normal text-[12px] leading-[1.5] text-[#9ca3af] text-left">
-                                {result.jibunAddress}
-                              </p>
-                            )}
-                            {result.zipCode && (
-                              <p className="font-suit font-normal text-[12px] leading-[1.5] text-[#6b7280]">
-                                우편번호: {result.zipCode}
-                              </p>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                    {showAddressDropdown && addressResults.length === 0 && !isAddressSearching && (
-                      <div className="absolute top-full left-0 mt-[4px] bg-white border border-[#e5e7eb] rounded-[6px] shadow-lg z-20 w-full px-[16px] py-[12px]">
-                        <p className="font-suit font-normal text-[14px] text-[#9ca3af]">검색 결과가 없습니다.</p>
-                      </div>
-                    )}
-                  </div>
-                  {deliveryInfo.address && (
-                    <div className="flex items-center gap-[8px] w-full px-[4px]">
-                      <p className="font-suit font-normal text-[14px] leading-[1.5] text-[#6b7280]">
-                        {deliveryInfo.zipCode && `[${deliveryInfo.zipCode}] `}{deliveryInfo.address}
+                  <div className="flex gap-[10px] h-[48px] items-center w-full">
+                    <input
+                      type="text"
+                      value={deliveryInfo.address ? `${deliveryInfo.zipCode ? `[${deliveryInfo.zipCode}] ` : ''}${deliveryInfo.address}` : ''}
+                      readOnly
+                      placeholder="주소 검색 버튼을 클릭해 주세요"
+                      className="bg-[#f9fafb] flex h-[48px] flex-1 items-center p-[16px] rounded-[6px] font-suit font-normal text-[16px] leading-[1.35] text-[#374151] placeholder:text-[#abb0ba] border-none outline-none cursor-default"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddressSearch}
+                      className="bg-white border border-[#3f7bfc] flex h-[48px] items-center justify-center px-[16px] py-[10px] rounded-[4px] shrink-0 hover:opacity-80 transition-opacity"
+                    >
+                      <p className="font-suit font-semibold text-[14px] leading-[1.35] text-[#3f7bfc] whitespace-nowrap">
+                        주소 검색
                       </p>
-                    </div>
-                  )}
+                    </button>
+                  </div>
                   <div className="flex flex-col gap-[6px] items-start w-full">
                     <input
                       type="text"
