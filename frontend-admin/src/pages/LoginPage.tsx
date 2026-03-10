@@ -8,7 +8,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 interface AdminLoginResponse {
   data: {
     accessToken: string;
-    user: { id: number; email: string; name: string; role: string };
+    admin: { id: number; email: string; name: string; role: string };
   };
 }
 
@@ -49,15 +49,15 @@ export default function LoginPage() {
         return;
       }
       const data = body.data;
-      if (!data?.accessToken || !data?.user) {
+      if (!data?.accessToken || !data?.admin) {
         setError('응답 형식이 올바르지 않습니다.');
         return;
       }
       setAdminAuth(data.accessToken, {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.name,
-        role: data.user.role,
+        id: data.admin.id,
+        email: data.admin.email,
+        name: data.admin.name,
+        role: data.admin.role,
       });
       navigate(from, { replace: true });
     } catch {

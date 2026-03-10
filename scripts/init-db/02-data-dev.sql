@@ -43,33 +43,42 @@ UPDATE products SET colors = '["화이트/White","실버/Silver"]' WHERE id IN (
 UPDATE products SET colors = '["블랙/Black","옐로우/Yellow","그린/Green"]' WHERE id IN (7, 8);
 UPDATE products SET colors = '["화이트/White","블랙/Black","그레이/Gray"]' WHERE id IN (9, 10);
 
-INSERT IGNORE INTO product_color_stock (product_id, color, stock, created_at, updated_at) VALUES
-(1, '화이트/White', 10, NOW(), NOW()),
-(1, '블랙/Black', 10, NOW(), NOW()),
-(1, '블루/Blue', 10, NOW(), NOW()),
-(2, '화이트/White', 8, NOW(), NOW()),
-(2, '블랙/Black', 9, NOW(), NOW()),
-(2, '블루/Blue', 8, NOW(), NOW()),
-(3, '레드/Red', 3, NOW(), NOW()),
-(3, '그레이/Gray', 2, NOW(), NOW()),
-(4, '레드/Red', 4, NOW(), NOW()),
-(4, '그레이/Gray', 4, NOW(), NOW()),
-(5, '화이트/White', 6, NOW(), NOW()),
-(5, '실버/Silver', 6, NOW(), NOW()),
-(6, '화이트/White', 5, NOW(), NOW()),
-(6, '실버/Silver', 5, NOW(), NOW()),
-(7, '블랙/Black', 3, NOW(), NOW()),
-(7, '옐로우/Yellow', 2, NOW(), NOW()),
-(7, '그린/Green', 1, NOW(), NOW()),
-(8, '블랙/Black', 2, NOW(), NOW()),
-(8, '옐로우/Yellow', 1, NOW(), NOW()),
-(8, '그린/Green', 1, NOW(), NOW()),
-(9, '화이트/White', 5, NOW(), NOW()),
-(9, '블랙/Black', 5, NOW(), NOW()),
-(9, '그레이/Gray', 5, NOW(), NOW()),
-(10, '화이트/White', 4, NOW(), NOW()),
-(10, '블랙/Black', 4, NOW(), NOW()),
-(10, '그레이/Gray', 4, NOW(), NOW());
+INSERT IGNORE INTO product_color_stock (product_id, color, color_code, stock, created_at, updated_at) VALUES
+(1, '화이트/White', '#FFFFFF', 10, NOW(), NOW()),
+(1, '블랙/Black', '#000000', 10, NOW(), NOW()),
+(1, '블루/Blue', '#0000FF', 10, NOW(), NOW()),
+(2, '화이트/White', '#FFFFFF', 8, NOW(), NOW()),
+(2, '블랙/Black', '#000000', 9, NOW(), NOW()),
+(2, '블루/Blue', '#0000FF', 8, NOW(), NOW()),
+(3, '레드/Red', '#FF0000', 3, NOW(), NOW()),
+(3, '그레이/Gray', '#808080', 2, NOW(), NOW()),
+(4, '레드/Red', '#FF0000', 4, NOW(), NOW()),
+(4, '그레이/Gray', '#808080', 4, NOW(), NOW()),
+(5, '화이트/White', '#FFFFFF', 6, NOW(), NOW()),
+(5, '실버/Silver', '#C0C0C0', 6, NOW(), NOW()),
+(6, '화이트/White', '#FFFFFF', 5, NOW(), NOW()),
+(6, '실버/Silver', '#C0C0C0', 5, NOW(), NOW()),
+(7, '블랙/Black', '#000000', 3, NOW(), NOW()),
+(7, '옐로우/Yellow', '#FFFF00', 2, NOW(), NOW()),
+(7, '그린/Green', '#008000', 1, NOW(), NOW()),
+(8, '블랙/Black', '#000000', 2, NOW(), NOW()),
+(8, '옐로우/Yellow', '#FFFF00', 1, NOW(), NOW()),
+(8, '그린/Green', '#008000', 1, NOW(), NOW()),
+(9, '화이트/White', '#FFFFFF', 5, NOW(), NOW()),
+(9, '블랙/Black', '#000000', 5, NOW(), NOW()),
+(9, '그레이/Gray', '#808080', 5, NOW(), NOW()),
+(10, '화이트/White', '#FFFFFF', 4, NOW(), NOW()),
+(10, '블랙/Black', '#000000', 4, NOW(), NOW()),
+(10, '그레이/Gray', '#808080', 4, NOW(), NOW());
+
+UPDATE product_color_stock SET color_code = '#FFFFFF' WHERE color = '화이트/White';
+UPDATE product_color_stock SET color_code = '#000000' WHERE color = '블랙/Black';
+UPDATE product_color_stock SET color_code = '#0000FF' WHERE color = '블루/Blue';
+UPDATE product_color_stock SET color_code = '#FF0000' WHERE color = '레드/Red';
+UPDATE product_color_stock SET color_code = '#808080' WHERE color = '그레이/Gray';
+UPDATE product_color_stock SET color_code = '#C0C0C0' WHERE color = '실버/Silver';
+UPDATE product_color_stock SET color_code = '#FFFF00' WHERE color = '옐로우/Yellow';
+UPDATE product_color_stock SET color_code = '#008000' WHERE color = '그린/Green';
 
 INSERT IGNORE INTO orders (id, user_id, total_amount, status, recipient, phone, address, zip_code, payment_provider, payment_id, paid_at, created_at, updated_at) VALUES
 (1, 3, 848000.00, 'pending', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', NULL, NULL, NULL, NOW(), NOW()),

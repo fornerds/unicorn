@@ -24,6 +24,8 @@ public class OrderDetailResponse {
     @Builder
     public static class OrderItemDto {
         private Long productId;
+        private String color;
+        private String colorCode;
         private ProductSummary product;
         private Integer quantity;
         private BigDecimal price;

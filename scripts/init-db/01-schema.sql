@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS product_color_stock (
   id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   product_id BIGINT NOT NULL,
   color VARCHAR(100) NOT NULL,
+  color_code VARCHAR(20) NULL,
   stock INT NOT NULL,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL,

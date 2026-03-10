@@ -79,12 +79,14 @@ public class ProductService {
             return rows.stream()
                     .map(cs -> ProductDetailResponse.ColorStock.builder()
                             .color(cs.getColor())
+                            .colorCode(cs.getColorCode())
                             .stock(cs.getStock())
                             .build())
                     .toList();
         }
         return List.of(ProductDetailResponse.ColorStock.builder()
                 .color(null)
+                .colorCode(null)
                 .stock(p.getStock())
                 .build());
     }

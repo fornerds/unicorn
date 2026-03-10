@@ -27,6 +27,8 @@ interface Pagination {
 const defaultForm = {
   name: '',
   description: '',
+  shortDescription: '',
+  content: '',
   price: 0,
   categoryId: 0,
   stock: 0,
@@ -96,14 +98,21 @@ export default function ProductsPage() {
   const openEdit = async (row: ProductItem) => {
     setEditing(row);
     try {
-      const res = await adminApiFetch<{ data: ProductItem & { description?: string; images?: string[] } }>(
-        `/admin/products/${row.id}`
-      );
+      const res = await adminApiFetch<{
+        data: ProductItem & {
+          description?: string;
+          shortDescription?: string;
+          content?: string;
+          images?: string[];
+        };
+      }>(`/admin/products/${row.id}`);
       const d = res?.data;
       if (d) {
         setForm({
           name: d.name ?? '',
           description: d.description ?? '',
+          shortDescription: d.shortDescription ?? '',
+          content: d.content ?? '',
           price: typeof d.price === 'number' ? d.price : 0,
           categoryId: d.categoryId ?? 0,
           stock: d.stock ?? 0,
@@ -124,6 +133,8 @@ export default function ProductsPage() {
       const body = {
         name: form.name.trim(),
         description: form.description.trim() || undefined,
+        shortDescription: form.shortDescription.trim() || undefined,
+        content: form.content.trim() || undefined,
         price: form.price,
         categoryId: form.categoryId || null,
         stock: form.stock,
@@ -294,13 +305,34 @@ export default function ProductsPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">설명</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">짧은 설명</label>
+            <input
+              type="text"
+              value={form.shortDescription}
+              onChange={(e) => setForm((f) => ({ ...f, shortDescription: e.target.value }))}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              placeholder="목록/요약용 한 줄 설명"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">설명 (요약)</label>
             <textarea
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-              rows={3}
+              className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              rows={2}
             />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">상세 설명 (HTML)</label>
+            <textarea
+              value={form.content}
+              onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
+              className="min-h-[200px] w-full resize-y rounded-lg border border-gray-300 px-3 py-2 font-mono text-sm"
+              rows={12}
+              placeholder="HTML 입력 가능. 이미지: &lt;img src=&quot;URL&quot; /&gt; 등으로 작성"
+            />
+            <p className="mt-1 text-xs text-gray-500">HTML 코드를 입력하면 상세 페이지에 반영됩니다. 이미지 업로드 후 URL을 img 태그로 넣을 수 있습니다.</p>
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">카테고리 *</label>
@@ -351,15 +383,22 @@ export default function ProductsPage() {
             />
             {uploading && <span className="ml-2 text-sm text-gray-500">업로드 중...</span>}
             {form.images.length > 0 && (
-              <ul className="mt-2 space-y-1">
+              <ul className="mt-2 flex flex-wrap gap-3">
                 {form.images.map((url, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm">
-                    <a href={url} target="_blank" rel="noopener noreferrer" className="truncate text-blue-600">
-                      {url}
-                    </a>
-                    <button type="button" onClick={() => removeImage(i)} className="text-red-600">
-                      삭제
-                    </button>
+                  <li key={i} className="flex flex-col items-start gap-1">
+                    <img
+                      src={url}
+                      alt={`제품 ${i + 1}`}
+                      className="h-24 w-24 rounded border border-gray-200 object-cover"
+                    />
+                    <div className="flex items-center gap-2">
+                      <a href={url} target="_blank" rel="noopener noreferrer" className="max-w-[120px] truncate text-xs text-blue-600">
+                        보기
+                      </a>
+                      <button type="button" onClick={() => removeImage(i)} className="text-xs text-red-600">
+                        삭제
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>

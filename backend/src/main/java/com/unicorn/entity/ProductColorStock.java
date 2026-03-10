@@ -27,6 +27,9 @@ public class ProductColorStock {
     @Column(nullable = false, length = 100)
     private String color;
 
+    @Column(name = "color_code", length = 20)
+    private String colorCode;
+
     @Column(nullable = false)
     private Integer stock;
 

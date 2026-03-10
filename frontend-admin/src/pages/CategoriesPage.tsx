@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { adminApiFetch } from '@/lib/api';
 import { Modal } from '@/components/Modal';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -9,6 +9,7 @@ interface CategoryItem {
   slug: string;
   sortOrder?: number;
   parentId?: number;
+  children?: CategoryItem[];
 }
 
 export default function CategoriesPage() {
@@ -131,6 +132,7 @@ export default function CategoriesPage() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">구분</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">ID</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">이름</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">슬러그</th>
@@ -140,29 +142,34 @@ export default function CategoriesPage() {
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
             {items.map((row) => (
-              <tr key={row.id}>
-                <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{row.id}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{row.name}</td>
-                <td className="px-4 py-3 text-sm text-gray-500">{row.slug}</td>
-                <td className="px-4 py-3 text-sm text-gray-500">{row.sortOrder ?? '-'}</td>
-                <td className="px-4 py-3 text-right text-sm">
-                  <button
-                    type="button"
-                    onClick={() => openEdit(row)}
-                    className="text-gray-600 hover:text-gray-900"
-                  >
-                    수정
-                  </button>
-                  <span className="mx-2 text-gray-300">|</span>
-                  <button
-                    type="button"
-                    onClick={() => setDeleteTarget(row)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    삭제
-                  </button>
-                </td>
-              </tr>
+              <React.Fragment key={row.id}>
+                <tr className="bg-gray-50">
+                  <td className="px-4 py-3 text-xs font-medium text-gray-500">상위</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{row.id}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{row.name}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{row.slug}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{row.sortOrder ?? '-'}</td>
+                  <td className="px-4 py-3 text-right text-sm">
+                    <button type="button" onClick={() => openEdit(row)} className="text-gray-600 hover:text-gray-900">수정</button>
+                    <span className="mx-2 text-gray-300">|</span>
+                    <button type="button" onClick={() => setDeleteTarget(row)} className="text-red-600 hover:text-red-700">삭제</button>
+                  </td>
+                </tr>
+                {(row.children ?? []).map((child) => (
+                  <tr key={child.id}>
+                    <td className="px-4 py-3 pl-8 text-xs text-gray-500">하위</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{child.id}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{child.name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-500">{child.slug}</td>
+                    <td className="px-4 py-3 text-sm text-gray-500">{child.sortOrder ?? '-'}</td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      <button type="button" onClick={() => openEdit(child)} className="text-gray-600 hover:text-gray-900">수정</button>
+                      <span className="mx-2 text-gray-300">|</span>
+                      <button type="button" onClick={() => setDeleteTarget(child)} className="text-red-600 hover:text-red-700">삭제</button>
+                    </td>
+                  </tr>
+                ))}
+              </React.Fragment>
             ))}
           </tbody>
         </table>
@@ -198,14 +205,21 @@ export default function CategoriesPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">상위 ID</label>
-            <input
-              type="number"
+            <label className="mb-1 block text-sm font-medium text-gray-700">상위 카테고리</label>
+            <select
               value={form.parentId}
               onChange={(e) => setForm((f) => ({ ...f, parentId: e.target.value }))}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-              min={0}
-            />
+            >
+              <option value="">없음 (최상위)</option>
+              {items
+                .filter((p) => !editing || p.id !== editing.id)
+                .map((p) => (
+                  <option key={p.id} value={String(p.id)}>
+                    {p.name} (ID: {p.id})
+                  </option>
+                ))}
+            </select>
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">정렬 *</label>

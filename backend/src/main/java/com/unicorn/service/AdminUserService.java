@@ -34,6 +34,14 @@ public class AdminUserService {
     @Transactional
     public AdminUserDetailResponse updateUser(Long id, AdminUpdateUserRequest request) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            if (!request.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(request.getEmail())) {
+                throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+            }
+            user.setEmail(request.getEmail().trim());
+        }
+        if (request.getName() != null) user.setName(request.getName());
+        if (request.getPhone() != null) user.setPhone(request.getPhone());
         if (request.getStatus() != null) user.setStatus(request.getStatus());
         if (request.getMemo() != null) user.setMemo(request.getMemo());
         user = userRepository.save(user);

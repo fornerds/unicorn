@@ -9,5 +9,4 @@ export const paths = {
   news: '/news',
   tags: '/tags',
   moodQuestions: '/mood-questions',
-  settings: '/settings',
 } as const;

@@ -37,7 +37,7 @@ export default function UsersPage() {
   const [error, setError] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailUser, setDetailUser] = useState<UserDetail | null>(null);
-  const [detailForm, setDetailForm] = useState({ status: '', memo: '' });
+  const [detailForm, setDetailForm] = useState({ email: '', name: '', phone: '', status: '', memo: '' });
   const [detailLoading, setDetailLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<UserItem | null>(null);
@@ -79,7 +79,13 @@ export default function UsersPage() {
       const d = res?.data;
       if (d) {
         setDetailUser(d);
-        setDetailForm({ status: d.status ?? '', memo: d.memo ?? '' });
+        setDetailForm({
+          email: d.email ?? '',
+          name: d.name ?? '',
+          phone: d.phone ?? '',
+          status: d.status ?? '',
+          memo: d.memo ?? '',
+        });
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : '상세 조회 실패');
@@ -96,7 +102,13 @@ export default function UsersPage() {
     try {
       await adminApiFetch(`/admin/users/${detailUser.id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ status: detailForm.status || undefined, memo: detailForm.memo || undefined }),
+        body: JSON.stringify({
+          email: detailForm.email.trim() || undefined,
+          name: detailForm.name.trim() || undefined,
+          phone: detailForm.phone.trim() || undefined,
+          status: detailForm.status || undefined,
+          memo: detailForm.memo.trim() || undefined,
+        }),
       });
       setDetailOpen(false);
       await fetchList();
@@ -222,9 +234,33 @@ export default function UsersPage() {
         ) : detailUser ? (
           <form onSubmit={handleUserUpdate} className="flex flex-col gap-4">
             <p className="text-sm text-gray-500">ID: {detailUser.id}</p>
-            <p className="text-sm font-medium">이메일: {detailUser.email}</p>
-            <p className="text-sm font-medium">이름: {detailUser.name}</p>
-            {detailUser.phone && <p className="text-sm">전화: {detailUser.phone}</p>}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">이메일</label>
+              <input
+                type="email"
+                value={detailForm.email}
+                onChange={(e) => setDetailForm((f) => ({ ...f, email: e.target.value }))}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">이름</label>
+              <input
+                type="text"
+                value={detailForm.name}
+                onChange={(e) => setDetailForm((f) => ({ ...f, name: e.target.value }))}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">전화번호</label>
+              <input
+                type="text"
+                value={detailForm.phone}
+                onChange={(e) => setDetailForm((f) => ({ ...f, phone: e.target.value }))}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              />
+            </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">상태</label>
               <select
@@ -232,9 +268,9 @@ export default function UsersPage() {
                 onChange={(e) => setDetailForm((f) => ({ ...f, status: e.target.value }))}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
               >
-                <option value="active">active</option>
-                <option value="inactive">inactive</option>
-                <option value="suspended">suspended</option>
+                <option value="active">active (활성)</option>
+                <option value="inactive">inactive (비활성)</option>
+                <option value="suspended">suspended (정지)</option>
               </select>
             </div>
             <div>
@@ -242,7 +278,7 @@ export default function UsersPage() {
               <textarea
                 value={detailForm.memo}
                 onChange={(e) => setDetailForm((f) => ({ ...f, memo: e.target.value }))}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 rows={3}
               />
             </div>

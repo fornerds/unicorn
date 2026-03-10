@@ -109,10 +109,17 @@ public class CartService {
     private CartResponse.CartItemDto toItemDto(CartItem ci) {
         Product p = ci.getProduct();
         String colorForResponse = ci.getColor() != null && !ci.getColor().isEmpty() ? ci.getColor() : null;
+        String colorCode = null;
+        if (colorForResponse != null) {
+            colorCode = productColorStockRepository.findByProduct_IdAndColor(p.getId(), colorForResponse)
+                    .map(ProductColorStock::getColorCode)
+                    .orElse(null);
+        }
         return CartResponse.CartItemDto.builder()
                 .id(ci.getId())
                 .productId(p.getId())
                 .color(colorForResponse)
+                .colorCode(colorCode)
                 .product(CartResponse.ProductSummary.builder()
                         .id(p.getId())
                         .name(p.getName())

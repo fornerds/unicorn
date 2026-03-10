@@ -51,6 +51,8 @@ services:
     depends_on:
       - backend
 
+  # 백오피스: API Base URL은 env 파일(ENV_FILE, 기본 .env.dev)의 ADMIN_API_BASE_URL 로 빌드 시 주입
+  # 사용: docker-compose --env-file .env.dev up -d --build
   frontend-admin:
     build:
       context: ./frontend-admin
@@ -58,6 +60,8 @@ services:
       args:
         VITE_API_BASE_URL: ${ADMIN_API_BASE_URL:-http://localhost:8080/api/v1}
     container_name: unicorn-frontend-admin
+    env_file:
+      - ${ENV_FILE:-.env.dev}
     ports:
       - "${ADMIN_PORT:-3001}:80"
     depends_on:

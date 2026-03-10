@@ -28,6 +28,7 @@ public class ProductDetailResponse {
     @Builder
     public static class ColorStock {
         private String color;
+        private String colorCode;
         private Integer stock;
     }
 

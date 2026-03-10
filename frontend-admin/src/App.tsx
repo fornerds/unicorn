@@ -11,7 +11,6 @@ import InquiriesPage from '@/pages/InquiriesPage';
 import NewsPage from '@/pages/NewsPage';
 import TagsPage from '@/pages/TagsPage';
 import MoodQuestionsPage from '@/pages/MoodQuestionsPage';
-import SettingsPage from '@/pages/SettingsPage';
 import { paths } from '@/routes/paths';
 
 export default function App() {
@@ -35,7 +34,6 @@ export default function App() {
         <Route path={paths.news.slice(1)} element={<NewsPage />} />
         <Route path={paths.tags.slice(1)} element={<TagsPage />} />
         <Route path={paths.moodQuestions.slice(1)} element={<MoodQuestionsPage />} />
-        <Route path={paths.settings.slice(1)} element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

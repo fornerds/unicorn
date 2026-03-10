@@ -29,6 +29,7 @@ public class OrderService {
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final ProductColorStockRepository productColorStockRepository;
 
     @Value("${app.payment.redirect-url-base:https://pg.example.com/redirect}")
     private String paymentRedirectUrlBase;
@@ -112,16 +113,7 @@ public class OrderService {
     }
 
     private OrderDetailResponse toDetailResponse(Order order) {
-        List<OrderDetailResponse.OrderItemDto> items = order.getItems().stream().map(oi -> OrderDetailResponse.OrderItemDto.builder()
-                .productId(oi.getProduct().getId())
-                .product(OrderDetailResponse.ProductSummary.builder()
-                        .id(oi.getProduct().getId())
-                        .name(oi.getProduct().getName())
-                        .imageUrl(oi.getProduct().getImageUrl())
-                        .build())
-                .quantity(oi.getQuantity())
-                .price(oi.getPrice())
-                .build()).collect(Collectors.toList());
+        List<OrderDetailResponse.OrderItemDto> items = order.getItems().stream().map(this::toOrderItemDto).collect(Collectors.toList());
         return OrderDetailResponse.builder()
                 .id(order.getId())
                 .items(items)
@@ -143,16 +135,7 @@ public class OrderService {
     }
 
     private OrderListResponse toListResponse(Order order) {
-        List<OrderDetailResponse.OrderItemDto> items = order.getItems().stream().map(oi -> OrderDetailResponse.OrderItemDto.builder()
-                .productId(oi.getProduct().getId())
-                .product(OrderDetailResponse.ProductSummary.builder()
-                        .id(oi.getProduct().getId())
-                        .name(oi.getProduct().getName())
-                        .imageUrl(oi.getProduct().getImageUrl())
-                        .build())
-                .quantity(oi.getQuantity())
-                .price(oi.getPrice())
-                .build()).collect(Collectors.toList());
+        List<OrderDetailResponse.OrderItemDto> items = order.getItems().stream().map(this::toOrderItemDto).collect(Collectors.toList());
         return OrderListResponse.builder()
                 .id(order.getId())
                 .items(items)
@@ -160,6 +143,28 @@ public class OrderService {
                 .status(order.getStatus())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
+                .build();
+    }
+
+    private OrderDetailResponse.OrderItemDto toOrderItemDto(OrderItem oi) {
+        String color = oi.getColor() != null && !oi.getColor().isEmpty() ? oi.getColor() : null;
+        String colorCode = null;
+        if (color != null) {
+            colorCode = productColorStockRepository.findByProduct_IdAndColor(oi.getProduct().getId(), color)
+                    .map(cs -> cs.getColorCode())
+                    .orElse(null);
+        }
+        return OrderDetailResponse.OrderItemDto.builder()
+                .productId(oi.getProduct().getId())
+                .color(color)
+                .colorCode(colorCode)
+                .product(OrderDetailResponse.ProductSummary.builder()
+                        .id(oi.getProduct().getId())
+                        .name(oi.getProduct().getName())
+                        .imageUrl(oi.getProduct().getImageUrl())
+                        .build())
+                .quantity(oi.getQuantity())
+                .price(oi.getPrice())
                 .build();
     }
 }

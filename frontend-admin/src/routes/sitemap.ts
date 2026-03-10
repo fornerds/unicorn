@@ -10,7 +10,6 @@ export const sitemap = [
   { name: '뉴스 관리', path: paths.news },
   { name: '태그 관리', path: paths.tags },
   { name: '기분 질문', path: paths.moodQuestions },
-  { name: '설정', path: paths.settings },
 ] as const;
 
 export function getPageTitle(pathname: string): string {
