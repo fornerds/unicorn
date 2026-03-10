@@ -2,14 +2,19 @@ package com.unicorn.controller;
 
 import com.unicorn.dto.ApiResponse;
 import com.unicorn.dto.auth.*;
+import com.unicorn.dto.user.UpdateUserMeRequest;
+import com.unicorn.dto.user.UserMeResponse;
+import com.unicorn.security.JwtPrincipal;
 import com.unicorn.service.AuthService;
 import com.unicorn.service.OAuthProviderService;
+import com.unicorn.service.UserMeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -26,6 +31,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final OAuthProviderService oAuthProviderService;
+    private final UserMeService userMeService;
     private final com.unicorn.config.AuthCookieHelper authCookieHelper;
 
     @Operation(summary = "로그인", description = "이메일·비밀번호 로그인. 응답에 Set-Cookie(access_token, refresh_token) 설정.")
@@ -101,6 +107,15 @@ public class AuthController {
         String base = authService.getOauthFrontendRedirectUrl();
         String url = base + "?accessToken=" + data.getAccessToken() + "&expiresIn=" + data.getExpiresIn();
         return new RedirectView(url);
+    }
+
+    @Operation(summary = "SNS 로그인 후 회원정보 입력", description = "SNS 로그인 직후 이메일·이름·전화번호 등 누락된 정보를 한 번에 입력. 인증 필요(Authorization: Bearer accessToken).")
+    @PostMapping("/sns/complete-profile")
+    public ApiResponse<UserMeResponse> snsCompleteProfile(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @Valid @RequestBody UpdateUserMeRequest request) {
+        UserMeResponse data = userMeService.updateMe(principal.subjectId(), request);
+        return ApiResponse.success(data, "회원정보가 저장되었습니다.");
     }
 
     @Operation(summary = "회원가입 이메일 인증번호 발송", description = "회원가입 목적의 인증번호 6자리를 이메일로 발송합니다.")
