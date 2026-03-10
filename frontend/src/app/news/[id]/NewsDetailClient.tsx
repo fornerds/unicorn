@@ -66,21 +66,28 @@ export default function NewsDetailClient() {
   const [relatedNews, setRelatedNews] = useState<NewsItem[]>([]);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchNewsDetail = async () => {
       setIsLoading(true);
       try {
-        const res = await apiFetch<NewsDetailResponse>(`/news/${newsId}`);
+        const res = await apiFetch<NewsDetailResponse>(`/news/${newsId}`, {
+          signal: controller.signal,
+        });
         setNews(res.data);
         setRelatedNews(
           (res.data.relatedArticles || []).slice(0, 4).map(toNewsItem),
         );
-      } catch {
+      } catch (err) {
+        if (controller.signal.aborted) return;
         router.replace(ROUTES.NEWS);
       } finally {
-        setIsLoading(false);
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     };
+
     fetchNewsDetail();
+    return () => controller.abort();
   }, [newsId, router]);
 
   if (isLoading) {
@@ -187,9 +194,7 @@ export default function NewsDetailClient() {
             <div className="flex flex-col gap-[58.5px] items-start text-[18px] w-[772.5px]">
               <div className="font-suit font-normal leading-[1.7] min-w-full text-[#374151] whitespace-pre-wrap">
                 {news.content.split("\n").map((paragraph, index) => (
-                  <p key={index}>
-                    {paragraph || "\u00A0"}
-                  </p>
+                  <p key={index}>{paragraph || "\u00A0"}</p>
                 ))}
               </div>
               {news.tags && news.tags.length > 0 && (
@@ -218,7 +223,7 @@ export default function NewsDetailClient() {
                 <p className="leading-[1.5]">더보기</p>
               </Link>
             </div>
-            <div className="flex flex-wrap gap-[11px] items-start justify-between w-full max-w-[1167px]">
+            <div className="flex flex-wrap gap-[11px] items-start w-full max-w-[1167px]">
               {relatedNews.map((item) => (
                 <div key={item.id} className="w-[283px]">
                   <NewsCard news={item} />
