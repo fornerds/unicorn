@@ -24,9 +24,9 @@ export const ArrowDownIcon = ({
       <path
         d="M0.4375 0.4375L4.9375 5.4375L9.4375 0.4375"
         stroke="#6B7280"
-        stroke-width="0.875"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="0.875"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
