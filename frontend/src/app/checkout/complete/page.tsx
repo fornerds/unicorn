@@ -57,35 +57,33 @@ export default function CheckoutCompletePage() {
         const provider = params.get('provider');
         const paymentKey = params.get('paymentKey');
         const amountStr = params.get('amount');
+        const orderIdStr = params.get('orderId');
         history.replaceState({}, '', window.location.pathname);
 
-        if (provider && paymentKey && amountStr) {
+        if (provider && paymentKey && amountStr && orderIdStr) {
           setConfirmStatus('loading');
-          const amount = parseInt(amountStr, 10);
-          const prepareDataStr = localStorage.getItem('payPrepareData');
-          const prepareData = prepareDataStr ? JSON.parse(prepareDataStr) : null;
+          const amount = amountStr.includes('.')
+            ? Math.round(parseFloat(amountStr) * 100)
+            : parseInt(amountStr, 10);
+          const confirmedOrderId = parseInt(orderIdStr, 10);
 
           try {
-            const res = await apiFetch<{ data: { orderId: number; totalAmount: number } }>('/payments/confirm-and-create-order', {
+            await apiFetch('/payments/confirm', {
               method: 'POST',
               body: JSON.stringify({
+                orderId: confirmedOrderId,
                 paymentProvider: provider,
                 paymentKey,
                 amount,
-                shippingAddress: prepareData?.shippingAddress,
-                paymentMethod: prepareData?.paymentMethod || provider,
-                cartItemIds: prepareData?.cartItemIds,
               }),
             });
-            setOrderId(res.data.orderId);
+            setOrderId(confirmedOrderId);
             setConfirmStatus('success');
             localStorage.removeItem('payPrepareData');
 
             const checkoutDataStr = localStorage.getItem('checkoutData');
             if (checkoutDataStr) {
-              try {
-                setOrderData(JSON.parse(checkoutDataStr));
-              } catch {}
+              try { setOrderData(JSON.parse(checkoutDataStr)); } catch {}
             }
           } catch {
             setConfirmStatus('error');
