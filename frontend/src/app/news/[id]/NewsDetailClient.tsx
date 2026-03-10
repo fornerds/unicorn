@@ -193,7 +193,7 @@ export default function NewsDetailClient() {
 
             <div className="flex flex-col gap-[58.5px] items-start text-[18px] w-[772.5px]">
               <div
-                className="news-detail-content font-suit font-normal leading-[1.7] min-w-full text-[#374151]"
+                className="rich-content font-suit font-normal min-w-full text-[#374151]"
                 dangerouslySetInnerHTML={{ __html: news.content }}
               />
               {news.tags && news.tags.length > 0 && (

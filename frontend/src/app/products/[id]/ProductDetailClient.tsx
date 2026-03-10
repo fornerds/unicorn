@@ -701,7 +701,7 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
             </h2>
             {product.content ? (
               <div
-                className="product-detail-content font-suit font-thin leading-[1.5] text-[16.5px] tracking-[-0.495px] w-full lg:w-[1036.5px] [&_p]:mb-3 [&_p]:last:mb-0 [&_strong]:font-semibold [&_em]:italic [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_img]:max-w-full [&_img]:h-auto [&_a]:text-[#374151] [&_a]:underline [&_.ql-youtube-embed]:relative [&_.ql-youtube-embed]:max-w-full [&_.ql-youtube-embed]:aspect-video [&_.ql-youtube-embed]:my-4 [&_.ql-youtube-embed_iframe]:absolute [&_.ql-youtube-embed_iframe]:inset-0 [&_.ql-youtube-embed_iframe]:w-full [&_.ql-youtube-embed_iframe]:h-full [&_.ql-youtube-embed_iframe]:rounded-lg"
+                className="rich-content font-suit font-thin text-[#374151] w-full lg:w-[1036.5px]"
                 dangerouslySetInnerHTML={{ __html: product.content }}
               />
             ) : (
