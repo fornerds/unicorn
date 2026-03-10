@@ -53,11 +53,10 @@ function ResetPasswordContent() {
             newPassword,
           }),
         });
-      } else if (method === 'email' && emailParam && tokenParam) {
-        await apiFetch('/auth/password/find/email', {
+      } else if (method === 'email' && tokenParam) {
+        await apiFetch('/auth/password/find/email/reset', {
           method: 'POST',
           body: JSON.stringify({
-            email: emailParam,
             token: tokenParam,
             newPassword,
           }),

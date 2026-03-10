@@ -22,6 +22,7 @@ export default function ForgotPasswordPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [resetToken, setResetToken] = useState('');
 
   const countryCodes = [
     { code: '82', label: '82' },
@@ -66,12 +67,12 @@ export default function ForgotPasswordPage() {
       const fullEmail = `${email}@${emailDomain}`;
       setIsSending(true);
       try {
-        await apiFetch<{ data: { sent: boolean } }>('/auth/password/find/email', {
+        await apiFetch<{ data: { sent: boolean } }>('/auth/password/find/email/send-code', {
           method: 'POST',
           body: JSON.stringify({ email: fullEmail }),
         });
         setIsCodeSent(true);
-        setSuccessMessage('인증 메일이 전송되었습니다. 이메일을 확인해 주세요.');
+        setSuccessMessage('인증번호가 이메일로 전송되었습니다. 이메일을 확인해 주세요.');
       } catch (err) {
         if (err instanceof ApiClientError) {
           setError(err.message);
@@ -84,14 +85,42 @@ export default function ForgotPasswordPage() {
     }
   };
 
-  const handleVerifyCode = () => {
+  const handleVerifyCode = async () => {
     setError('');
     if (!verificationCode.trim()) {
       setError('인증번호를 입력해 주세요.');
       return;
     }
-    setIsVerified(true);
-    setSuccessMessage('인증이 완료되었습니다.');
+
+    if (activeTab === 'phone') {
+      setIsVerified(true);
+      setSuccessMessage('인증이 완료되었습니다.');
+      return;
+    }
+
+    // 이메일 인증: verify-code API 호출 후 resetToken 저장
+    const fullEmail = `${email}@${emailDomain}`;
+    setIsVerifying(true);
+    try {
+      const res = await apiFetch<{ data: { sent: boolean; success: boolean; resetToken: string } }>(
+        '/auth/password/find/email/verify-code',
+        {
+          method: 'POST',
+          body: JSON.stringify({ email: fullEmail, code: verificationCode }),
+        },
+      );
+      setResetToken(res.data.resetToken);
+      setIsVerified(true);
+      setSuccessMessage('인증이 완료되었습니다.');
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        setError(err.message);
+      } else {
+        setError('인증번호 확인에 실패했습니다. 다시 확인해 주세요.');
+      }
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -119,7 +148,7 @@ export default function ForgotPasswordPage() {
       const params = new URLSearchParams({
         method: 'email',
         email: fullEmail,
-        token: verificationCode,
+        token: resetToken,
       });
       router.push(`/login/reset-password?${params.toString()}`);
     }
@@ -130,6 +159,7 @@ export default function ForgotPasswordPage() {
     setIsCodeSent(false);
     setIsVerified(false);
     setVerificationCode('');
+    setResetToken('');
     setError('');
     setSuccessMessage('');
   };

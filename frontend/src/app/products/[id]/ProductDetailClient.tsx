@@ -16,6 +16,8 @@ import { withBasePath } from "@/utils/assets";
 import { apiFetch } from "@/lib/api";
 import { getCategoryDisplayName } from "@/utils/categoryMapping";
 import { ROUTES } from "@/utils/constants";
+import { useAuthStore } from "@/stores/authStore";
+import { LoginModal } from "@/components/ui/LoginModal";
 
 interface ApiCategory {
   id: number;
@@ -67,6 +69,8 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
   const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [isCartLoading, setIsCartLoading] = useState(false);
   const [isBuyLoading, setIsBuyLoading] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { isAuthenticated } = useAuthStore();
   const [cartMessage, setCartMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showColorDropdown, setShowColorDropdown] = useState(false);
   const colorDropdownRef = useRef<HTMLDivElement>(null);
@@ -112,6 +116,10 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
   }, [showColorDropdown]);
 
   const handleLikeClick = async () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     if (isLikeLoading) return;
     const prevLiked = isLiked;
     setIsLiked(!isLiked);
@@ -146,6 +154,10 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
   };
 
   const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     if (isCartLoading || !product) return;
     setIsCartLoading(true);
     setCartMessage(null);
@@ -168,6 +180,10 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
   };
 
   const handleBuyNow = async () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     if (isBuyLoading || !product) return;
     setIsBuyLoading(true);
     try {
@@ -283,6 +299,12 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
   const currentImage = images[selectedImageIndex];
 
   return (
+    <>
+    <LoginModal
+      isOpen={showLoginModal}
+      onClose={() => setShowLoginModal(false)}
+      message={'회원만 이용 가능한 서비스입니다.\n로그인하시겠습니까?'}
+    />
     <div className="bg-white min-h-screen">
       <div className="flex flex-col gap-[84px] items-start pb-[150px] pt-[8px] px-[20px] md:px-[32px] lg:px-[45px] w-full max-w-[1440px] mx-auto">
         <div className="flex flex-col lg:flex-row flex-wrap gap-[22.5px] items-start w-full max-w-[1350px]">
@@ -690,5 +712,6 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
         )}
       </div>
     </div>
+    </>
   );
 };

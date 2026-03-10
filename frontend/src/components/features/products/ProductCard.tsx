@@ -7,6 +7,8 @@ import { LikeIcon, LikeIconFilled } from '@/components/ui/icons';
 import { useState } from 'react';
 import { withBasePath } from '@/utils/assets';
 import { apiFetch } from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
+import { LoginModal } from '@/components/ui/LoginModal';
 
 interface ProductCardProps {
   id: string;
@@ -31,10 +33,17 @@ export const ProductCard = ({
 }: ProductCardProps) => {
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { isAuthenticated } = useAuthStore();
 
   const handleLikeClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
 
     if (isLikeLoading) return;
 
@@ -61,6 +70,12 @@ export const ProductCard = ({
   const formattedPrice = new Intl.NumberFormat('ko-KR').format(price);
 
   return (
+    <>
+    <LoginModal
+      isOpen={showLoginModal}
+      onClose={() => setShowLoginModal(false)}
+      message={'회원만 이용 가능한 서비스입니다.\n로그인하시겠습니까?'}
+    />
     <Link
       href={ROUTES.PRODUCT_DETAIL(id)}
       className="bg-[#f9fafb] flex flex-col items-center overflow-hidden pb-[36px] pt-[16px] px-[24px] rounded-[8px] shrink-0 w-[367px] hover:opacity-95 transition-opacity"
@@ -125,5 +140,6 @@ export const ProductCard = ({
         </p>
       </div>
     </Link>
+    </>
   );
 };

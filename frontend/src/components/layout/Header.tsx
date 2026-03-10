@@ -1,13 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ProfileIcon, CartIcon } from '@/components/ui/icons';
 import { ROUTES } from '@/utils/constants';
 import { cn } from '@/utils/cn';
 import { useHeader } from '@/contexts/HeaderContext';
+import { useAuthStore } from '@/stores/authStore';
+import { LoginModal } from '@/components/ui/LoginModal';
 
 interface HeaderProps {
   variant?: 'main' | 'default';
@@ -22,8 +24,11 @@ const navigationItems = [
 
 export const Header = ({ variant = 'default' }: HeaderProps) => {
   const pathname = usePathname();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const { isFirstSection, introOverlayVisible } = useHeader();
+  const { isAuthenticated } = useAuthStore();
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -111,6 +116,12 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
   }, [isAboutPage, isContactPage, shouldBeTransparent]);
 
   return (
+    <>
+    <LoginModal
+      isOpen={showLoginModal}
+      onClose={() => setShowLoginModal(false)}
+      message={'회원만 이용 가능한 서비스입니다.\n로그인하시겠습니까?'}
+    />
     <header
       ref={headerRef}
       className={cn(
@@ -174,22 +185,29 @@ export const Header = ({ variant = 'default' }: HeaderProps) => {
         </nav>
 
         <div className="flex gap-[30px] h-[44px] items-center justify-center shrink-0">
-          <Link
-            href={ROUTES.MY_PAGE}
+          <button
+            onClick={() => {
+              if (!isAuthenticated) { setShowLoginModal(true); return; }
+              router.push(ROUTES.MY_PAGE);
+            }}
             className="relative shrink-0 w-[28px] h-[28px] flex items-center justify-center hover:opacity-80 transition-opacity"
             aria-label="프로필"
           >
             <ProfileIcon className="w-[28px] h-[28px]" fill={iconColor} />
-          </Link>
-          <Link
-            href={ROUTES.CART}
+          </button>
+          <button
+            onClick={() => {
+              if (!isAuthenticated) { setShowLoginModal(true); return; }
+              router.push(ROUTES.CART);
+            }}
             className="relative shrink-0 w-[28px] h-[28px] flex items-center justify-center hover:opacity-80 transition-opacity"
             aria-label="장바구니"
           >
             <CartIcon className="w-[28px] h-[28px]" fill={iconColor} />
-          </Link>
+          </button>
         </div>
       </motion.div>
     </header>
+    </>
   );
 };
