@@ -35,6 +35,7 @@ interface ProductDetailSpec {
 
 interface ColorStock {
   color: string;
+  colorCode?: string;
   stock: number;
 }
 
@@ -426,7 +427,7 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
                       <div className="flex gap-[12px] items-center min-w-0 flex-1">
                         <div
                           className="rounded-full shrink-0 w-[24.75px] h-[24.75px] border border-[#d1d5db]"
-                          style={{ backgroundColor: selectedColor }}
+                          style={{ backgroundColor: colorOptions.find((c) => c.color === selectedColor)?.colorCode || selectedColor }}
                         />
                         <p className="flex-1 font-suit font-light text-[15px] leading-[1.35] text-[#374151] text-left text-ellipsis overflow-hidden whitespace-pre-wrap max-h-[40.5px]">
                           {selectedColor}
@@ -468,7 +469,7 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
                             <div className="flex gap-[12px] items-center min-w-0 flex-1">
                               <div
                                 className="rounded-full shrink-0 w-[24.75px] h-[24.75px] border border-[#d1d5db]"
-                                style={{ backgroundColor: colorOpt.color }}
+                                style={{ backgroundColor: colorOpt.colorCode || colorOpt.color }}
                               />
                               <p className="flex-1 font-suit font-light text-[15px] leading-[1.35] text-[#374151] text-ellipsis overflow-hidden whitespace-pre-wrap">
                                 {colorOpt.color}

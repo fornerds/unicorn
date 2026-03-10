@@ -76,3 +76,125 @@
   /* 커스텀 유틸리티 클래스 */
 }
 
+/* 제품 상세 에디터 HTML 콘텐츠 스타일 */
+.product-detail-content h1,
+.product-detail-content h2,
+.product-detail-content h3,
+.product-detail-content h4,
+.product-detail-content h5,
+.product-detail-content h6 {
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: #1f2937;
+}
+
+.product-detail-content h1 { font-size: 2em; }
+.product-detail-content h2 { font-size: 1.5em; }
+.product-detail-content h3 { font-size: 1.25em; }
+
+.product-detail-content p {
+  margin-bottom: 0.875em;
+  line-height: 1.7;
+}
+.product-detail-content p:last-child { margin-bottom: 0; }
+
+.product-detail-content strong,
+.product-detail-content b {
+  font-weight: 600;
+}
+
+.product-detail-content em,
+.product-detail-content i {
+  font-style: italic;
+}
+
+.product-detail-content u {
+  text-decoration: underline;
+}
+
+.product-detail-content s {
+  text-decoration: line-through;
+}
+
+.product-detail-content ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-bottom: 0.875em;
+}
+
+.product-detail-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin-bottom: 0.875em;
+}
+
+.product-detail-content li {
+  margin-bottom: 0.25em;
+  line-height: 1.6;
+}
+
+.product-detail-content blockquote {
+  border-left: 3px solid #e5e7eb;
+  padding-left: 1em;
+  margin: 1em 0;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.product-detail-content pre {
+  background: #f3f4f6;
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin-bottom: 0.875em;
+  font-size: 0.9em;
+}
+
+.product-detail-content code {
+  background: #f3f4f6;
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.product-detail-content a {
+  color: #374151;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.product-detail-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 0.5em 0;
+}
+
+.product-detail-content iframe {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 0.5em 0;
+}
+
+/* 유튜브 embed 반응형 */
+.product-detail-content .ql-video,
+.product-detail-content iframe[src*="youtube"],
+.product-detail-content iframe[src*="youtu.be"] {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+}
+
+/* 텍스트 정렬 (Quill) */
+.product-detail-content .ql-align-center { text-align: center; }
+.product-detail-content .ql-align-right  { text-align: right; }
+.product-detail-content .ql-align-justify { text-align: justify; }
+
+/* 들여쓰기 (Quill) */
+.product-detail-content .ql-indent-1 { padding-left: 3em; }
+.product-detail-content .ql-indent-2 { padding-left: 6em; }
+.product-detail-content .ql-indent-3 { padding-left: 9em; }
+
