@@ -99,9 +99,9 @@ export default function MyPage() {
     const fetchOrders = async () => {
       try {
         const res = await apiFetch<OrdersResponse>(
-          "/users/me/orders?page=1&limit=3",
+          "/users/me/orders?page=1&limit=10",
         );
-        setOrders(res.data.items);
+        setOrders(res.data.items.filter((o) => o.status !== "pending").slice(0, 3));
       } catch {
         setOrders([]);
       } finally {

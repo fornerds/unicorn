@@ -46,8 +46,9 @@ export default function MyOrdersPage() {
       setIsLoading(true);
       try {
         const res = await apiFetch<OrdersResponse>(`/users/me/orders?page=${currentPage}&limit=${ITEMS_PER_PAGE}`);
-        setOrders(res.data.items);
-        setTotalOrders(res.data.pagination.total);
+        const filtered = res.data.items.filter((o) => o.status !== 'pending');
+        setOrders(filtered);
+        setTotalOrders(res.data.pagination.total - (res.data.items.length - filtered.length));
         setTotalPages(res.data.pagination.totalPages);
       } catch {
         setOrders([]);
