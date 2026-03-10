@@ -287,7 +287,7 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
         ? [product.imageUrl]
         : [];
 
-  const colorOptions =
+  const colorOptions: { color: string; colorCode?: string; stock: number }[] =
     product.colorStocks && product.colorStocks.length > 0
       ? product.colorStocks
       : product.colors?.map((c) => ({ color: c, stock: 0 })) ?? [];

@@ -1,10 +1,12 @@
 package com.unicorn.service;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,85 +19,51 @@ public class EmailService {
     @Value("${app.mail.from:noreply@example.com}")
     private String fromEmail;
 
-    public void sendPasswordResetEmail(String toEmail, String resetLink) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(toEmail);
-        message.setSubject("[Unicorn] 비밀번호 재설정 링크");
-        message.setText("비밀번호를 재설정하려면 아래 링크를 클릭하세요.\n\n" + resetLink + "\n\n이 링크는 1시간 동안 유효합니다.");
+    private void sendHtml(String toEmail, String subject, String htmlBody) {
         try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
             mailSender.send(message);
-            log.debug("Password reset email sent to {}", toEmail);
-        } catch (Exception e) {
-            log.warn("Failed to send password reset email to {}: {}", toEmail, e.getMessage());
+        } catch (MessagingException e) {
+            log.warn("Failed to send email to {}: {}", toEmail, e.getMessage());
             throw new IllegalStateException("이메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요.");
         }
+    }
+
+    public void sendPasswordResetEmail(String toEmail, String resetLink) {
+        String html = EmailHtmlTemplates.passwordResetLink(resetLink);
+        sendHtml(toEmail, "[Unicorn] 비밀번호 재설정 링크", html);
+        log.debug("Password reset email sent to {}", toEmail);
     }
 
     public void sendTestEmail(String toEmail) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(toEmail);
-        message.setSubject("[Unicorn] 이메일 발송 테스트");
-        message.setText("이메일 발송 테스트입니다. 메일 설정이 정상 동작합니다.");
-        try {
-            mailSender.send(message);
-            log.info("Test email sent to {}", toEmail);
-        } catch (Exception e) {
-            log.warn("Failed to send test email to {}: {}", toEmail, e.getMessage());
-            throw new IllegalStateException("이메일 발송에 실패했습니다: " + e.getMessage());
-        }
+        String html = EmailHtmlTemplates.testEmail();
+        sendHtml(toEmail, "[Unicorn] 이메일 발송 테스트", html);
+        log.info("Test email sent to {}", toEmail);
     }
 
     public void sendTempPasswordEmail(String toEmail, String tempPassword) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(toEmail);
-        message.setSubject("[Unicorn] 임시 비밀번호 안내");
-        message.setText("요청하신 임시 비밀번호는 다음과 같습니다.\n\n[" + tempPassword + "]\n\n로그인 후 반드시 비밀번호를 변경해 주세요.");
-        try {
-            mailSender.send(message);
-            log.info("Temp password email sent to {}", toEmail);
-        } catch (Exception e) {
-            log.warn("Failed to send temp password email to {}: {}", toEmail, e.getMessage());
-            throw new IllegalStateException("이메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-        }
+        String html = EmailHtmlTemplates.tempPassword(tempPassword);
+        sendHtml(toEmail, "[Unicorn] 임시 비밀번호 안내", html);
+        log.info("Temp password email sent to {}", toEmail);
     }
 
     public void sendVerificationCodeEmail(String toEmail, String code, String purposeText) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(toEmail);
-        message.setSubject("[Unicorn] " + purposeText + " 인증번호 안내");
-        message.setText("요청하신 인증번호는 [" + code + "] 입니다.\n\n해당 인증번호는 3분 동안 유효합니다.");
-        try {
-            mailSender.send(message);
-            log.info("Verification code email sent to {}", toEmail);
-        } catch (Exception e) {
-            log.warn("Failed to send verification code email to {}: {}", toEmail, e.getMessage());
-            throw new IllegalStateException("인증 메일 발송에 실패했습니다. 이메일 주소를 확인하거나 잠시 후 다시 시도해 주세요.");
-        }
+        String html = EmailHtmlTemplates.verificationCode(purposeText, code);
+        sendHtml(toEmail, "[Unicorn] " + purposeText + " 인증번호 안내", html);
+        log.info("Verification code email sent to {}", toEmail);
     }
 
     /**
      * 문의 답변 메일 발송 (1차 답변). 이후 추가 대화는 메일에서 진행.
      */
     public void sendInquiryReply(String toEmail, String inquirerName, String inquiryContent, String replyMessage) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(toEmail);
-        message.setSubject("[Unicorn] 문의하신 내용에 대한 답변입니다");
-        String body = inquirerName + "님,\n\n문의해 주셔서 감사합니다.\n\n"
-                + "■ 문의 내용\n" + (inquiryContent != null ? inquiryContent : "") + "\n\n"
-                + "■ 답변\n" + (replyMessage != null ? replyMessage : "") + "\n\n"
-                + "추가로 궁금하신 점이 있으시면 이 메일에 답장 주시면 됩니다.\n\n— Unicorn";
-        message.setText(body);
-        try {
-            mailSender.send(message);
-            log.info("Inquiry reply email sent to {}", toEmail);
-        } catch (Exception e) {
-            log.warn("Failed to send inquiry reply to {}: {}", toEmail, e.getMessage());
-            throw new IllegalStateException("답변 메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-        }
+        String html = EmailHtmlTemplates.inquiryReply(inquirerName, inquiryContent, replyMessage);
+        sendHtml(toEmail, "[Unicorn] 문의하신 내용에 대한 답변입니다", html);
+        log.info("Inquiry reply email sent to {}", toEmail);
     }
 }
