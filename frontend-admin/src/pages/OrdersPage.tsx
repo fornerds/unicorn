@@ -2,10 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { adminApiFetch } from '@/lib/api';
 import { Modal } from '@/components/Modal';
 
+type OrderStatus = 'pending' | 'paid' | 'shipping' | 'delivered' | 'cancelled' | string;
+
 interface OrderRow {
   id: number;
   totalAmount?: number;
-  status: string;
+  status: OrderStatus;
   recipient?: string;
   createdAt: string;
 }
@@ -28,10 +30,23 @@ interface OrderDetail {
   userId?: number;
   items?: OrderItemDto[];
   totalAmount?: number;
-  status: string;
+  status: OrderStatus;
   shipping?: ShippingDto;
   createdAt: string;
 }
+
+const ORDER_STATUS_LABELS: Record<string, string> = {
+  pending: '결제 대기',
+  paid: '결제 완료',
+  shipping: '배송 중',
+  delivered: '배송 완료',
+  cancelled: '취소됨',
+};
+
+const getOrderStatusLabel = (status: OrderStatus): string => {
+  if (!status) return '-';
+  return ORDER_STATUS_LABELS[status] ?? status;
+};
 
 interface Pagination {
   page: number;
@@ -142,7 +157,9 @@ export default function OrdersPage() {
                     <td className="px-4 py-3 text-right text-sm text-gray-900">
                       {row.totalAmount != null ? row.totalAmount.toLocaleString() : '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{row.status}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {getOrderStatusLabel(row.status)}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-500">
                       {row.createdAt ? new Date(row.createdAt).toLocaleDateString('ko-KR') : '-'}
                     </td>
@@ -204,11 +221,11 @@ export default function OrdersPage() {
                 onChange={(e) => setStatusValue(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
               >
-                <option value="pending">pending</option>
-                <option value="paid">paid</option>
-                <option value="shipping">shipping</option>
-                <option value="delivered">delivered</option>
-                <option value="cancelled">cancelled</option>
+                <option value="pending">{getOrderStatusLabel('pending')}</option>
+                <option value="paid">{getOrderStatusLabel('paid')}</option>
+                <option value="shipping">{getOrderStatusLabel('shipping')}</option>
+                <option value="delivered">{getOrderStatusLabel('delivered')}</option>
+                <option value="cancelled">{getOrderStatusLabel('cancelled')}</option>
               </select>
             </div>
             <div className="flex justify-end gap-2 pt-2">

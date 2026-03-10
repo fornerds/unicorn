@@ -8,8 +8,12 @@ import com.unicorn.dto.payment.PayPalCreateOrderRequest;
 import com.unicorn.dto.payment.PayPalCreateOrderResponse;
 import com.unicorn.entity.Order;
 import com.unicorn.entity.OrderItem;
+import com.unicorn.entity.Product;
+import com.unicorn.entity.ProductColorStock;
 import com.unicorn.repository.CartItemRepository;
 import com.unicorn.repository.OrderRepository;
+import com.unicorn.repository.ProductColorStockRepository;
+import com.unicorn.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,8 @@ public class PaymentService {
     private final PayPalClient payPalClient;
     private final ExchangeRateService exchangeRateService;
     private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository;
+    private final ProductColorStockRepository productColorStockRepository;
 
     @Transactional(readOnly = true)
     public PayPalCreateOrderResponse createPayPalOrder(Long userId, PayPalCreateOrderRequest request) {
@@ -87,7 +92,10 @@ public class PaymentService {
         order.setPaymentId(request.getPaymentKey());
         orderRepository.save(order);
 
-        // 주문에 포함된 상품들을 장바구니에서 찾아 삭제
+        for (OrderItem oi : order.getItems()) {
+            decreaseStock(oi);
+        }
+
         for (OrderItem oi : order.getItems()) {
             String color = oi.getColor() != null ? oi.getColor() : "";
             cartItemRepository.findByUserIdAndProductIdAndColor(userId, oi.getProduct().getId(), color)
@@ -99,5 +107,29 @@ public class PaymentService {
                 .status("paid")
                 .paidAt(order.getPaidAt())
                 .build();
+    }
+
+    private void decreaseStock(OrderItem oi) {
+        Product p = productRepository.findById(oi.getProduct().getId()).orElseThrow();
+        String color = oi.getColor() != null && !oi.getColor().isBlank() ? oi.getColor().trim() : "";
+        int qty = oi.getQuantity();
+
+        if (!color.isEmpty()) {
+            productColorStockRepository.findByProduct_IdAndColor(p.getId(), color).ifPresent(cs -> {
+                int colorAfter = cs.getStock() - qty;
+                if (colorAfter < 0) {
+                    throw new IllegalStateException("제품 " + p.getName() + " (" + color + ") 재고가 부족합니다.");
+                }
+                cs.setStock(colorAfter);
+                productColorStockRepository.save(cs);
+            });
+        }
+
+        int productAfter = p.getStock() - qty;
+        if (productAfter < 0) {
+            throw new IllegalStateException("제품 " + p.getName() + " 재고가 부족합니다.");
+        }
+        p.setStock(productAfter);
+        productRepository.save(p);
     }
 }

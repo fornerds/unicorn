@@ -6,16 +6,17 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+
 @Data
 @Builder
 public class AdminProductResponse {
 
     private Long id;
     private String name;
-    private String description;
     private BigDecimal price;
     private String imageUrl;
     private Integer stock;
+    private List<AdminColorStockItem> colorStocks;
     private Long categoryId;
     private String categoryName;
     private Long parentCategoryId;

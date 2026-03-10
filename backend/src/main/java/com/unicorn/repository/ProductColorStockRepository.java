@@ -10,4 +10,6 @@ public interface ProductColorStockRepository extends org.springframework.data.jp
     List<ProductColorStock> findByProductIdOrderByColor(Long productId);
 
     Optional<ProductColorStock> findByProduct_IdAndColor(Long productId, String color);
+
+    void deleteByProduct_Id(Long productId);
 }

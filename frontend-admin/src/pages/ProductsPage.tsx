@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { adminApiFetch, adminApiUpload } from '@/lib/api';
 import { Modal } from '@/components/Modal';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 interface ProductItem {
   id: number;
@@ -17,6 +18,22 @@ interface CategoryItem {
   name: string;
 }
 
+interface CategoryTreeNode extends CategoryItem {
+  children?: CategoryTreeNode[];
+}
+
+function flattenCategories(nodes: CategoryTreeNode[], parentName = ''): CategoryItem[] {
+  const result: CategoryItem[] = [];
+  for (const node of nodes) {
+    const displayName = parentName ? `${parentName} > ${node.name}` : node.name;
+    result.push({ id: node.id, name: displayName });
+    if (Array.isArray(node.children) && node.children.length > 0) {
+      result.push(...flattenCategories(node.children, node.name));
+    }
+  }
+  return result;
+}
+
 interface Pagination {
   page: number;
   limit: number;
@@ -24,15 +41,22 @@ interface Pagination {
   totalPages: number;
 }
 
+interface ColorStockItem {
+  color: string;
+  colorCode: string;
+  stock: number;
+}
+
 const defaultForm = {
   name: '',
-  description: '',
   shortDescription: '',
   content: '',
   price: 0,
   categoryId: 0,
   stock: 0,
+  imageUrl: '' as string,
   images: [] as string[],
+  colorStocks: [] as ColorStockItem[],
 };
 
 export default function ProductsPage() {
@@ -48,6 +72,7 @@ export default function ProductsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState(defaultForm);
+  const [detailSection, setDetailSection] = useState<'edit' | 'preview'>('edit');
 
   const fetchList = async () => {
     try {
@@ -68,8 +93,9 @@ export default function ProductsPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await adminApiFetch<{ data: CategoryItem[] }>('/admin/categories');
-      setCategories(Array.isArray(res?.data) ? res.data : []);
+      const res = await adminApiFetch<{ data: CategoryTreeNode[] }>('/admin/categories');
+      const raw = Array.isArray(res?.data) ? res.data : [];
+      setCategories(flattenCategories(raw));
     } catch {
       setCategories([]);
     }
@@ -92,6 +118,7 @@ export default function ProductsPage() {
   const openCreate = () => {
     setEditing(null);
     setForm(defaultForm);
+    setDetailSection('edit');
     setModalOpen(true);
   };
 
@@ -100,28 +127,33 @@ export default function ProductsPage() {
     try {
       const res = await adminApiFetch<{
         data: ProductItem & {
-          description?: string;
           shortDescription?: string;
           content?: string;
+          imageUrl?: string;
           images?: string[];
+          colorStocks?: ColorStockItem[];
         };
       }>(`/admin/products/${row.id}`);
       const d = res?.data;
       if (d) {
         setForm({
           name: d.name ?? '',
-          description: d.description ?? '',
           shortDescription: d.shortDescription ?? '',
           content: d.content ?? '',
           price: typeof d.price === 'number' ? d.price : 0,
           categoryId: d.categoryId ?? 0,
           stock: d.stock ?? 0,
+          imageUrl: d.imageUrl ?? '',
           images: Array.isArray(d.images) ? d.images : [],
+          colorStocks: Array.isArray(d.colorStocks)
+            ? d.colorStocks.map((c) => ({ color: c.color ?? '', colorCode: c.colorCode ?? '', stock: c.stock ?? 0 }))
+            : [],
         });
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : '상세 조회 실패');
     }
+    setDetailSection('edit');
     setModalOpen(true);
   };
 
@@ -132,13 +164,19 @@ export default function ProductsPage() {
     try {
       const body = {
         name: form.name.trim(),
-        description: form.description.trim() || undefined,
         shortDescription: form.shortDescription.trim() || undefined,
         content: form.content.trim() || undefined,
         price: form.price,
         categoryId: form.categoryId || null,
         stock: form.stock,
+        imageUrl: form.imageUrl?.trim() ?? '',
         images: form.images.length ? form.images : undefined,
+        colorStocks:
+          form.colorStocks.filter((c) => c.color.trim()).length > 0
+            ? form.colorStocks
+                .filter((c) => c.color.trim())
+                .map((c) => ({ color: c.color.trim(), colorCode: c.colorCode.trim() || undefined, stock: c.stock }))
+            : undefined,
       };
       if (editing) {
         await adminApiFetch(`/admin/products/${editing.id}`, {
@@ -175,16 +213,14 @@ export default function ProductsPage() {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRepresentativeImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
     setError(null);
     try {
       const res = await adminApiUpload(file);
-      if (res?.data?.url) {
-        setForm((f) => ({ ...f, images: [...f.images, res.data.url] }));
-      }
+      if (res?.data?.url) setForm((f) => ({ ...f, imageUrl: res.data.url }));
     } catch (err) {
       setError(err instanceof Error ? err.message : '업로드 실패');
     } finally {
@@ -193,8 +229,57 @@ export default function ProductsPage() {
     }
   };
 
-  const removeImage = (index: number) => {
+  const removeRepresentativeImage = () => {
+    setForm((f) => ({ ...f, imageUrl: '' }));
+  };
+
+  const handleDetailImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const urls: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const res = await adminApiUpload(files[i]);
+        if (res?.data?.url) urls.push(res.data.url);
+      }
+      if (urls.length) setForm((f) => ({ ...f, images: [...f.images, ...urls] }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '업로드 실패');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  const removeDetailImage = (index: number) => {
     setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
+  };
+
+  const moveDetailImage = (index: number, direction: 'prev' | 'next') => {
+    setForm((f) => {
+      const next = [...f.images];
+      const to = direction === 'prev' ? index - 1 : index + 1;
+      if (to < 0 || to >= next.length) return f;
+      [next[index], next[to]] = [next[to], next[index]];
+      return { ...f, images: next };
+    });
+  };
+
+  const addColorStock = () => {
+    setForm((f) => ({ ...f, colorStocks: [...f.colorStocks, { color: '', colorCode: '', stock: 0 }] }));
+  };
+
+  const updateColorStock = (index: number, field: keyof ColorStockItem, value: string | number) => {
+    setForm((f) => ({
+      ...f,
+      colorStocks: f.colorStocks.map((c, i) => (i === index ? { ...c, [field]: value } : c)),
+    }));
+  };
+
+  const removeColorStock = (index: number) => {
+    setForm((f) => ({ ...f, colorStocks: f.colorStocks.filter((_, i) => i !== index) }));
   };
 
   return (
@@ -292,6 +377,7 @@ export default function ProductsPage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         title={editing ? '제품 수정' : '제품 추가'}
+        size="xl"
       >
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
@@ -315,24 +401,52 @@ export default function ProductsPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">설명 (요약)</label>
-            <textarea
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm"
-              rows={2}
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">상세 설명 (HTML)</label>
-            <textarea
-              value={form.content}
-              onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
-              className="min-h-[200px] w-full resize-y rounded-lg border border-gray-300 px-3 py-2 font-mono text-sm"
-              rows={12}
-              placeholder="HTML 입력 가능. 이미지: &lt;img src=&quot;URL&quot; /&gt; 등으로 작성"
-            />
-            <p className="mt-1 text-xs text-gray-500">HTML 코드를 입력하면 상세 페이지에 반영됩니다. 이미지 업로드 후 URL을 img 태그로 넣을 수 있습니다.</p>
+            <div className="mb-2 flex items-center justify-between">
+              <label className="block text-sm font-medium text-gray-700">상세 설명</label>
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => setDetailSection('edit')}
+                  className={`rounded px-3 py-1.5 text-sm ${detailSection === 'edit' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                >
+                  편집
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDetailSection('preview')}
+                  className={`rounded px-3 py-1.5 text-sm ${detailSection === 'preview' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                >
+                  미리보기
+                </button>
+              </div>
+            </div>
+            <div className="min-h-[420px]">
+              {detailSection === 'edit' ? (
+                <RichTextEditor
+                  value={form.content}
+                  onChange={(content) => setForm((f) => ({ ...f, content }))}
+                  placeholder="굵게, 기울임, 목록, 링크, 이미지, 유튜브 영상을 사용할 수 있습니다."
+                  minHeight="420px"
+                  onImageUpload={async (file) => {
+                    setError(null);
+                    try {
+                      const res = await adminApiUpload(file);
+                      return res.data.url;
+                    } catch (e) {
+                      setError(e instanceof Error ? e.message : '이미지 업로드 실패');
+                      throw e;
+                    }
+                  }}
+                />
+              ) : (
+                <div
+                  className="product-detail-preview min-h-[420px] w-full rounded-lg border border-gray-200 bg-white p-4 text-base text-gray-800 [&_h1]:mb-4 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded [&_li]:mb-1 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-3 [&_p]:leading-relaxed [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_strong]:font-bold [&_em]:italic [&_a]:text-blue-600 [&_a]:underline [&_a]:break-all"
+                  dangerouslySetInnerHTML={{
+                    __html: form.content?.trim() || '<p class="text-gray-400">입력된 상세 설명이 없습니다.</p>',
+                  }}
+                />
+              )}
+            </div>
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">카테고리 *</label>
@@ -373,29 +487,116 @@ export default function ProductsPage() {
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">이미지</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">컬러별 재고</label>
+            <p className="mb-2 text-xs text-gray-500">색상명·색상코드(#000000)·재고를 입력하면 컬러별 재고로 관리됩니다.</p>
+            {form.colorStocks.length > 0 && (
+              <div className="mb-2 overflow-x-auto rounded-lg border border-gray-200">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 py-2 text-left font-medium text-gray-700">색상명</th>
+                      <th className="px-3 py-2 text-left font-medium text-gray-700">색상코드</th>
+                      <th className="px-3 py-2 text-right font-medium text-gray-700">재고</th>
+                      <th className="w-12 px-2 py-2" />
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {form.colorStocks.map((c, i) => (
+                      <tr key={i}>
+                        <td className="px-3 py-2">
+                          <input
+                            type="text"
+                            value={c.color}
+                            onChange={(e) => updateColorStock(i, 'color', e.target.value)}
+                            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                            placeholder="예: 화이트/White"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="text"
+                            value={c.colorCode}
+                            onChange={(e) => updateColorStock(i, 'colorCode', e.target.value)}
+                            className="w-full rounded border border-gray-300 px-2 py-1 font-mono text-sm"
+                            placeholder="#FFFFFF"
+                          />
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <input
+                            type="number"
+                            value={c.stock}
+                            onChange={(e) => updateColorStock(i, 'stock', Number(e.target.value) || 0)}
+                            className="w-20 rounded border border-gray-300 px-2 py-1 text-right text-sm"
+                            min={0}
+                          />
+                        </td>
+                        <td className="px-2 py-2">
+                          <button type="button" onClick={() => removeColorStock(i)} className="text-red-600 hover:text-red-700">
+                            삭제
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <button type="button" onClick={addColorStock} className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
+              컬러 재고 행 추가
+            </button>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">대표 이미지</label>
+            <p className="mb-2 text-xs text-gray-500">목록·썸네일용 1장.</p>
             <input
               type="file"
               accept="image/*"
-              onChange={handleFileUpload}
+              onChange={handleRepresentativeImageUpload}
               disabled={uploading}
               className="text-sm"
             />
             {uploading && <span className="ml-2 text-sm text-gray-500">업로드 중...</span>}
+            {form.imageUrl && (
+              <div className="mt-2 flex items-start gap-2">
+                <img src={form.imageUrl} alt="대표" className="h-24 w-24 rounded border border-gray-200 object-cover" />
+                <div className="flex flex-col gap-1">
+                  <a href={form.imageUrl} target="_blank" rel="noopener noreferrer" className="max-w-[200px] truncate text-xs text-blue-600">
+                    보기
+                  </a>
+                  <button type="button" onClick={removeRepresentativeImage} className="text-left text-xs text-red-600 hover:text-red-700">
+                    삭제
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">상세 이미지</label>
+            <p className="mb-2 text-xs text-gray-500">제품 상세 페이지 갤러리용. 여러 장 선택 가능.</p>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleDetailImagesUpload}
+              disabled={uploading}
+              className="text-sm"
+            />
             {form.images.length > 0 && (
               <ul className="mt-2 flex flex-wrap gap-3">
                 {form.images.map((url, i) => (
-                  <li key={i} className="flex flex-col items-start gap-1">
-                    <img
-                      src={url}
-                      alt={`제품 ${i + 1}`}
-                      className="h-24 w-24 rounded border border-gray-200 object-cover"
-                    />
-                    <div className="flex items-center gap-2">
-                      <a href={url} target="_blank" rel="noopener noreferrer" className="max-w-[120px] truncate text-xs text-blue-600">
+                  <li key={`${url}-${i}`} className="flex flex-col items-start gap-1">
+                    <img src={url} alt={`상세 ${i + 1}`} className="h-24 w-24 rounded border border-gray-200 object-cover" />
+                    <div className="flex flex-wrap items-center gap-1">
+                      <a href={url} target="_blank" rel="noopener noreferrer" className="max-w-[100px] truncate text-xs text-blue-600">
                         보기
                       </a>
-                      <button type="button" onClick={() => removeImage(i)} className="text-xs text-red-600">
+                      <button type="button" onClick={() => moveDetailImage(i, 'prev')} disabled={i === 0} className="text-xs text-gray-500 disabled:opacity-40">
+                        ←
+                      </button>
+                      <button type="button" onClick={() => moveDetailImage(i, 'next')} disabled={i === form.images.length - 1} className="text-xs text-gray-500 disabled:opacity-40">
+                        →
+                      </button>
+                      <button type="button" onClick={() => removeDetailImage(i)} className="text-xs text-red-600">
                         삭제
                       </button>
                     </div>

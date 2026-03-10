@@ -35,9 +35,6 @@ public class Product extends BaseEntity {
     @Column(nullable = false, length = 200)
     private String name;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
@@ -50,10 +47,6 @@ public class Product extends BaseEntity {
 
     @Column(nullable = false)
     private Integer stock;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
-    private List<String> colors;
 
     @Column(name = "weight", length = 100)
     private String weight;

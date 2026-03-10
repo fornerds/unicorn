@@ -11,6 +11,7 @@ public class ProductListResponse {
 
     private Long id;
     private String name;
+    private String imageUrl;
     private BigDecimal price;
     private Boolean isLiked;
     private CategorySummary parentCategory;

@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserLikeService {
@@ -38,6 +40,10 @@ public class UserLikeService {
         int stock = colorStocks.isEmpty()
                 ? (p.getStock() != null ? p.getStock() : 0)
                 : colorStocks.stream().mapToInt(cs -> cs.getStock() != null ? cs.getStock() : 0).sum();
+        List<String> colorNames = colorStocks.stream()
+                .map(cs -> cs.getColor() != null ? cs.getColor() : "")
+                .filter(s -> !s.isEmpty())
+                .toList();
         return WishlistProductResponse.builder()
                 .id(p.getId())
                 .name(p.getName())
@@ -51,7 +57,7 @@ public class UserLikeService {
                         .build() : null)
                 .stock(stock)
                 .price(p.getPrice())
-                .colors(p.getColors())
+                .colors(colorNames.isEmpty() ? null : colorNames)
                 .build();
     }
 

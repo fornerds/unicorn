@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { adminApiFetch } from '@/lib/api';
+import { adminApiFetch, adminApiUpload } from '@/lib/api';
 import { Modal } from '@/components/Modal';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 interface NewsItem {
   id: number;
@@ -34,6 +35,7 @@ export default function NewsPage() {
   const [editing, setEditing] = useState<NewsItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<NewsItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const [form, setForm] = useState({
     title: '',
     content: '',
@@ -41,6 +43,7 @@ export default function NewsPage() {
     published: false,
     tagIds: [] as number[],
   });
+  const [contentSection, setContentSection] = useState<'edit' | 'preview'>('edit');
 
   const fetchList = async () => {
     try {
@@ -86,6 +89,7 @@ export default function NewsPage() {
   const openCreate = () => {
     setEditing(null);
     setForm({ title: '', content: '', imageUrl: '', published: false, tagIds: [] });
+    setContentSection('edit');
     setModalOpen(true);
   };
 
@@ -93,21 +97,34 @@ export default function NewsPage() {
     setEditing(row);
     try {
       const res = await adminApiFetch<{
-        data: { title?: string; content?: string; imageUrl?: string; published?: boolean; tagIds?: number[] };
+        data: {
+          title?: string;
+          content?: string;
+          imageUrl?: string;
+          published?: boolean;
+          tagIds?: number[];
+          tags?: { id: number }[];
+        };
       }>(`/admin/news/${row.id}`);
       const d = res?.data;
       if (d) {
+        const tagIds = Array.isArray(d.tagIds)
+          ? d.tagIds
+          : Array.isArray(d.tags)
+            ? d.tags.map((t) => t.id)
+            : [];
         setForm({
           title: d.title ?? '',
           content: d.content ?? '',
           imageUrl: d.imageUrl ?? '',
           published: d.published ?? false,
-          tagIds: Array.isArray(d.tagIds) ? d.tagIds : [],
+          tagIds,
         });
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : '상세 조회 실패');
     }
+    setContentSection('edit');
     setModalOpen(true);
   };
 
@@ -163,6 +180,28 @@ export default function NewsPage() {
       ...f,
       tagIds: f.tagIds.includes(id) ? f.tagIds.filter((x) => x !== id) : [...f.tagIds, id],
     }));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageUploading(true);
+    setError(null);
+    try {
+      const res = await adminApiUpload(file);
+      if (res?.data?.url) {
+        setForm((f) => ({ ...f, imageUrl: res.data.url }));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '이미지 업로드 실패');
+    } finally {
+      setImageUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  const removeImage = () => {
+    setForm((f) => ({ ...f, imageUrl: '' }));
   };
 
   return (
@@ -233,7 +272,7 @@ export default function NewsPage() {
         )}
       </div>
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? '뉴스 수정' : '뉴스 추가'}>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? '뉴스 수정' : '뉴스 추가'} size="xl">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">제목 *</label>
@@ -246,22 +285,80 @@ export default function NewsPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">본문</label>
-            <textarea
-              value={form.content}
-              onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-              rows={5}
-            />
+            <div className="mb-2 flex items-center justify-between">
+              <label className="block text-sm font-medium text-gray-700">본문</label>
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => setContentSection('edit')}
+                  className={`rounded px-3 py-1.5 text-sm ${contentSection === 'edit' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                >
+                  편집
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setContentSection('preview')}
+                  className={`rounded px-3 py-1.5 text-sm ${contentSection === 'preview' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                >
+                  미리보기
+                </button>
+              </div>
+            </div>
+            <div className="min-h-[320px]">
+              {contentSection === 'edit' ? (
+                <RichTextEditor
+                  value={form.content}
+                  onChange={(content) => setForm((f) => ({ ...f, content }))}
+                  placeholder="굵게, 기울임, 제목, 목록, 정렬, 이미지, 유튜브를 사용할 수 있습니다."
+                  minHeight="320px"
+                  onImageUpload={async (file) => {
+                    setError(null);
+                    try {
+                      const res = await adminApiUpload(file);
+                      return res.data.url;
+                    } catch (e) {
+                      setError(e instanceof Error ? e.message : '이미지 업로드 실패');
+                      throw e;
+                    }
+                  }}
+                />
+              ) : (
+                <div
+                  className="min-h-[320px] w-full rounded-lg border border-gray-200 bg-white p-4 text-base text-gray-800 [&_h1]:mb-4 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded [&_li]:mb-1 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-3 [&_p]:leading-relaxed [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_strong]:font-bold [&_em]:italic [&_a]:text-blue-600 [&_a]:underline [&_a]:break-all"
+                  dangerouslySetInnerHTML={{
+                    __html: form.content?.trim() || '<p class="text-gray-400">입력된 본문이 없습니다.</p>',
+                  }}
+                />
+              )}
+            </div>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">이미지 URL</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">대표 이미지</label>
             <input
-              type="url"
-              value={form.imageUrl}
-              onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={imageUploading}
+              className="text-sm"
             />
+            {imageUploading && <span className="ml-2 text-sm text-gray-500">업로드 중...</span>}
+            {form.imageUrl && (
+              <div className="mt-2 flex items-start gap-2">
+                <img
+                  src={form.imageUrl}
+                  alt="대표"
+                  className="h-24 w-24 rounded border border-gray-200 object-cover"
+                />
+                <div className="flex flex-col gap-1">
+                  <a href={form.imageUrl} target="_blank" rel="noopener noreferrer" className="max-w-[200px] truncate text-xs text-blue-600">
+                    보기
+                  </a>
+                  <button type="button" onClick={removeImage} className="text-left text-xs text-red-600 hover:text-red-700">
+                    삭제
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <input

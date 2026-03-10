@@ -676,9 +676,16 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
             <h2 className="flex flex-col font-suit font-light justify-center text-[24px] whitespace-nowrap shrink-0">
               <span className="leading-[normal]">About</span>
             </h2>
-            <p className="font-suit font-thin leading-[1.5] text-[16.5px] tracking-[-0.495px] w-full lg:w-[1036.5px] whitespace-pre-wrap">
-              {product.content || product.shortDescription}
-            </p>
+            {product.content ? (
+              <div
+                className="product-detail-content font-suit font-thin leading-[1.5] text-[16.5px] tracking-[-0.495px] w-full lg:w-[1036.5px] [&_p]:mb-3 [&_p]:last:mb-0 [&_strong]:font-semibold [&_em]:italic [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_img]:max-w-full [&_img]:h-auto [&_a]:text-[#374151] [&_a]:underline [&_.ql-youtube-embed]:relative [&_.ql-youtube-embed]:max-w-full [&_.ql-youtube-embed]:aspect-video [&_.ql-youtube-embed]:my-4 [&_.ql-youtube-embed_iframe]:absolute [&_.ql-youtube-embed_iframe]:inset-0 [&_.ql-youtube-embed_iframe]:w-full [&_.ql-youtube-embed_iframe]:h-full [&_.ql-youtube-embed_iframe]:rounded-lg"
+                dangerouslySetInnerHTML={{ __html: product.content }}
+              />
+            ) : (
+              <p className="font-suit font-thin leading-[1.5] text-[16.5px] tracking-[-0.495px] w-full lg:w-[1036.5px] whitespace-pre-wrap">
+                {product.shortDescription}
+              </p>
+            )}
           </div>
         )}
       </div>

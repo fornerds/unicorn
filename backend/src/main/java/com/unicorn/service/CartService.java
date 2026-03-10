@@ -44,7 +44,8 @@ public class CartService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다."));
         String color = request.getColor() != null && !request.getColor().isBlank() ? request.getColor().trim() : "";
-        if (product.getColors() != null && !product.getColors().isEmpty() && color.isEmpty()) {
+        boolean hasColorStocks = !productColorStockRepository.findByProductIdOrderByColor(product.getId()).isEmpty();
+        if (hasColorStocks && color.isEmpty()) {
             throw new IllegalArgumentException("색상을 선택해 주세요.");
         }
         int availableStock = getAvailableStock(product.getId(), color, product.getStock());

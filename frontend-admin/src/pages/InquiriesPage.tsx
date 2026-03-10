@@ -2,6 +2,29 @@ import { useCallback, useEffect, useState } from 'react';
 import { adminApiFetch } from '@/lib/api';
 import { Modal } from '@/components/Modal';
 
+const INQUIRY_TYPE_LABELS: Record<string, string> = {
+  general: '일반 문의',
+  product: '제품 문의',
+  technical: '기술 문의',
+  partnership: '파트너십 문의',
+  cancel: '취소/환불',
+};
+
+const INQUIRY_STATUS_LABELS: Record<string, string> = {
+  pending: '미답변',
+  answered: '답변 완료',
+};
+
+const getInquiryTypeLabel = (type: string | undefined): string => {
+  if (!type) return '-';
+  return INQUIRY_TYPE_LABELS[type] ?? type;
+};
+
+const getInquiryStatusLabel = (status: string | undefined): string => {
+  if (!status) return '-';
+  return INQUIRY_STATUS_LABELS[status] ?? status;
+};
+
 interface InquiryItem {
   id: number;
   name?: string;
@@ -157,8 +180,8 @@ export default function InquiriesPage() {
                     <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{row.id}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{row.name ?? '-'}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{row.email ?? '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{row.inquiryType ?? '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{row.status ?? '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{getInquiryTypeLabel(row.inquiryType)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{getInquiryStatusLabel(row.status)}</td>
                     <td className="px-4 py-3 text-sm text-gray-500">
                       {row.createdAt ? new Date(row.createdAt).toLocaleDateString('ko-KR') : '-'}
                     </td>
@@ -207,7 +230,7 @@ export default function InquiriesPage() {
             <p className="text-sm text-gray-500">ID: {detailInquiry.id}</p>
             <p className="text-sm">이름: {detailInquiry.name ?? '-'}</p>
             <p className="text-sm">이메일: {detailInquiry.email ?? '-'}</p>
-            <p className="text-sm">문의 유형: {detailInquiry.inquiryType ?? '-'}</p>
+            <p className="text-sm">문의 유형: {getInquiryTypeLabel(detailInquiry.inquiryType)}</p>
             <p className="text-sm">내용: {detailInquiry.content ?? '-'}</p>
             <form onSubmit={handleStatusUpdate} className="flex flex-col gap-2">
               <label className="text-sm font-medium text-gray-700">상태</label>
@@ -216,23 +239,27 @@ export default function InquiriesPage() {
                 onChange={(e) => setStatusValue(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
               >
-                <option value="pending">pending (미답변)</option>
-                <option value="answered">answered (답변 완료)</option>
+                <option value="pending">{getInquiryStatusLabel('pending')}</option>
+                <option value="answered">{getInquiryStatusLabel('answered')}</option>
               </select>
               <button type="submit" disabled={submitting} className="rounded-lg bg-gray-700 px-4 py-2 text-sm text-white hover:bg-gray-600 disabled:opacity-50">상태 저장</button>
             </form>
-            <hr className="border-gray-200" />
-            <form onSubmit={handleSendReply} className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">답변 메일 발송</label>
-              <textarea
-                value={replyMessage}
-                onChange={(e) => setReplyMessage(e.target.value)}
-                placeholder="답변 내용을 입력하세요. 문의자 이메일로 발송됩니다."
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                rows={4}
-              />
-              <button type="submit" disabled={submitting || !replyMessage.trim()} className="rounded-lg bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-800 disabled:opacity-50">답변 발송</button>
-            </form>
+            {detailInquiry.status !== 'answered' && (
+              <>
+                <hr className="border-gray-200" />
+                <form onSubmit={handleSendReply} className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700">답변 메일 발송</label>
+                  <textarea
+                    value={replyMessage}
+                    onChange={(e) => setReplyMessage(e.target.value)}
+                    placeholder="답변 내용을 입력하세요. 문의자 이메일로 발송됩니다."
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    rows={4}
+                  />
+                  <button type="submit" disabled={submitting || !replyMessage.trim()} className="rounded-lg bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-800 disabled:opacity-50">답변 발송</button>
+                </form>
+              </>
+            )}
             <button type="button" onClick={() => setDetailOpen(false)} className="mt-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">닫기</button>
           </div>
         ) : null}

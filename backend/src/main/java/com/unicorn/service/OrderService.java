@@ -5,8 +5,15 @@ import com.unicorn.dto.order.CreateOrderResponse;
 import com.unicorn.dto.order.OrderDetailResponse;
 import com.unicorn.dto.order.OrderListResponse;
 import com.unicorn.dto.order.PrepareOrderResponse;
-import com.unicorn.entity.*;
-import com.unicorn.repository.*;
+import com.unicorn.entity.Order;
+import com.unicorn.entity.OrderItem;
+import com.unicorn.entity.Product;
+import com.unicorn.entity.User;
+import com.unicorn.repository.CartItemRepository;
+import com.unicorn.repository.OrderRepository;
+import com.unicorn.repository.ProductColorStockRepository;
+import com.unicorn.repository.ProductRepository;
+import com.unicorn.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -48,11 +55,15 @@ public class OrderService {
         for (CreateOrderRequest.OrderItemRequest itemReq : request.getItems()) {
             Product p = productRepository.findById(itemReq.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다. ID: " + itemReq.getProductId()));
-            
-            if (p.getStock() < itemReq.getQuantity()) {
+            String color = itemReq.getColor() != null && !itemReq.getColor().isBlank() ? itemReq.getColor().trim() : "";
+            int qty = itemReq.getQuantity();
+            if (p.getStock() < qty) {
                 throw new IllegalArgumentException("제품 " + p.getName() + " 재고가 부족합니다.");
             }
-            
+            int availableColorStock = getAvailableStock(p.getId(), color, p.getStock());
+            if (availableColorStock < qty) {
+                throw new IllegalArgumentException("제품 " + p.getName() + (color.isEmpty() ? "" : " (" + color + ")") + " 재고가 부족합니다.");
+            }
             BigDecimal lineTotal = p.getPrice().multiply(BigDecimal.valueOf(itemReq.getQuantity()));
             totalAmount = totalAmount.add(lineTotal);
             
@@ -166,5 +177,16 @@ public class OrderService {
                 .quantity(oi.getQuantity())
                 .price(oi.getPrice())
                 .build();
+    }
+
+    private int getAvailableStock(Long productId, String color, int productStock) {
+        if (color != null && !color.isEmpty()) {
+            return productColorStockRepository.findByProductIdOrderByColor(productId).stream()
+                    .filter(cs -> color.equals(cs.getColor()))
+                    .findFirst()
+                    .map(com.unicorn.entity.ProductColorStock::getStock)
+                    .orElse(0);
+        }
+        return productStock;
     }
 }

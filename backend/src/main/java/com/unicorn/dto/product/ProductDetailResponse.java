@@ -17,7 +17,6 @@ public class ProductDetailResponse {
     private CategoryInfo parentCategory;
     private CategoryInfo category;
     private Boolean isLiked;
-    private List<String> colors;
     private List<ColorStock> colorStocks;
     private BigDecimal price;
     private ProductDetail detail;
