@@ -66,6 +66,7 @@ public class UserMeService {
                 .name(user.getName())
                 .phone(user.getPhone())
                 .marketingAgreed(user.getMarketingAgreed())
+                .isSnsUser(user.getPasswordHash() == null)
                 .build();
     }
 }

@@ -11,4 +11,5 @@ public class UserMeResponse {
     private String name;
     private String phone;
     private Boolean marketingAgreed;
+    private Boolean isSnsUser;
 }

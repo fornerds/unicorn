@@ -13,6 +13,7 @@ export const ROUTES = {
   LOGIN: '/login',
   SIGNUP: '/signup',
   SNS_LOGIN: '/login/sns',
+  SNS_COMPLETE: '/login/sns/complete',
 
   // Purchase
   CART: '/cart',

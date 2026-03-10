@@ -41,6 +41,10 @@ function SnsCallbackHandler() {
 
       try {
         const res = await apiFetch<MeResponse>('/users/me');
+        if (!res.data.name || !res.data.phone) {
+          router.push(ROUTES.SNS_COMPLETE);
+          return;
+        }
         setUser({
           id: '',
           email: res.data.email,

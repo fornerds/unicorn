@@ -25,17 +25,19 @@ export default function MyProfilePage() {
   const [phone, setPhone] = useState('');
   const [marketingAgreed, setMarketingAgreed] = useState(false);
   const [joinDate, setJoinDate] = useState('');
+  const [isSnsUser, setIsSnsUser] = useState(false);
 
   // GET /users/me - 페이지 로드 시 최신 회원정보 조회
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const res = await apiFetch<{ data: { email: string; name: string; phone: string; marketingAgreed: boolean } }>('/users/me');
+        const res = await apiFetch<{ data: { email: string; name: string; phone: string; marketingAgreed: boolean; isSnsUser: boolean } }>('/users/me');
         const data = res.data;
         setName(data.name || '');
         setEmail(data.email || '');
         setPhone(data.phone ? formatPhoneNumber(data.phone) : '');
         setMarketingAgreed(data.marketingAgreed ?? false);
+        setIsSnsUser(data.isSnsUser ?? false);
         updateUser({
           name: data.name,
           email: data.email,
@@ -193,7 +195,9 @@ export default function MyProfilePage() {
                   <>
                     <button
                       onClick={() => setIsPasswordModalOpen(true)}
-                      className="bg-[#f9fafb] border border-[#e5e7eb] flex h-[40px] items-center justify-center px-[32px] py-[12px] rounded-[10px] hover:opacity-90 transition-opacity"
+                      disabled={isSnsUser}
+                      title={isSnsUser ? 'SNS 로그인 회원은 비밀번호 변경이 불가합니다.' : undefined}
+                      className="bg-[#f9fafb] border border-[#e5e7eb] flex h-[40px] items-center justify-center px-[32px] py-[12px] rounded-[10px] transition-opacity disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90"
                     >
                       <div className="flex flex-col font-suit font-normal justify-center text-[#6c6c6c] text-[16px] text-center whitespace-nowrap">
                         <p className="leading-[1.3]">비밀번호 변경</p>
