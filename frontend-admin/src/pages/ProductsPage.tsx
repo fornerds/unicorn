@@ -411,11 +411,14 @@ export default function ProductsPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">채팅/카탈로그용 요약</label>
+            <p className="mb-1.5 text-xs text-gray-500">
+              비워 두면 제품 등록 시 AI가 자동으로 생성합니다. 직접 입력해도 됩니다.
+            </p>
             <textarea
               value={form.aiSummary}
               onChange={(e) => setForm((f) => ({ ...f, aiSummary: e.target.value }))}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-              placeholder="AI 상담·제품 추천에 사용됩니다. 비우면 짧은 설명이 사용됩니다. (500자 내외 권장)"
+              placeholder="비워 두면 등록 시 자동 생성 (200자 내외)"
               rows={3}
               maxLength={500}
             />

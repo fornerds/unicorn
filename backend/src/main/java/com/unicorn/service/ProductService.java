@@ -115,6 +115,12 @@ public class ProductService {
                             .name(p.getName())
                             .categoryName(p.getCategory().getName())
                             .price(p.getPrice())
+                            .currency(p.getCurrency())
+                            .weight(p.getWeight())
+                            .totalHeight(p.getTotalHeight())
+                            .operatingTime(p.getOperatingTime())
+                            .battery(p.getBattery())
+                            .speed(p.getSpeed())
                             .summary(summary)
                             .build();
                 })

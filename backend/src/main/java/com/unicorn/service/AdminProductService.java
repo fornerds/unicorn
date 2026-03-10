@@ -27,6 +27,7 @@ public class AdminProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductColorStockRepository productColorStockRepository;
+    private final AiChatService aiChatService;
 
     @Transactional(readOnly = true)
     public Page<AdminProductResponse> getProducts(Long categoryId, String keyword, int page, int limit) {
@@ -48,6 +49,14 @@ public class AdminProductService {
                 : (request.getImages() != null && !request.getImages().isEmpty() ? request.getImages().get(0) : null);
         String currency = request.getCurrency() != null && !request.getCurrency().isBlank() ? request.getCurrency().trim().toUpperCase() : "USD";
         if (!"USD".equals(currency) && !"KRW".equals(currency)) currency = "USD";
+        String aiSummary = request.getAiSummary() != null && !request.getAiSummary().isBlank()
+                ? request.getAiSummary().trim()
+                : aiChatService.generateProductSummary(
+                        request.getName(), request.getShortDescription(), request.getContent(),
+                        request.getPrice(), request.getCurrency(),
+                        request.getWeight(), request.getTotalHeight(), request.getOperatingTime(),
+                        request.getBattery(), request.getSpeed(),
+                        category.getName());
         Product p = Product.builder()
                 .category(category)
                 .name(request.getName())
@@ -62,7 +71,7 @@ public class AdminProductService {
                 .battery(request.getBattery())
                 .speed(request.getSpeed())
                 .shortDescription(request.getShortDescription())
-                .aiSummary(request.getAiSummary())
+                .aiSummary(aiSummary)
                 .content(request.getContent())
                 .build();
         p = productRepository.save(p);
