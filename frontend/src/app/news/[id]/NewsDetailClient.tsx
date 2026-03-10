@@ -192,11 +192,10 @@ export default function NewsDetailClient() {
             </div>
 
             <div className="flex flex-col gap-[58.5px] items-start text-[18px] w-[772.5px]">
-              <div className="font-suit font-normal leading-[1.7] min-w-full text-[#374151] whitespace-pre-wrap">
-                {news.content.split("\n").map((paragraph, index) => (
-                  <p key={index}>{paragraph || "\u00A0"}</p>
-                ))}
-              </div>
+              <div
+                className="news-detail-content font-suit font-normal leading-[1.7] min-w-full text-[#374151]"
+                dangerouslySetInnerHTML={{ __html: news.content }}
+              />
               {news.tags && news.tags.length > 0 && (
                 <div className="flex flex-col font-suit font-medium leading-[1.5] text-[18px] text-[#b5b8c0]">
                   <p className="leading-[1.5] break-words">
