@@ -4,7 +4,6 @@ import com.unicorn.dto.order.CreateOrderRequest;
 import com.unicorn.dto.order.CreateOrderResponse;
 import com.unicorn.dto.order.OrderDetailResponse;
 import com.unicorn.dto.order.OrderListResponse;
-import com.unicorn.dto.order.PrepareOrderResponse;
 import com.unicorn.entity.Order;
 import com.unicorn.entity.OrderItem;
 import com.unicorn.entity.Product;
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +35,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final ProductColorStockRepository productColorStockRepository;
+    private final ExchangeRateService exchangeRateService;
 
     @Value("${app.payment.redirect-url-base:https://pg.example.com/redirect}")
     private String paymentRedirectUrlBase;
@@ -49,9 +48,12 @@ public class OrderService {
             throw new IllegalArgumentException("주문할 항목이 없습니다.");
         }
 
+        String paymentMethod = request.getPaymentMethod() != null ? request.getPaymentMethod().trim().toLowerCase() : "";
+        boolean payInUsd = "paypal".equals(paymentMethod);
+
         BigDecimal totalAmount = BigDecimal.ZERO;
         List<OrderItem> orderItems = new ArrayList<>();
-        
+
         for (CreateOrderRequest.OrderItemRequest itemReq : request.getItems()) {
             Product p = productRepository.findById(itemReq.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다. ID: " + itemReq.getProductId()));
@@ -64,21 +66,26 @@ public class OrderService {
             if (availableColorStock < qty) {
                 throw new IllegalArgumentException("제품 " + p.getName() + (color.isEmpty() ? "" : " (" + color + ")") + " 재고가 부족합니다.");
             }
-            BigDecimal lineTotal = p.getPrice().multiply(BigDecimal.valueOf(itemReq.getQuantity()));
+            BigDecimal itemPrice = payInUsd
+                    ? exchangeRateService.priceToUsd(p.getPrice(), p.getCurrency())
+                    : exchangeRateService.priceToKrw(p.getPrice(), p.getCurrency());
+            BigDecimal lineTotal = itemPrice.multiply(BigDecimal.valueOf(itemReq.getQuantity()));
             totalAmount = totalAmount.add(lineTotal);
-            
+
             OrderItem oi = OrderItem.builder()
                     .product(p)
                     .color(itemReq.getColor())
                     .quantity(itemReq.getQuantity())
-                    .price(p.getPrice())
+                    .price(itemPrice)
                     .build();
             orderItems.add(oi);
         }
 
+        String orderCurrency = payInUsd ? "USD" : "KRW";
         Order order = Order.builder()
                 .user(user)
                 .totalAmount(totalAmount)
+                .currency(orderCurrency)
                 .status("pending")
                 .recipient(request.getShippingAddress().getRecipient())
                 .phone(request.getShippingAddress().getPhone())
@@ -124,11 +131,15 @@ public class OrderService {
     }
 
     private OrderDetailResponse toDetailResponse(Order order) {
-        List<OrderDetailResponse.OrderItemDto> items = order.getItems().stream().map(this::toOrderItemDto).collect(Collectors.toList());
+        List<OrderDetailResponse.OrderItemDto> items = order.getItems().stream()
+                .map(oi -> toOrderItemDto(oi, order))
+                .collect(Collectors.toList());
+        String currency = order.getCurrency() != null ? order.getCurrency() : "KRW";
         return OrderDetailResponse.builder()
                 .id(order.getId())
                 .items(items)
                 .totalAmount(order.getTotalAmount())
+                .currency(currency)
                 .status(order.getStatus())
                 .shipping(OrderDetailResponse.ShippingDto.builder()
                         .recipient(order.getRecipient())
@@ -146,18 +157,22 @@ public class OrderService {
     }
 
     private OrderListResponse toListResponse(Order order) {
-        List<OrderDetailResponse.OrderItemDto> items = order.getItems().stream().map(this::toOrderItemDto).collect(Collectors.toList());
+        List<OrderDetailResponse.OrderItemDto> items = order.getItems().stream()
+                .map(oi -> toOrderItemDto(oi, order))
+                .collect(Collectors.toList());
+        String currency = order.getCurrency() != null ? order.getCurrency() : "KRW";
         return OrderListResponse.builder()
                 .id(order.getId())
                 .items(items)
                 .totalAmount(order.getTotalAmount())
+                .currency(currency)
                 .status(order.getStatus())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
                 .build();
     }
 
-    private OrderDetailResponse.OrderItemDto toOrderItemDto(OrderItem oi) {
+    private OrderDetailResponse.OrderItemDto toOrderItemDto(OrderItem oi, Order order) {
         String color = oi.getColor() != null && !oi.getColor().isEmpty() ? oi.getColor() : null;
         String colorCode = null;
         if (color != null) {

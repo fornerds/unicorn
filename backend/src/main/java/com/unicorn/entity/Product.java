@@ -38,6 +38,11 @@ public class Product extends BaseEntity {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
+    /** 가격 단위. USD 또는 KRW. API 응답 시 USD면 환율 적용해 KRW로 변환해 전달 */
+    @Builder.Default
+    @Column(nullable = false, length = 3)
+    private String currency = "USD";
+
     @Column(name = "image_url", length = 512)
     private String imageUrl;
 
@@ -65,6 +70,10 @@ public class Product extends BaseEntity {
 
     @Column(name = "short_description", length = 500)
     private String shortDescription;
+
+    /** AI 채팅/제품 카탈로그용 요약. 백오피스에서 직접 작성·수정. 비어 있으면 shortDescription 사용 */
+    @Column(name = "ai_summary", length = 500)
+    private String aiSummary;
 
     @Column(columnDefinition = "TEXT")
     private String content;

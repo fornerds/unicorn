@@ -1,5 +1,6 @@
 package com.unicorn.service;
 
+import com.unicorn.dto.ai.ProductCatalogItem;
 import com.unicorn.dto.product.ProductDetailResponse;
 import com.unicorn.dto.product.ProductListResponse;
 import com.unicorn.entity.Product;
@@ -22,6 +23,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserProductLikeRepository userProductLikeRepository;
     private final ProductColorStockRepository productColorStockRepository;
+    private final ExchangeRateService exchangeRateService;
 
     private static final java.util.Set<String> ALLOWED_SORT_FIELDS = java.util.Set.of("id", "name", "price", "stock", "createdAt", "updatedAt");
     private static final String DEFAULT_SORT = "createdAt";
@@ -65,7 +67,7 @@ public class ProductService {
                 .category(categoryInfo)
                 .isLiked(isLiked)
                 .colorStocks(colorStocks)
-                .price(p.getPrice())
+                .price(priceInKrw(p))
                 .detail(detail)
                 .shortDescription(p.getShortDescription())
                 .content(p.getContent())
@@ -100,6 +102,25 @@ public class ProductService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public List<ProductCatalogItem> getProductCatalogForAi() {
+        List<Product> products = productRepository.findAll();
+        return products.stream()
+                .map(p -> {
+                    String summary = (p.getAiSummary() != null && !p.getAiSummary().isBlank())
+                            ? p.getAiSummary()
+                            : (p.getShortDescription() != null ? p.getShortDescription() : "");
+                    return ProductCatalogItem.builder()
+                            .id(p.getId())
+                            .name(p.getName())
+                            .categoryName(p.getCategory().getName())
+                            .price(p.getPrice())
+                            .summary(summary)
+                            .build();
+                })
+                .toList();
+    }
+
     private ProductListResponse toListResponse(Product p, Long userId) {
         boolean isLiked = userId != null && userProductLikeRepository.existsByUserIdAndProductId(userId, p.getId());
         var cat = p.getCategory();
@@ -108,7 +129,7 @@ public class ProductService {
                 .id(p.getId())
                 .name(p.getName())
                 .imageUrl(p.getImageUrl())
-                .price(p.getPrice())
+                .price(priceInKrw(p))
                 .isLiked(isLiked)
                 .parentCategory(parent != null ? ProductListResponse.CategorySummary.builder()
                         .id(parent.getId())
@@ -119,5 +140,10 @@ public class ProductService {
                         .name(cat.getName())
                         .build())
                 .build();
+    }
+
+    /** DB 저장 단위(USD/KRW)에 따라 프론트용 가격(원화) 반환 */
+    private java.math.BigDecimal priceInKrw(Product p) {
+        return exchangeRateService.priceToKrw(p.getPrice(), p.getCurrency());
     }
 }

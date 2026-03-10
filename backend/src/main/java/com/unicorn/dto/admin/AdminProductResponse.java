@@ -14,6 +14,7 @@ public class AdminProductResponse {
     private Long id;
     private String name;
     private BigDecimal price;
+    private String currency;
     private String imageUrl;
     private Integer stock;
     private List<AdminColorStockItem> colorStocks;
@@ -28,6 +29,7 @@ public class AdminProductResponse {
     private String battery;
     private String speed;
     private String shortDescription;
+    private String aiSummary;
     private String content;
     private Instant createdAt;
     private Instant updatedAt;

@@ -46,10 +46,13 @@ public class AdminProductService {
         String imageUrl = request.getImageUrl() != null && !request.getImageUrl().isBlank()
                 ? request.getImageUrl()
                 : (request.getImages() != null && !request.getImages().isEmpty() ? request.getImages().get(0) : null);
+        String currency = request.getCurrency() != null && !request.getCurrency().isBlank() ? request.getCurrency().trim().toUpperCase() : "USD";
+        if (!"USD".equals(currency) && !"KRW".equals(currency)) currency = "USD";
         Product p = Product.builder()
                 .category(category)
                 .name(request.getName())
                 .price(request.getPrice())
+                .currency(currency)
                 .imageUrl(imageUrl)
                 .images(request.getImages())
                 .stock(request.getStock())
@@ -59,6 +62,7 @@ public class AdminProductService {
                 .battery(request.getBattery())
                 .speed(request.getSpeed())
                 .shortDescription(request.getShortDescription())
+                .aiSummary(request.getAiSummary())
                 .content(request.getContent())
                 .build();
         p = productRepository.save(p);
@@ -72,6 +76,10 @@ public class AdminProductService {
         Product p = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다."));
         if (request.getName() != null) p.setName(request.getName());
         if (request.getPrice() != null) p.setPrice(request.getPrice());
+        if (request.getCurrency() != null && !request.getCurrency().isBlank()) {
+            String c = request.getCurrency().trim().toUpperCase();
+            if ("USD".equals(c) || "KRW".equals(c)) p.setCurrency(c);
+        }
         if (request.getStock() != null) p.setStock(request.getStock());
         if (request.getImageUrl() != null) {
             p.setImageUrl(request.getImageUrl().isBlank() ? null : request.getImageUrl());
@@ -85,6 +93,7 @@ public class AdminProductService {
         if (request.getBattery() != null) p.setBattery(request.getBattery());
         if (request.getSpeed() != null) p.setSpeed(request.getSpeed());
         if (request.getShortDescription() != null) p.setShortDescription(request.getShortDescription());
+        if (request.getAiSummary() != null) p.setAiSummary(request.getAiSummary());
         if (request.getContent() != null) p.setContent(request.getContent());
         if (request.getColorStocks() != null) syncColorStocks(p, request.getColorStocks());
 
@@ -133,6 +142,7 @@ public class AdminProductService {
                 .id(p.getId())
                 .name(p.getName())
                 .price(p.getPrice())
+                .currency(p.getCurrency() != null ? p.getCurrency() : "USD")
                 .imageUrl(p.getImageUrl())
                 .stock(p.getStock())
                 .colorStocks(colorStocks.isEmpty() ? null : colorStocks)
@@ -147,6 +157,7 @@ public class AdminProductService {
                 .battery(p.getBattery())
                 .speed(p.getSpeed())
                 .shortDescription(p.getShortDescription())
+                .aiSummary(p.getAiSummary())
                 .content(p.getContent())
                 .createdAt(p.getCreatedAt())
                 .updatedAt(p.getUpdatedAt())

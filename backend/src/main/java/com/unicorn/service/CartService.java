@@ -26,12 +26,16 @@ public class CartService {
     private final ProductRepository productRepository;
     private final ProductColorStockRepository productColorStockRepository;
     private final UserRepository userRepository;
+    private final ExchangeRateService exchangeRateService;
 
     @Transactional(readOnly = true)
     public CartResponse getCart(Long userId) {
         List<CartItem> items = cartItemRepository.findByUserIdOrderByCreatedAtDesc(userId);
         BigDecimal total = items.stream()
-                .map(ci -> ci.getProduct().getPrice().multiply(BigDecimal.valueOf(ci.getQuantity())))
+                .map(ci -> {
+                    BigDecimal priceKrw = exchangeRateService.priceToKrw(ci.getProduct().getPrice(), ci.getProduct().getCurrency());
+                    return priceKrw.multiply(BigDecimal.valueOf(ci.getQuantity()));
+                })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return CartResponse.builder()
                 .items(items.stream().map(this::toItemDto).collect(Collectors.toList()))
@@ -116,6 +120,7 @@ public class CartService {
                     .map(ProductColorStock::getColorCode)
                     .orElse(null);
         }
+        BigDecimal priceKrw = exchangeRateService.priceToKrw(p.getPrice(), p.getCurrency());
         return CartResponse.CartItemDto.builder()
                 .id(ci.getId())
                 .productId(p.getId())
@@ -124,11 +129,11 @@ public class CartService {
                 .product(CartResponse.ProductSummary.builder()
                         .id(p.getId())
                         .name(p.getName())
-                        .price(p.getPrice())
+                        .price(priceKrw)
                         .imageUrl(p.getImageUrl())
                         .build())
                 .quantity(ci.getQuantity())
-                .price(p.getPrice())
+                .price(priceKrw)
                 .build();
     }
 }

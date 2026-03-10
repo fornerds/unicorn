@@ -13,6 +13,7 @@ public class OrderListResponse {
     private Long id;
     private List<OrderDetailResponse.OrderItemDto> items;
     private BigDecimal totalAmount;
+    private String currency;
     private String status;
     private Instant createdAt;
     private Instant updatedAt;

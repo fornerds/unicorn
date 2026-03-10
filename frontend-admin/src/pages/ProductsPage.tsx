@@ -8,6 +8,7 @@ interface ProductItem {
   id: number;
   name: string;
   price?: number;
+  currency?: string;
   stock?: number;
   categoryId?: number;
   categoryName?: string;
@@ -50,8 +51,10 @@ interface ColorStockItem {
 const defaultForm = {
   name: '',
   shortDescription: '',
+  aiSummary: '',
   content: '',
   price: 0,
+  currency: 'USD' as string,
   categoryId: 0,
   stock: 0,
   imageUrl: '' as string,
@@ -128,7 +131,9 @@ export default function ProductsPage() {
       const res = await adminApiFetch<{
         data: ProductItem & {
           shortDescription?: string;
+          aiSummary?: string;
           content?: string;
+          currency?: string;
           imageUrl?: string;
           images?: string[];
           colorStocks?: ColorStockItem[];
@@ -139,8 +144,10 @@ export default function ProductsPage() {
         setForm({
           name: d.name ?? '',
           shortDescription: d.shortDescription ?? '',
+          aiSummary: d.aiSummary ?? '',
           content: d.content ?? '',
           price: typeof d.price === 'number' ? d.price : 0,
+          currency: d.currency ?? 'USD',
           categoryId: d.categoryId ?? 0,
           stock: d.stock ?? 0,
           imageUrl: d.imageUrl ?? '',
@@ -165,8 +172,10 @@ export default function ProductsPage() {
       const body = {
         name: form.name.trim(),
         shortDescription: form.shortDescription.trim() || undefined,
+        aiSummary: form.aiSummary.trim() || undefined,
         content: form.content.trim() || undefined,
         price: form.price,
+        currency: form.currency || 'USD',
         categoryId: form.categoryId || null,
         stock: form.stock,
         imageUrl: form.imageUrl?.trim() ?? '',
@@ -321,7 +330,7 @@ export default function ProductsPage() {
                     <td className="px-4 py-3 text-sm text-gray-900">{row.name}</td>
                     <td className="px-4 py-3 text-sm text-gray-500">{row.categoryName ?? '-'}</td>
                     <td className="px-4 py-3 text-right text-sm text-gray-900">
-                      {row.price != null ? row.price.toLocaleString() : '-'}
+                      {row.price != null ? `${row.price.toLocaleString()} ${row.currency ?? 'USD'}` : '-'}
                     </td>
                     <td className="px-4 py-3 text-right text-sm text-gray-900">{row.stock ?? '-'}</td>
                     <td className="px-4 py-3 text-right text-sm">
@@ -401,6 +410,17 @@ export default function ProductsPage() {
             />
           </div>
           <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">채팅/카탈로그용 요약</label>
+            <textarea
+              value={form.aiSummary}
+              onChange={(e) => setForm((f) => ({ ...f, aiSummary: e.target.value }))}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              placeholder="AI 상담·제품 추천에 사용됩니다. 비우면 짧은 설명이 사용됩니다. (500자 내외 권장)"
+              rows={3}
+              maxLength={500}
+            />
+          </div>
+          <div>
             <div className="mb-2 flex items-center justify-between">
               <label className="block text-sm font-medium text-gray-700">상세 설명</label>
               <div className="flex gap-1">
@@ -465,14 +485,26 @@ export default function ProductsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">가격 *</label>
-              <input
-                type="number"
-                value={form.price || ''}
-                onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) || 0 }))}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                min={0}
-                required
-              />
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  value={form.price || ''}
+                  onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) || 0 }))}
+                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  min={0}
+                  required
+                />
+                <select
+                  value={form.currency || 'USD'}
+                  onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
+                  className="w-20 rounded-lg border border-gray-300 px-2 py-2 text-sm"
+                  aria-label="가격 단위"
+                >
+                  <option value="USD">USD</option>
+                  <option value="KRW">KRW</option>
+                </select>
+              </div>
+              <p className="mt-1 text-xs text-gray-500">USD 저장 시 API에서 환율 적용해 원화로 전달됩니다.</p>
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">재고 *</label>

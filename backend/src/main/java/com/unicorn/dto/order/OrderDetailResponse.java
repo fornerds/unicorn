@@ -14,6 +14,7 @@ public class OrderDetailResponse {
     private Long id;
     private List<OrderItemDto> items;
     private BigDecimal totalAmount;
+    private String currency;
     private String status;
     private ShippingDto shipping;
     private PaymentDto payment;

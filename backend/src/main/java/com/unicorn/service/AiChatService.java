@@ -3,6 +3,7 @@ package com.unicorn.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unicorn.dto.ai.ChatResponse;
+import com.unicorn.dto.ai.ProductCatalogItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +11,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class AiChatService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ProductService productService;
 
     public ChatResponse chat(String message, String conversationId) {
         String convId = conversationId != null && !conversationId.isBlank()
@@ -42,9 +46,19 @@ public class AiChatService {
         }
 
         try {
+            String catalogText = buildProductCatalogText();
+            List<Map<String, Object>> messages = new ArrayList<>();
+            if (catalogText != null && !catalogText.isBlank()) {
+                messages.add(Map.of(
+                        "role", "system",
+                        "content", "당신은 이 쇼핑몰의 상담원입니다. 아래 제품 카탈로그를 참고해 고객 질문에 답하고, 적절한 제품을 추천해 주세요. 가격·카테고리·요약만 참고하며, 없는 정보는 지어내지 마세요.\n\n[제품 카탈로그]\n" + catalogText
+                ));
+            }
+            messages.add(Map.of("role", "user", "content", message));
+
             Map<String, Object> body = Map.of(
                     "model", model,
-                    "messages", List.of(Map.of("role", "user", "content", message))
+                    "messages", messages
             );
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -73,6 +87,17 @@ public class AiChatService {
                     .conversationId(convId)
                     .build();
         }
+    }
+
+    private String buildProductCatalogText() {
+        List<ProductCatalogItem> items = productService.getProductCatalogForAi();
+        if (items.isEmpty()) {
+            return "";
+        }
+        return items.stream()
+                .map(i -> String.format("- id: %d | 이름: %s | 카테고리: %s | 가격: %s | 요약: %s",
+                        i.getId(), i.getName(), i.getCategoryName(), i.getPrice(), i.getSummary() != null ? i.getSummary() : ""))
+                .collect(Collectors.joining("\n"));
     }
 
     private static ChatResponse fallbackResponse(String message, String convId) {

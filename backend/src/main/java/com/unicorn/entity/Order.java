@@ -36,6 +36,11 @@ public class Order extends BaseEntity {
     @Column(name = "total_amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalAmount;
 
+    /** 주문 금액 단위. 결제 수단에 따라 KRW(토스) 또는 USD(PayPal) */
+    @Column(nullable = false, length = 3)
+    @Builder.Default
+    private String currency = "KRW";
+
     @Column(nullable = false, length = 30)
     private String status;
 

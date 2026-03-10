@@ -19,6 +19,7 @@ interface Order {
   id: number;
   items: OrderItem[];
   totalAmount: number;
+  currency?: string;
   status: string;
   createdAt: string;
   updatedAt: string;
@@ -196,12 +197,11 @@ export default function MyOrdersPage() {
                                 </div>
                                 <div className="flex gap-[3px] items-end justify-center">
                                   <div className="flex flex-col font-suit font-semibold justify-center text-[22px] text-[#1f2937] whitespace-nowrap">
-                                    <p className="leading-[1.5]">{formatPrice(order.totalAmount)}</p>
-                                  </div>
-                                  <div className="flex flex-col items-center justify-center py-[3px] w-[14px]">
-                                    <div className="flex flex-col font-suit font-medium justify-center text-[18px] text-[#1f2937] w-full">
-                                      <p className="leading-[1.5] whitespace-pre-wrap">원</p>
-                                    </div>
+                                    <p className="leading-[1.5]">
+                                      {order.currency === 'USD'
+                                        ? `$${formatPrice(order.totalAmount)}`
+                                        : `${formatPrice(order.totalAmount)}원`}
+                                    </p>
                                   </div>
                                 </div>
                               </div>

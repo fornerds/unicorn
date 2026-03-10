@@ -19,6 +19,9 @@ public class AdminProductRequest {
     @DecimalMin("0")
     private BigDecimal price;
 
+    /** 가격 단위. USD 또는 KRW (기본 USD) */
+    private String currency = "USD";
+
     @NotNull
     private Long categoryId;
 
@@ -38,6 +41,8 @@ public class AdminProductRequest {
     private String battery;
     private String speed;
     private String shortDescription;
+    /** AI 채팅·카탈로그용 요약 (관리자 직접 작성) */
+    private String aiSummary;
     private String content;
 
     /** 컬러별 재고. 있으면 product_color_stock 에 반영 */

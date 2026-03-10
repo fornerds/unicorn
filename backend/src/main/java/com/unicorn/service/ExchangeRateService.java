@@ -68,6 +68,39 @@ public class ExchangeRateService {
         return amountKrw.divide(krwPerUsd, 2, RoundingMode.HALF_UP);
     }
 
+    /**
+     * USD 금액을 KRW로 변환 (정수 반올림). API 응답·주문 금액 등 프론트에 원화로 보낼 때 사용.
+     */
+    public BigDecimal usdToKrw(BigDecimal amountUsd) {
+        if (amountUsd == null || amountUsd.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal krwPerUsd = getKrwPerUsd();
+        return amountUsd.multiply(krwPerUsd).setScale(0, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * DB 저장 단위(currency)에 따라 원화 금액 반환. USD 또는 null/blank면 환율 적용, KRW면 그대로(정수).
+     */
+    public BigDecimal priceToKrw(BigDecimal price, String currency) {
+        if (price == null) return BigDecimal.ZERO;
+        if (currency == null || currency.isBlank() || "USD".equalsIgnoreCase(currency)) {
+            return usdToKrw(price);
+        }
+        return price.setScale(0, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * DB 저장 단위(currency)에 따라 달러 금액 반환. KRW면 환율 적용, USD면 그대로(소수점 2자리).
+     */
+    public BigDecimal priceToUsd(BigDecimal price, String currency) {
+        if (price == null) return BigDecimal.ZERO;
+        if ("KRW".equalsIgnoreCase(currency)) {
+            return krwToUsd(price);
+        }
+        return price.setScale(2, RoundingMode.HALF_UP);
+    }
+
     @Data
     private static class ErApiResponse {
         private Map<String, Number> rates;

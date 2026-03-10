@@ -9,7 +9,6 @@ import com.unicorn.dto.payment.PayPalCreateOrderResponse;
 import com.unicorn.entity.Order;
 import com.unicorn.entity.OrderItem;
 import com.unicorn.entity.Product;
-import com.unicorn.entity.ProductColorStock;
 import com.unicorn.repository.CartItemRepository;
 import com.unicorn.repository.OrderRepository;
 import com.unicorn.repository.ProductColorStockRepository;
@@ -45,12 +44,14 @@ public class PaymentService {
             throw new IllegalArgumentException("결제 대기 중인 주문이 아닙니다.");
         }
 
-        BigDecimal usd = exchangeRateService.krwToUsd(order.getTotalAmount());
+        BigDecimal usd = "USD".equalsIgnoreCase(order.getCurrency())
+                ? order.getTotalAmount().setScale(2, RoundingMode.HALF_UP)
+                : exchangeRateService.krwToUsd(order.getTotalAmount());
         if (usd.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("달러 환산 금액이 잘못되었습니다.");
         }
 
-        String amountUsdStr = usd.setScale(2, RoundingMode.HALF_UP).toPlainString();
+        String amountUsdStr = usd.toPlainString();
         String referenceId = "order-" + order.getId();
         String paypalOrderId = payPalClient.createOrder(amountUsdStr, referenceId);
         

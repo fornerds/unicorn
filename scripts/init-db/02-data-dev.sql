@@ -9,93 +9,49 @@ INSERT IGNORE INTO users (id, email, password_hash, name, status, role, created_
 (3, 'user2@unicorn.dev', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', '테스트유저2', 'active', 'USER', NOW(), NOW());
 
 INSERT IGNORE INTO categories (id, parent_id, name, slug, sort_order, created_at, updated_at) VALUES
-(1, NULL, '가정용 로봇/가사 도우미', 'home', 1, NOW(), NOW()),
-(2, NULL, '화재진압/인명구조용 로봇', 'firefighting', 2, NOW(), NOW()),
-(3, NULL, '단순 업무/환자케어 로봇', 'medical', 3, NOW(), NOW()),
-(4, NULL, '위험 현장', 'industrial', 4, NOW(), NOW()),
-(5, NULL, '분류/포장 로봇', 'logistics', 5, NOW(), NOW()),
-(6, 1, '청소/가사 로봇', 'home-cleaning', 1, NOW(), NOW()),
-(7, 1, '요리/생활 보조 로봇', 'home-living', 2, NOW(), NOW()),
-(8, 2, '화재 진압/구조', 'firefighting-rescue', 1, NOW(), NOW()),
-(9, 2, '방화·탐지 설비', 'firefighting-detection', 2, NOW(), NOW()),
-(10, 3, '의료/환자 케어', 'medical-care', 1, NOW(), NOW()),
-(11, 3, '병원 업무/배송 로봇', 'medical-delivery', 2, NOW(), NOW()),
-(12, 4, '산업/위험지역', 'industrial-hazard', 1, NOW(), NOW()),
-(13, 4, '원격 탐사/작업', 'industrial-remote', 2, NOW(), NOW()),
-(14, 5, '물류/포장', 'logistics-packaging', 1, NOW(), NOW()),
-(15, 5, '피킹/분류 로봇', 'logistics-picking', 2, NOW(), NOW());
+(1, NULL, '휴머노이드 로봇', 'humanoid', 1, NOW(), NOW()),
+(2, NULL, '논휴머노이드 로봇', 'non-humanoid', 2, NOW(), NOW());
 
-INSERT IGNORE INTO products (id, category_id, name, description, short_description, content, price, stock, weight, total_height, operating_time, battery, speed, created_at, updated_at) VALUES
-(1, 6, '가정용 청소 로봇 A', '가사 도우미용 스마트 청소 로봇. 바닥 청소·걸레질 자동화.', '스마트 바닥 청소', '<p>가정용 청소 로봇 A의 상세 설명입니다.</p>', 389000.00, 30, '3.5kg', '10cm', '120분', '5200mAh', '0.5m/s', NOW(), NOW()),
-(2, 6, '가정용 로봇 청소기 B', '일상 가사 지원 로봇. 먼지·알레르기 원인 제거.', '알레르기 케어 청소', '<p>가정용 로봇 청소기 B 상세.</p>', 459000.00, 25, '4.0kg', '9.5cm', '150분', '6400mAh', '0.6m/s', NOW(), NOW()),
-(3, 8, '화재 진압 로봇', '인명구조용 방화 로봇. 고온·연기 환경 투입.', '고온 환경 화재 진압', '<p>화재 진압 로봇입니다.</p>', 12500000.00, 5, '120kg', '1.2m', '4시간', '대용량 배터리팩', '1.5m/s', NOW(), NOW()),
-(4, 8, '인명구조 탐색 로봇', '화재현장 탐색·구조용 로봇. 열화상·가스 감지.', '열화상 감지 탐색', '<p>구조 탐색용 로봇입니다.</p>', 9800000.00, 8, '45kg', '0.8m', '6시간', '리튬이온 100Ah', '2.0m/s', NOW(), NOW()),
-(5, 10, '병원 업무 보조 로봇', '단순 업무 자동화 로봇. 배송·안내·서류 전달.', '병원 물류 배송', '<p>병원 내 배송 로봇입니다.</p>', 3200000.00, 12, '35kg', '1.1m', '8시간', '리튬이온 60Ah', '1.2m/s', NOW(), NOW()),
-(6, 10, '환자 케어 로봇', '환자 모니터링·케어 지원 로봇. 원격 상주·알림.', '실시간 환자 모니터링', '<p>환자 케어 로봇입니다.</p>', 4500000.00, 10, '25kg', '1.4m', '12시간', '리튬이온 80Ah', '1.0m/s', NOW(), NOW()),
-(7, 12, '위험 현장 작업 로봇', '위험 구역 작업용 로봇. 방사능·유해가스 대응.', '방사능/가스 현장 투입', '<p>위험 구역 특수 로봇입니다.</p>', 8500000.00, 6, '80kg', '1.0m', '5시간', '내환경 배터리', '1.0m/s', NOW(), NOW()),
-(8, 12, '산업용 위험지역 로봇', '고위험 현장 투입용. 원격 조작·탐사.', '원격 조작 탐사', '<p>산업용 탐사 로봇입니다.</p>', 11200000.00, 4, '150kg', '1.5m', '4시간', '산업용 배터리팩', '1.5m/s', NOW(), NOW()),
-(9, 14, '물류 분류 로봇', '물류 분류 자동화 로봇. 바코드·무게 기반 분류.', '자동 물류 피킹', '<p>물류 센터 분류 로봇입니다.</p>', 2800000.00, 15, '15kg', '0.5m', '10시간', '리튬이온 40Ah', '2.5m/s', NOW(), NOW()),
-(10, 14, '자동 포장 로봇', '분류/포장 로봇. 피킹·포장·라벨링 일체형.', '포장 라벨링 일체형', '<p>포장 자동화 로봇입니다.</p>', 3500000.00, 12, '60kg', '1.8m', '상시(유선)', 'AC전원', 'N/A', NOW(), NOW());
-
-UPDATE products SET colors = '["화이트/White","블랙/Black","블루/Blue"]' WHERE id IN (1, 2);
-UPDATE products SET colors = '["레드/Red","그레이/Gray"]' WHERE id IN (3, 4);
-UPDATE products SET colors = '["화이트/White","실버/Silver"]' WHERE id IN (5, 6);
-UPDATE products SET colors = '["블랙/Black","옐로우/Yellow","그린/Green"]' WHERE id IN (7, 8);
-UPDATE products SET colors = '["화이트/White","블랙/Black","그레이/Gray"]' WHERE id IN (9, 10);
+-- 가격·통화: DB에는 USD로 저장. API 응답 시 환율 적용해 원화로 전달.
+INSERT IGNORE INTO products (id, category_id, name, short_description, ai_summary, content, price, currency, stock, weight, total_height, operating_time, battery, speed, created_at, updated_at) VALUES
+(1, 1, '1X Technologies NEO', '가정용 휴머노이드 167cm 30kg. Redwood AI. 프리오더 2026.', '1X NEO. 가정용 휴머노이드. $20,000 또는 월 $499 리스. https://www.1x.tech/neo', '<p>1X NEO. <a href="https://www.1x.tech/neo" target="_blank" rel="noopener">공식</a>. $20,000 / 월 $499 리스.</p>', 20000.00, 'USD', 0, '30kg', '167cm', NULL, NULL, NULL, NOW(), NOW()),
+(2, 1, 'Unitree G1', '127cm 35kg 휴머노이드. G1 Basic $19,995~$21,600, EDU $43,500~.', 'Unitree G1. 휴머노이드. 기본 $19,995~$21,600, EDU $43,500~. https://www.unitree.com/', '<p>Unitree G1. <a href="https://www.unitree.com/g1" target="_blank" rel="noopener">공식</a>. Basic $19,995~, EDU $43,500~.</p>', 19995.00, 'USD', 3, '35kg', '127cm', NULL, NULL, NULL, NOW(), NOW()),
+(3, 1, 'Unitree H1', '180cm 대형 휴머노이드. 기준가 $90,000.', 'Unitree H1. 휴머노이드 180cm. $90,000. https://www.unitree.com/', '<p>Unitree H1. <a href="https://www.unitree.com/" target="_blank" rel="noopener">공식</a>. $90,000.</p>', 90000.00, 'USD', 2, NULL, '180cm', NULL, NULL, NULL, NOW(), NOW()),
+(4, 1, 'Figure 03', 'Figure AI 휴머노이드. 소비자 $20,000, 상용 $130,000.', 'Figure 03. 휴머노이드. 소비자 $20,000 / 상용 $130,000. https://www.figure.ai/', '<p>Figure 03. <a href="https://www.figure.ai/" target="_blank" rel="noopener">공식</a> / <a href="https://www.figure.ai/figure" target="_blank" rel="noopener">제품</a>. $20,000~$130,000.</p>', 20000.00, 'USD', 0, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+(5, 1, 'Agility Robotics DIGIT', '물류 휴머노이드 175cm 64kg. 16kg 적재 8시간. $250,000.', 'Agility DIGIT. 휴머노이드 물류. $250,000. https://www.agilityrobotics.com/', '<p>Agility DIGIT. <a href="https://www.agilityrobotics.com/" target="_blank" rel="noopener">공식</a>. $250,000~.</p>', 250000.00, 'USD', 2, '64kg', '175cm', '8시간', NULL, NULL, NOW(), NOW()),
+(6, 1, 'Boston Dynamics Atlas', '전기 휴머노이드 제조/물류. 가격 문의.', 'Boston Dynamics Atlas. 휴머노이드. 가격 미공개(문의). https://bostondynamics.com/products/atlas/', '<p>Boston Dynamics Atlas. <a href="https://bostondynamics.com/products/atlas/" target="_blank" rel="noopener">제품</a>. 가격 문의.</p>', 0.00, 'USD', 0, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+(7, 2, 'Boston Dynamics Spot', '4족 로봇. Explorer Kit 약 $74,500. 옵션 시 $100K~$195K.', 'Boston Dynamics Spot. 4족. 기준 $74,500. https://bostondynamics.com/products/spot/', '<p>Boston Dynamics Spot. <a href="https://bostondynamics.com/products/spot/" target="_blank" rel="noopener">제품</a>. 약 $74,500.</p>', 74500.00, 'USD', 3, NULL, NULL, '90분/배터리', '2팩 포함', NULL, NOW(), NOW()),
+(8, 2, 'Boston Dynamics Stretch', '창고 언로딩. 50lb 600~800케이스/시간. 16시간. 가격 문의.', 'Boston Dynamics Stretch. 창고 언로딩. 가격 미공개(문의). https://bostondynamics.com/products/stretch/', '<p>Boston Dynamics Stretch. <a href="https://bostondynamics.com/products/stretch/" target="_blank" rel="noopener">제품</a>. 가격 문의.</p>', 0.00, 'USD', 0, NULL, NULL, '16시간', NULL, NULL, NOW(), NOW()),
+(9, 2, 'Unitree Go2 (Edu)', '교육용 4족. Standard $13,999, Plus $15,900~$20,800. 15kg.', 'Unitree Go2 Edu. 4족 교육. Standard $13,999~. https://www.unitree.com/go2', '<p>Unitree Go2 (Edu). <a href="https://www.unitree.com/go2" target="_blank" rel="noopener">제품</a>. $13,999~.</p>', 13999.00, 'USD', 5, '15kg', NULL, '2~4시간', NULL, NULL, NOW(), NOW());
 
 INSERT IGNORE INTO product_color_stock (product_id, color, color_code, stock, created_at, updated_at) VALUES
-(1, '화이트/White', '#FFFFFF', 10, NOW(), NOW()),
-(1, '블랙/Black', '#000000', 10, NOW(), NOW()),
-(1, '블루/Blue', '#0000FF', 10, NOW(), NOW()),
-(2, '화이트/White', '#FFFFFF', 8, NOW(), NOW()),
-(2, '블랙/Black', '#000000', 9, NOW(), NOW()),
-(2, '블루/Blue', '#0000FF', 8, NOW(), NOW()),
-(3, '레드/Red', '#FF0000', 3, NOW(), NOW()),
-(3, '그레이/Gray', '#808080', 2, NOW(), NOW()),
-(4, '레드/Red', '#FF0000', 4, NOW(), NOW()),
-(4, '그레이/Gray', '#808080', 4, NOW(), NOW()),
-(5, '화이트/White', '#FFFFFF', 6, NOW(), NOW()),
-(5, '실버/Silver', '#C0C0C0', 6, NOW(), NOW()),
-(6, '화이트/White', '#FFFFFF', 5, NOW(), NOW()),
-(6, '실버/Silver', '#C0C0C0', 5, NOW(), NOW()),
-(7, '블랙/Black', '#000000', 3, NOW(), NOW()),
-(7, '옐로우/Yellow', '#FFFF00', 2, NOW(), NOW()),
-(7, '그린/Green', '#008000', 1, NOW(), NOW()),
-(8, '블랙/Black', '#000000', 2, NOW(), NOW()),
-(8, '옐로우/Yellow', '#FFFF00', 1, NOW(), NOW()),
-(8, '그린/Green', '#008000', 1, NOW(), NOW()),
-(9, '화이트/White', '#FFFFFF', 5, NOW(), NOW()),
-(9, '블랙/Black', '#000000', 5, NOW(), NOW()),
-(9, '그레이/Gray', '#808080', 5, NOW(), NOW()),
-(10, '화이트/White', '#FFFFFF', 4, NOW(), NOW()),
-(10, '블랙/Black', '#000000', 4, NOW(), NOW()),
-(10, '그레이/Gray', '#808080', 4, NOW(), NOW());
+(1, '기본', NULL, 0, NOW(), NOW()),
+(2, '기본', NULL, 3, NOW(), NOW()),
+(3, '기본', NULL, 2, NOW(), NOW()),
+(4, '기본', NULL, 0, NOW(), NOW()),
+(5, '기본', NULL, 2, NOW(), NOW()),
+(6, '기본', NULL, 0, NOW(), NOW()),
+(7, '기본', NULL, 3, NOW(), NOW()),
+(8, '기본', NULL, 0, NOW(), NOW()),
+(9, '기본', NULL, 5, NOW(), NOW());
 
-UPDATE product_color_stock SET color_code = '#FFFFFF' WHERE color = '화이트/White';
-UPDATE product_color_stock SET color_code = '#000000' WHERE color = '블랙/Black';
-UPDATE product_color_stock SET color_code = '#0000FF' WHERE color = '블루/Blue';
-UPDATE product_color_stock SET color_code = '#FF0000' WHERE color = '레드/Red';
-UPDATE product_color_stock SET color_code = '#808080' WHERE color = '그레이/Gray';
-UPDATE product_color_stock SET color_code = '#C0C0C0' WHERE color = '실버/Silver';
-UPDATE product_color_stock SET color_code = '#FFFF00' WHERE color = '옐로우/Yellow';
-UPDATE product_color_stock SET color_code = '#008000' WHERE color = '그린/Green';
-
-INSERT IGNORE INTO orders (id, user_id, total_amount, status, recipient, phone, address, zip_code, payment_provider, payment_id, paid_at, created_at, updated_at) VALUES
-(1, 3, 848000.00, 'pending', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', NULL, NULL, NULL, NOW(), NOW()),
-(2, 3, 389000.00, 'paid', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', 'toss', 'pay-002', NOW(), DATE_SUB(NOW(), INTERVAL 5 DAY), NOW()),
-(3, 3, 459000.00, 'preparing', '테스트유저2', '010-2222-2222', '서울시 서초구 샘플동 33', '06633', 'toss', 'pay-003', DATE_SUB(NOW(), INTERVAL 3 DAY), DATE_SUB(NOW(), INTERVAL 3 DAY), NOW()),
-(4, 3, 3200000.00, 'shipping', '테스트유저2', '010-2222-2222', '경기도 성남시 분당구 44', '13444', 'toss', 'pay-004', DATE_SUB(NOW(), INTERVAL 2 DAY), DATE_SUB(NOW(), INTERVAL 2 DAY), NOW()),
-(5, 3, 2800000.00, 'delivered', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', 'toss', 'pay-005', DATE_SUB(NOW(), INTERVAL 10 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY), NOW()),
-(6, 3, 12500000.00, 'cancelled', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', NULL, NULL, NULL, DATE_SUB(NOW(), INTERVAL 1 DAY), NOW());
+-- 주문 금액·통화: 결제 수단에 따라 DB에 KRW 또는 USD 저장. 더미는 금액이 USD 기준이므로 currency=USD.
+INSERT IGNORE INTO orders (id, user_id, total_amount, currency, status, recipient, phone, address, zip_code, payment_provider, payment_id, paid_at, created_at, updated_at) VALUES
+(1, 3, 33994.00, 'USD', 'pending', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', NULL, NULL, NULL, NOW(), NOW()),
+(2, 3, 20000.00, 'USD', 'paid', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', 'toss', 'pay-002', NOW(), DATE_SUB(NOW(), INTERVAL 5 DAY), NOW()),
+(3, 3, 19995.00, 'USD', 'preparing', '테스트유저2', '010-2222-2222', '서울시 서초구 샘플동 33', '06633', 'toss', 'pay-003', DATE_SUB(NOW(), INTERVAL 3 DAY), DATE_SUB(NOW(), INTERVAL 3 DAY), NOW()),
+(4, 3, 250000.00, 'USD', 'shipping', '테스트유저2', '010-2222-2222', '경기도 성남시 분당구 44', '13444', 'toss', 'pay-004', DATE_SUB(NOW(), INTERVAL 2 DAY), DATE_SUB(NOW(), INTERVAL 2 DAY), NOW()),
+(5, 3, 13999.00, 'USD', 'delivered', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', 'toss', 'pay-005', DATE_SUB(NOW(), INTERVAL 10 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY), NOW()),
+(6, 3, 74500.00, 'USD', 'cancelled', '테스트유저2', '010-2222-2222', '서울시 강남구 테스트로 22', '06222', NULL, NULL, NULL, DATE_SUB(NOW(), INTERVAL 1 DAY), NOW());
 
 INSERT IGNORE INTO order_items (id, order_id, product_id, quantity, price, created_at) VALUES
-(1, 1, 1, 1, 389000.00, NOW()),
-(2, 1, 2, 1, 459000.00, NOW()),
-(3, 2, 1, 1, 389000.00, NOW()),
-(4, 3, 2, 1, 459000.00, NOW()),
-(5, 4, 5, 1, 3200000.00, NOW()),
-(6, 5, 9, 1, 2800000.00, NOW()),
-(7, 6, 3, 1, 12500000.00, NOW());
+(1, 1, 1, 1, 20000.00, NOW()),
+(2, 1, 2, 1, 13994.00, NOW()),
+(3, 2, 1, 1, 20000.00, NOW()),
+(4, 3, 2, 1, 19995.00, NOW()),
+(5, 4, 5, 1, 250000.00, NOW()),
+(6, 5, 9, 1, 13999.00, NOW()),
+(7, 6, 7, 1, 74500.00, NOW());
 
 INSERT IGNORE INTO mood_questions (id, question, sort_order, created_at, updated_at) VALUES
 (1, '어떤 종류의 로봇에 관심이 있으신가요?', 1, NOW(), NOW()),

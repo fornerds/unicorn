@@ -19,6 +19,9 @@ public class AdminProductPatchRequest {
     @DecimalMin("0")
     private BigDecimal price;
 
+    @Size(max = 3)
+    private String currency;
+
     @Min(0)
     private Integer stock;
 
@@ -34,6 +37,7 @@ public class AdminProductPatchRequest {
     private String battery;
     private String speed;
     private String shortDescription;
+    private String aiSummary;
     private String content;
 
     /** 컬러별 재고. 있으면 product_color_stock 을 이 목록으로 교체 */
