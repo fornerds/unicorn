@@ -22,12 +22,10 @@ const emailDomains = [
   { value: 'outlook.com', label: 'outlook.com' },
 ];
 
-const inquiryProducts = [
-  { value: '', label: '상품 무관' },
-  { value: 'product1', label: '제품 1' },
-  { value: 'product2', label: '제품 2' },
-  { value: 'product3', label: '제품 3' },
-];
+interface ProductOption {
+  value: string;
+  label: string;
+}
 
 const inquiryTypes = [
   { value: 'general', label: '일반 문의' },
@@ -50,6 +48,9 @@ export default function ContactPage() {
   const bannerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(84);
+  const [inquiryProducts, setInquiryProducts] = useState<ProductOption[]>([
+    { value: '', label: '상품 무관' },
+  ]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -91,6 +92,24 @@ export default function ContactPage() {
     }
 
     return () => window.removeEventListener('resize', updateHeaderHeight);
+  }, []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await apiFetch<{ data: { items: { id: number; name: string }[] } }>(
+          '/products?limit=100&sort=name&order=asc',
+        );
+        const options: ProductOption[] = [
+          { value: '', label: '상품 무관' },
+          ...res.data.items.map((p) => ({ value: String(p.id), label: p.name })),
+        ];
+        setInquiryProducts(options);
+      } catch {
+        // 실패 시 기본값 유지
+      }
+    };
+    fetchProducts();
   }, []);
 
   useEffect(() => {
@@ -181,7 +200,7 @@ export default function ContactPage() {
       };
 
       if (formData.product) {
-        body.productId = formData.product;
+        body.productId = Number(formData.product);
       }
 
       await apiFetch('/inquiries', {
