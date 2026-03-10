@@ -287,10 +287,10 @@ export const ProductDetailClient = ({ id }: { id: string }) => {
         ? [product.imageUrl]
         : [];
 
-  const colorOptions: { color: string; colorCode?: string; stock: number }[] =
+  const colorOptions: ColorStock[] =
     product.colorStocks && product.colorStocks.length > 0
       ? product.colorStocks
-      : product.colors?.map((c) => ({ color: c, stock: 0 })) ?? [];
+      : product.colors?.map((c): ColorStock => ({ color: c, stock: 0 })) ?? [];
 
   const formattedPrice = new Intl.NumberFormat("ko-KR").format(product.price);
 

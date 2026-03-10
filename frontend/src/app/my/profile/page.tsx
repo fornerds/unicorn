@@ -57,6 +57,7 @@ export default function MyProfilePage() {
       }
     };
     fetchUserInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
