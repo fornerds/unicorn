@@ -12,6 +12,7 @@ public class ProductDetailResponse {
 
     private Long id;
     private String name;
+    private String company;
     private String imageUrl;
     private List<String> images;
     private CategoryInfo parentCategory;

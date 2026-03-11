@@ -15,6 +15,8 @@ public class AdminProductRequest {
     @NotBlank
     private String name;
 
+    private String company;
+
     @NotNull
     @DecimalMin("0")
     private BigDecimal price;

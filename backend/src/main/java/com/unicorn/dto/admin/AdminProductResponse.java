@@ -13,6 +13,7 @@ public class AdminProductResponse {
 
     private Long id;
     private String name;
+    private String company;
     private BigDecimal price;
     private String currency;
     private String imageUrl;

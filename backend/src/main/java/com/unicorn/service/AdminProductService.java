@@ -60,6 +60,7 @@ public class AdminProductService {
         Product p = Product.builder()
                 .category(category)
                 .name(request.getName())
+                .company(request.getCompany())
                 .price(request.getPrice())
                 .currency(currency)
                 .imageUrl(imageUrl)
@@ -84,6 +85,7 @@ public class AdminProductService {
     public AdminProductResponse update(Long id, AdminProductPatchRequest request) {
         Product p = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다."));
         if (request.getName() != null) p.setName(request.getName());
+        if (request.getCompany() != null) p.setCompany(request.getCompany());
         if (request.getPrice() != null) p.setPrice(request.getPrice());
         if (request.getCurrency() != null && !request.getCurrency().isBlank()) {
             String c = request.getCurrency().trim().toUpperCase();
@@ -150,6 +152,7 @@ public class AdminProductService {
         return AdminProductResponse.builder()
                 .id(p.getId())
                 .name(p.getName())
+                .company(p.getCompany())
                 .price(p.getPrice())
                 .currency(p.getCurrency() != null ? p.getCurrency() : "USD")
                 .imageUrl(p.getImageUrl())

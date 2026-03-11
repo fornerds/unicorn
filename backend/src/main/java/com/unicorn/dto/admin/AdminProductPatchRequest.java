@@ -16,6 +16,9 @@ public class AdminProductPatchRequest {
     @Size(max = 200)
     private String name;
 
+    @Size(max = 200)
+    private String company;
+
     @DecimalMin("0")
     private BigDecimal price;
 
