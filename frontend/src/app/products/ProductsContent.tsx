@@ -17,6 +17,7 @@ interface ApiCategory {
 interface ApiProduct {
   id: number;
   name: string;
+  company?: string;
   price: number;
   isLiked: boolean;
   imageUrl?: string;
@@ -128,7 +129,7 @@ export const ProductsContent = () => {
         price: item.price,
         imageUrl: item.imageUrl,
         category: `${getCategoryDisplayName(item.parentCategory?.name || '')} > ${item.category?.name || ''}`,
-        companyName: 'Boston Dynamics',
+        companyName: item.company || '',
         isLiked: item.isLiked,
         parentCategoryId: item.parentCategory?.id || 0,
       }));
