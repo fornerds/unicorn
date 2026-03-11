@@ -50,9 +50,10 @@ INSERT IGNORE INTO product_color_stock (product_id, color, color_code, stock, cr
 (9, '기본', NULL, 5, NOW(), NOW());
 
 INSERT IGNORE INTO mood_questions (id, question, sort_order, created_at, updated_at) VALUES
-(1, '어떤 종류의 로봇에 관심이 있으신가요?', 1, NOW(), NOW()),
-(2, '로봇을 어떤 용도로 사용할 계획인가요?', 2, NOW(), NOW()),
-(3, '조립·프로그래밍 경험 수준을 알려주세요.', 3, NOW(), NOW());
+(1, '몸이 불편한 가족을 케어할 로봇이 필요해요', 1, NOW(), NOW()),
+(2, '산업현장용 로봇이 필요해요', 2, NOW(), NOW()),
+(3, '공장에 인력대신 투입할 로봇이 필요해요', 3, NOW(), NOW()),
+(4, '가정용 청소·가사 도우미 로봇이 필요해요', 4, NOW(), NOW());
 
 INSERT IGNORE INTO tags (id, name, created_at, updated_at) VALUES
 (1, 'AI', NOW(), NOW()),

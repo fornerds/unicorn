@@ -8,21 +8,27 @@ INSERT IGNORE INTO users (id, email, password_hash, name, status, role, created_
 (2, 'user1@unicorn.dev', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', '테스트유저1', 'active', 'USER', NOW(), NOW()),
 (3, 'user2@unicorn.dev', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', '테스트유저2', 'active', 'USER', NOW(), NOW());
 
+-- 상위 카테고리 5개 (프론트엔드 디자인과 매핑) + 하위: 휴머노이드, 논휴머노이드
 INSERT IGNORE INTO categories (id, parent_id, name, slug, sort_order, created_at, updated_at) VALUES
-(1, NULL, '휴머노이드 로봇', 'humanoid', 1, NOW(), NOW()),
-(2, NULL, '논휴머노이드 로봇', 'non-humanoid', 2, NOW(), NOW());
+(1, NULL, 'HOME', 'home', 1, NOW(), NOW()),
+(2, NULL, 'FIREFIGHTING', 'firefighting', 2, NOW(), NOW()),
+(3, NULL, 'INDUSTRIAL', 'industrial', 3, NOW(), NOW()),
+(4, NULL, 'MEDICAL', 'medical', 4, NOW(), NOW()),
+(5, NULL, 'LOGISTICS', 'logistics', 5, NOW(), NOW()),
+(6, 3, '휴머노이드 로봇', 'humanoid', 1, NOW(), NOW()),
+(7, 3, '논휴머노이드 로봇', 'non-humanoid', 2, NOW(), NOW());
 
 -- 가격·통화: DB에는 USD로 저장. API 응답 시 환율 적용해 원화로 전달.
 INSERT IGNORE INTO products (id, category_id, name, company, short_description, ai_summary, content, price, currency, stock, weight, total_height, operating_time, battery, speed, created_at, updated_at) VALUES
-(1, 1, '1X Technologies NEO', '1X Technologies', '가정용 휴머노이드 167cm 30kg. Redwood AI. 프리오더 2026.', '1X NEO. 가정용 휴머노이드. $20,000 또는 월 $499 리스. https://www.1x.tech/neo', '<p>1X NEO. <a href="https://www.1x.tech/neo" target="_blank" rel="noopener">공식</a>. $20,000 / 월 $499 리스.</p>', 20000.00, 'USD', 0, '30kg', '167cm', NULL, NULL, NULL, NOW(), NOW()),
-(2, 1, 'Unitree G1', 'Unitree', '127cm 35kg 휴머노이드. G1 Basic $19,995~$21,600, EDU $43,500~.', 'Unitree G1. 휴머노이드. 기본 $19,995~$21,600, EDU $43,500~. https://www.unitree.com/', '<p>Unitree G1. <a href="https://www.unitree.com/g1" target="_blank" rel="noopener">공식</a>. Basic $19,995~, EDU $43,500~.</p>', 19995.00, 'USD', 3, '35kg', '127cm', NULL, NULL, NULL, NOW(), NOW()),
-(3, 1, 'Unitree H1', 'Unitree', '180cm 대형 휴머노이드. 기준가 $90,000.', 'Unitree H1. 휴머노이드 180cm. $90,000. https://www.unitree.com/', '<p>Unitree H1. <a href="https://www.unitree.com/" target="_blank" rel="noopener">공식</a>. $90,000.</p>', 90000.00, 'USD', 2, NULL, '180cm', NULL, NULL, NULL, NOW(), NOW()),
-(4, 1, 'Figure 03', 'Figure', 'Figure AI 휴머노이드. 소비자 $20,000, 상용 $130,000.', 'Figure 03. 휴머노이드. 소비자 $20,000 / 상용 $130,000. https://www.figure.ai/', '<p>Figure 03. <a href="https://www.figure.ai/" target="_blank" rel="noopener">공식</a> / <a href="https://www.figure.ai/figure" target="_blank" rel="noopener">제품</a>. $20,000~$130,000.</p>', 20000.00, 'USD', 0, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
-(5, 1, 'Agility Robotics DIGIT', 'Agility Robotics', '물류 휴머노이드 175cm 64kg. 16kg 적재 8시간. $250,000.', 'Agility DIGIT. 휴머노이드 물류. $250,000. https://www.agilityrobotics.com/', '<p>Agility DIGIT. <a href="https://www.agilityrobotics.com/" target="_blank" rel="noopener">공식</a>. $250,000~.</p>', 250000.00, 'USD', 2, '64kg', '175cm', '8시간', NULL, NULL, NOW(), NOW()),
-(6, 1, 'Boston Dynamics Atlas', 'Boston Dynamics', '전기 휴머노이드 제조/물류. 가격 문의.', 'Boston Dynamics Atlas. 휴머노이드. 가격 미공개(문의). https://bostondynamics.com/products/atlas/', '<p>Boston Dynamics Atlas. <a href="https://bostondynamics.com/products/atlas/" target="_blank" rel="noopener">제품</a>. 가격 문의.</p>', 0.00, 'USD', 0, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
-(7, 2, 'Boston Dynamics Spot', 'Boston Dynamics', '4족 로봇. Explorer Kit 약 $74,500. 옵션 시 $100K~$195K.', 'Boston Dynamics Spot. 4족. 기준 $74,500. https://bostondynamics.com/products/spot/', '<p>Boston Dynamics Spot. <a href="https://bostondynamics.com/products/spot/" target="_blank" rel="noopener">제품</a>. 약 $74,500.</p>', 74500.00, 'USD', 3, NULL, NULL, '90분/배터리', '2팩 포함', NULL, NOW(), NOW()),
-(8, 2, 'Boston Dynamics Stretch', 'Boston Dynamics', '창고 언로딩. 50lb 600~800케이스/시간. 16시간. 가격 문의.', 'Boston Dynamics Stretch. 창고 언로딩. 가격 미공개(문의). https://bostondynamics.com/products/stretch/', '<p>Boston Dynamics Stretch. <a href="https://bostondynamics.com/products/stretch/" target="_blank" rel="noopener">제품</a>. 가격 문의.</p>', 0.00, 'USD', 0, NULL, NULL, '16시간', NULL, NULL, NOW(), NOW()),
-(9, 2, 'Unitree Go2 (Edu)', 'Unitree', '교육용 4족. Standard $13,999, Plus $15,900~$20,800. 15kg.', 'Unitree Go2 Edu. 4족 교육. Standard $13,999~. https://www.unitree.com/go2', '<p>Unitree Go2 (Edu). <a href="https://www.unitree.com/go2" target="_blank" rel="noopener">제품</a>. $13,999~.</p>', 13999.00, 'USD', 5, '15kg', NULL, '2~4시간', NULL, NULL, NOW(), NOW());
+(1, 6, '1X Technologies NEO', '1X Technologies', '가정용 휴머노이드 167cm 30kg. Redwood AI. 프리오더 2026.', '1X NEO. 가정용 휴머노이드. $20,000 또는 월 $499 리스. https://www.1x.tech/neo', '<p>1X NEO. <a href="https://www.1x.tech/neo" target="_blank" rel="noopener">공식</a>. $20,000 / 월 $499 리스.</p>', 20000.00, 'USD', 0, '30kg', '167cm', NULL, NULL, NULL, NOW(), NOW()),
+(2, 6, 'Unitree G1', 'Unitree', '127cm 35kg 휴머노이드. G1 Basic $19,995~$21,600, EDU $43,500~.', 'Unitree G1. 휴머노이드. 기본 $19,995~$21,600, EDU $43,500~. https://www.unitree.com/', '<p>Unitree G1. <a href="https://www.unitree.com/g1" target="_blank" rel="noopener">공식</a>. Basic $19,995~, EDU $43,500~.</p>', 19995.00, 'USD', 3, '35kg', '127cm', NULL, NULL, NULL, NOW(), NOW()),
+(3, 6, 'Unitree H1', 'Unitree', '180cm 대형 휴머노이드. 기준가 $90,000.', 'Unitree H1. 휴머노이드 180cm. $90,000. https://www.unitree.com/', '<p>Unitree H1. <a href="https://www.unitree.com/" target="_blank" rel="noopener">공식</a>. $90,000.</p>', 90000.00, 'USD', 2, NULL, '180cm', NULL, NULL, NULL, NOW(), NOW()),
+(4, 6, 'Figure 03', 'Figure', 'Figure AI 휴머노이드. 소비자 $20,000, 상용 $130,000.', 'Figure 03. 휴머노이드. 소비자 $20,000 / 상용 $130,000. https://www.figure.ai/', '<p>Figure 03. <a href="https://www.figure.ai/" target="_blank" rel="noopener">공식</a> / <a href="https://www.figure.ai/figure" target="_blank" rel="noopener">제품</a>. $20,000~$130,000.</p>', 20000.00, 'USD', 0, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+(5, 6, 'Agility Robotics DIGIT', 'Agility Robotics', '물류 휴머노이드 175cm 64kg. 16kg 적재 8시간. $250,000.', 'Agility DIGIT. 휴머노이드 물류. $250,000. https://www.agilityrobotics.com/', '<p>Agility DIGIT. <a href="https://www.agilityrobotics.com/" target="_blank" rel="noopener">공식</a>. $250,000~.</p>', 250000.00, 'USD', 2, '64kg', '175cm', '8시간', NULL, NULL, NOW(), NOW()),
+(6, 6, 'Boston Dynamics Atlas', 'Boston Dynamics', '전기 휴머노이드 제조/물류. 가격 문의.', 'Boston Dynamics Atlas. 휴머노이드. 가격 미공개(문의). https://bostondynamics.com/products/atlas/', '<p>Boston Dynamics Atlas. <a href="https://bostondynamics.com/products/atlas/" target="_blank" rel="noopener">제품</a>. 가격 문의.</p>', 0.00, 'USD', 0, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+(7, 7, 'Boston Dynamics Spot', 'Boston Dynamics', '4족 로봇. Explorer Kit 약 $74,500. 옵션 시 $100K~$195K.', 'Boston Dynamics Spot. 4족. 기준 $74,500. https://bostondynamics.com/products/spot/', '<p>Boston Dynamics Spot. <a href="https://bostondynamics.com/products/spot/" target="_blank" rel="noopener">제품</a>. 약 $74,500.</p>', 74500.00, 'USD', 3, NULL, NULL, '90분/배터리', '2팩 포함', NULL, NOW(), NOW()),
+(8, 7, 'Boston Dynamics Stretch', 'Boston Dynamics', '창고 언로딩. 50lb 600~800케이스/시간. 16시간. 가격 문의.', 'Boston Dynamics Stretch. 창고 언로딩. 가격 미공개(문의). https://bostondynamics.com/products/stretch/', '<p>Boston Dynamics Stretch. <a href="https://bostondynamics.com/products/stretch/" target="_blank" rel="noopener">제품</a>. 가격 문의.</p>', 0.00, 'USD', 0, NULL, NULL, '16시간', NULL, NULL, NOW(), NOW()),
+(9, 7, 'Unitree Go2 (Edu)', 'Unitree', '교육용 4족. Standard $13,999, Plus $15,900~$20,800. 15kg.', 'Unitree Go2 Edu. 4족 교육. Standard $13,999~. https://www.unitree.com/go2', '<p>Unitree Go2 (Edu). <a href="https://www.unitree.com/go2" target="_blank" rel="noopener">제품</a>. $13,999~.</p>', 13999.00, 'USD', 5, '15kg', NULL, '2~4시간', NULL, NULL, NOW(), NOW());
 
 INSERT IGNORE INTO product_color_stock (product_id, color, color_code, stock, created_at, updated_at) VALUES
 (1, '기본', NULL, 0, NOW(), NOW()),
@@ -54,9 +60,10 @@ INSERT IGNORE INTO order_items (id, order_id, product_id, quantity, price, creat
 (7, 6, 7, 1, 74500.00, NOW());
 
 INSERT IGNORE INTO mood_questions (id, question, sort_order, created_at, updated_at) VALUES
-(1, '어떤 종류의 로봇에 관심이 있으신가요?', 1, NOW(), NOW()),
-(2, '로봇을 어떤 용도로 사용할 계획인가요?', 2, NOW(), NOW()),
-(3, '조립·프로그래밍 경험 수준을 알려주세요.', 3, NOW(), NOW());
+(1, '몸이 불편한 가족을 케어할 로봇이 필요해요', 1, NOW(), NOW()),
+(2, '산업현장용 로봇이 필요해요', 2, NOW(), NOW()),
+(3, '공장에 인력대신 투입할 로봇이 필요해요', 3, NOW(), NOW()),
+(4, '가정용 청소·가사 도우미 로봇이 필요해요', 4, NOW(), NOW());
 
 INSERT IGNORE INTO tags (id, name, created_at, updated_at) VALUES
 (1, 'AI', NOW(), NOW()),
