@@ -369,9 +369,17 @@ export const AIChatSection = () => {
                                 <Link
                                   key={product.id}
                                   href={ROUTES.PRODUCT_DETAIL(String(product.id))}
-                                  className="flex shrink-0 flex-col items-center justify-between w-[229px] h-[300px] py-[6px] rounded-[16px] border border-[#eaebef] bg-white hover:opacity-90 transition-opacity overflow-hidden"
+                                  className="flex shrink-0 flex-col w-[229px] h-[300px] py-[6px] px-[14px] rounded-[16px] border border-[#eaebef] bg-white hover:opacity-90 transition-opacity"
                                 >
-                                  <div className="flex flex-1 w-full items-center justify-center bg-[#f9fafb] relative overflow-hidden">
+                                  <div className="flex items-center justify-between mb-[8px]">
+                                    <p className="font-suit font-medium text-[14px] leading-[1.4] text-[#9ca3af]">
+                                      {getCategoryDisplayName(product.category)}
+                                    </p>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                      <path d="M4.1665 9.99935L15.8332 9.99935M15.8332 9.99935L9.99984 4.16602M15.8332 9.99935L9.99984 15.8327" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </div>
+                                  <div className="relative flex-1 w-full">
                                     {product.imageUrl ? (
                                       <Image
                                         src={
@@ -382,27 +390,21 @@ export const AIChatSection = () => {
                                         alt={product.name}
                                         fill
                                         unoptimized
-                                        className="object-contain p-[12px]"
+                                        className="object-contain"
                                       />
                                     ) : (
-                                      <span className="font-cardo font-medium text-[14px] text-[#1f2937]">UNICORN</span>
+                                      <div className="w-full h-full flex items-center justify-center">
+                                        <span className="font-cardo font-medium text-[14px] text-[#1f2937]">UNICORN</span>
+                                      </div>
                                     )}
                                   </div>
-                                  <div className="flex flex-col gap-[6px] w-full px-[14px] pt-[10px] pb-[4px] shrink-0">
-                                    <p className="font-suit font-medium text-[11px] leading-[1.4] text-[#959ba9] truncate">
-                                      {getCategoryDisplayName(product.category)} · {product.companyName}
-                                    </p>
-                                    <p className="font-suit font-semibold text-[14px] leading-[1.4] text-[#1f2937] line-clamp-2">
+                                  <div className="flex flex-col items-center gap-[4px] mt-[8px]">
+                                    <p className="font-suit font-semibold text-[16px] leading-[1.4] text-[#1f2937] text-center truncate w-full">
                                       {product.name}
                                     </p>
-                                    <div className="flex items-center justify-between">
-                                      <p className="font-suit font-medium text-[13px] leading-[1.4] text-[#374151]">
-                                        {new Intl.NumberFormat("ko-KR").format(product.price)}원
-                                      </p>
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M4.1665 9.99935L15.8332 9.99935M15.8332 9.99935L9.99984 4.16602M15.8332 9.99935L9.99984 15.8327" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                      </svg>
-                                    </div>
+                                    <p className="font-suit font-medium text-[14px] leading-[1.4] text-[#9ca3af] text-center">
+                                      {new Intl.NumberFormat("ko-KR").format(product.price)}원
+                                    </p>
                                   </div>
                                 </Link>
                               ))}
