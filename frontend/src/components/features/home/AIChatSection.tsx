@@ -11,6 +11,8 @@ import {
   UploadIcon,
 } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
+import { ProductCard } from "@/components/features/products/ProductCard";
+import { getCategoryDisplayName } from "@/utils/categoryMapping";
 
 const FALLBACK_QUESTIONS = [
   "몸이 불편한 가족을 케어할 로봇이 필요해요",
@@ -22,6 +24,7 @@ interface ChatMessage {
   id: string;
   type: "user" | "ai";
   content: string;
+  recommendedProducts?: ChatProductCard[];
 }
 
 interface MoodQuestion {
@@ -36,10 +39,20 @@ interface MoodQuestionsResponse {
   };
 }
 
+interface ChatProductCard {
+  id: number;
+  name: string;
+  price: number;
+  imageUrl?: string;
+  category: string;
+  companyName: string;
+}
+
 interface ChatResponse {
   data: {
     reply: string;
     conversationId: string;
+    recommendedProducts?: ChatProductCard[];
   };
 }
 
@@ -118,6 +131,7 @@ export const AIChatSection = () => {
           id: `ai-${Date.now()}`,
           type: "ai",
           content: res.data.reply,
+          recommendedProducts: res.data.recommendedProducts,
         },
       ]);
     } catch {
@@ -345,6 +359,23 @@ export const AIChatSection = () => {
                             {msg.content}
                           </ReactMarkdown>
                         </div>
+                        {msg.recommendedProducts &&
+                          msg.recommendedProducts.length > 0 && (
+                          <div className="flex gap-[12px] overflow-x-auto w-full pb-[8px] [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:bg-[#eeeff1] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
+                            {msg.recommendedProducts.map((product) => (
+                              <ProductCard
+                                key={product.id}
+                                id={String(product.id)}
+                                name={product.name}
+                                price={product.price}
+                                imageUrl={product.imageUrl}
+                                category={getCategoryDisplayName(product.category)}
+                                companyName={product.companyName}
+                                isLiked={false}
+                              />
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

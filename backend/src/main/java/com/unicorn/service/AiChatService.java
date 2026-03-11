@@ -2,6 +2,7 @@ package com.unicorn.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.unicorn.dto.ai.ChatProductCard;
 import com.unicorn.dto.ai.ChatResponse;
 import com.unicorn.dto.ai.ProductCatalogItem;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,7 +58,9 @@ public class AiChatService {
                         "role", "system",
                         "content", "당신은 이 쇼핑몰의 상담원입니다. 아래 제품 카탈로그는 참고용입니다. 이 정보를 바탕으로 고객 질문에 답하고, 적절한 제품을 추천해 주세요.\n"
                                 + "규칙: 카탈로그의 가격·무게·높이·가동시간·배터리·속도·요약을 참고해 정확히 답하세요. 없는 정보는 지어내지 마세요.\n"
-                                + "답변에는 카탈로그 원문(id, 목록 형식)을 그대로 붙여넣지 말고, 자연스러운 상담 문장으로 답하세요. 다만 예산·가격 비교가 필요할 때는 제품명과 가격을 표나 목록 형태로 정리해 주세요. 제품 분류(카테고리)는 쇼핑몰에 이미 있으므로, 응답은 AI 상담 문장과 필요 시 가격 정리만 출력하세요.\n\n[제품 카탈로그]\n" + catalogText
+                                + "고객이 묻는 용도·카테고리(가정용/HOME, 소방/FIREFIGHTING, 산업/INDUSTRIAL, 의료/MEDICAL, 물류/LOGISTICS)와 맞는 제품만 추천하세요.\n"
+                                + "답변에는 카탈로그 원문(id, 목록 형식)을 그대로 붙여넣지 말고, 자연스러운 상담 문장으로 답하세요. 다만 예산·가격 비교가 필요할 때는 제품명과 가격을 표나 목록 형태로 정리해 주세요.\n"
+                                + "중요: 추천하는 제품이 있으면 응답 마지막에 반드시 다음 한 줄을 붙여주세요. 카탈로그에 있는 제품 id만 사용하고 쉼표로 구분. 예: [PRODUCT_IDS:1,2,3]\n\n[제품 카탈로그]\n" + catalogText
                 ));
             }
             messages.add(Map.of("role", "user", "content", message));
@@ -80,9 +85,14 @@ public class AiChatService {
                 return fallbackResponse(message, convId);
             }
             String content = choices.get(0).path("message").path("content").asText("");
+            ParsedReply parsed = parseReplyAndExtractProductIds(content);
+            List<ChatProductCard> recommendedProducts = parsed.productIds.isEmpty()
+                    ? List.of()
+                    : productService.getProductsForChat(parsed.productIds);
             return ChatResponse.builder()
-                    .reply(content.isBlank() ? "응답이 비어 있습니다." : content)
+                    .reply(parsed.cleanReply.isBlank() ? "응답이 비어 있습니다." : parsed.cleanReply)
                     .conversationId(convId)
+                    .recommendedProducts(recommendedProducts)
                     .build();
         } catch (Exception e) {
             log.warn("OpenAI chat error", e);
@@ -128,6 +138,34 @@ public class AiChatService {
                 .reply("AI 응답을 가져오지 못했습니다. (요청: " + message + ")")
                 .conversationId(convId)
                 .build();
+    }
+
+    private static final Pattern PRODUCT_IDS_PATTERN = Pattern.compile("\\[PRODUCT_IDS\\s*:\\s*([0-9,\\s]+)\\]");
+
+    private static ParsedReply parseReplyAndExtractProductIds(String reply) {
+        if (reply == null || reply.isBlank()) {
+            return new ParsedReply("", List.of());
+        }
+        Matcher m = PRODUCT_IDS_PATTERN.matcher(reply);
+        List<Long> ids = new ArrayList<>();
+        String cleanReply = reply;
+        if (m.find()) {
+            String idsStr = m.group(1);
+            for (String part : idsStr.split(",")) {
+                String trimmed = part.trim();
+                if (!trimmed.isBlank()) {
+                    try {
+                        ids.add(Long.parseLong(trimmed));
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+            cleanReply = reply.replaceAll("\\s*\\[PRODUCT_IDS\\s*:[^\\]]+\\]\\s*$", "").trim();
+        }
+        return new ParsedReply(cleanReply, ids);
+    }
+
+    private record ParsedReply(String cleanReply, List<Long> productIds) {
     }
 
     /**

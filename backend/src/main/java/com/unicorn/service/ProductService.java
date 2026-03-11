@@ -1,5 +1,6 @@
 package com.unicorn.service;
 
+import com.unicorn.dto.ai.ChatProductCard;
 import com.unicorn.dto.ai.ProductCatalogItem;
 import com.unicorn.dto.product.ProductDetailResponse;
 import com.unicorn.dto.product.ProductListResponse;
@@ -101,6 +102,32 @@ public class ProductService {
                 .battery(p.getBattery())
                 .speed(p.getSpeed())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatProductCard> getProductsForChat(java.util.List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        var productsById = productRepository.findAllById(ids).stream()
+                .collect(java.util.stream.Collectors.toMap(Product::getId, p -> p));
+        return ids.stream()
+                .filter(productsById::containsKey)
+                .map(productsById::get)
+                .map(p -> {
+                    var cat = p.getCategory();
+                    var parent = cat != null ? cat.getParent() : null;
+                    String categoryName = parent != null ? parent.getName() : (cat != null ? cat.getName() : "");
+                    return ChatProductCard.builder()
+                            .id(p.getId())
+                            .name(p.getName())
+                            .price(priceInKrw(p))
+                            .imageUrl(p.getImageUrl())
+                            .category(categoryName != null ? categoryName : "")
+                            .companyName(p.getCompany() != null ? p.getCompany() : "")
+                            .build();
+                })
+                .toList();
     }
 
     @Transactional(readOnly = true)
