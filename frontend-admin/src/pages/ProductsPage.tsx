@@ -50,6 +50,7 @@ interface ColorStockItem {
 
 const defaultForm = {
   name: '',
+  company: '',
   shortDescription: '',
   aiSummary: '',
   content: '',
@@ -130,6 +131,7 @@ export default function ProductsPage() {
     try {
       const res = await adminApiFetch<{
         data: ProductItem & {
+          company?: string;
           shortDescription?: string;
           aiSummary?: string;
           content?: string;
@@ -143,6 +145,7 @@ export default function ProductsPage() {
       if (d) {
         setForm({
           name: d.name ?? '',
+          company: d.company ?? '',
           shortDescription: d.shortDescription ?? '',
           aiSummary: d.aiSummary ?? '',
           content: d.content ?? '',
@@ -171,6 +174,7 @@ export default function ProductsPage() {
     try {
       const body = {
         name: form.name.trim(),
+        company: form.company.trim() || undefined,
         shortDescription: form.shortDescription.trim() || undefined,
         aiSummary: form.aiSummary.trim() || undefined,
         content: form.content.trim() || undefined,
@@ -397,6 +401,16 @@ export default function ProductsPage() {
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
               required
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">회사명</label>
+            <input
+              type="text"
+              value={form.company}
+              onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              placeholder="예: Boston Dynamics"
             />
           </div>
           <div>
