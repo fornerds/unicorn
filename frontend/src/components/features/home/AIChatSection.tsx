@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
@@ -11,8 +13,9 @@ import {
   UploadIcon,
 } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api";
-import { ProductCard } from "@/components/features/products/ProductCard";
+import { ROUTES } from "@/utils/constants";
 import { getCategoryDisplayName } from "@/utils/categoryMapping";
+import { withBasePath } from "@/utils/assets";
 
 const FALLBACK_QUESTIONS = [
   "몸이 불편한 가족을 케어할 로봇이 필요해요",
@@ -361,21 +364,50 @@ export const AIChatSection = () => {
                         </div>
                         {msg.recommendedProducts &&
                           msg.recommendedProducts.length > 0 && (
-                          <div className="flex gap-[12px] overflow-x-auto w-full pb-[8px] [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:bg-[#eeeff1] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
-                            {msg.recommendedProducts.map((product) => (
-                              <ProductCard
-                                key={product.id}
-                                id={String(product.id)}
-                                name={product.name}
-                                price={product.price}
-                                imageUrl={product.imageUrl}
-                                category={getCategoryDisplayName(product.category)}
-                                companyName={product.companyName}
-                                isLiked={false}
-                              />
-                            ))}
-                          </div>
-                        )}
+                            <div className="flex w-full gap-[12px] overflow-x-auto pb-[8px] [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#eeeff1] [&::-webkit-scrollbar-track]:bg-transparent">
+                              {msg.recommendedProducts.map((product) => (
+                                <Link
+                                  key={product.id}
+                                  href={ROUTES.PRODUCT_DETAIL(String(product.id))}
+                                  className="flex shrink-0 flex-col items-center justify-between w-[229px] h-[300px] py-[6px] rounded-[16px] border border-[#eaebef] bg-white hover:opacity-90 transition-opacity overflow-hidden"
+                                >
+                                  <div className="flex flex-1 w-full items-center justify-center bg-[#f9fafb] relative overflow-hidden">
+                                    {product.imageUrl ? (
+                                      <Image
+                                        src={
+                                          product.imageUrl.startsWith("http")
+                                            ? product.imageUrl
+                                            : withBasePath(product.imageUrl)
+                                        }
+                                        alt={product.name}
+                                        fill
+                                        unoptimized
+                                        className="object-contain p-[12px]"
+                                      />
+                                    ) : (
+                                      <span className="font-cardo font-medium text-[14px] text-[#1f2937]">UNICORN</span>
+                                    )}
+                                  </div>
+                                  <div className="flex flex-col gap-[6px] w-full px-[14px] pt-[10px] pb-[4px] shrink-0">
+                                    <p className="font-suit font-medium text-[11px] leading-[1.4] text-[#959ba9] truncate">
+                                      {getCategoryDisplayName(product.category)} · {product.companyName}
+                                    </p>
+                                    <p className="font-suit font-semibold text-[14px] leading-[1.4] text-[#1f2937] line-clamp-2">
+                                      {product.name}
+                                    </p>
+                                    <div className="flex items-center justify-between">
+                                      <p className="font-suit font-medium text-[13px] leading-[1.4] text-[#374151]">
+                                        {new Intl.NumberFormat("ko-KR").format(product.price)}원
+                                      </p>
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M4.1665 9.99935L15.8332 9.99935M15.8332 9.99935L9.99984 4.16602M15.8332 9.99935L9.99984 15.8327" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                      </svg>
+                                    </div>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          )}
                       </div>
                     )}
                   </div>
