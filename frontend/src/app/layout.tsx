@@ -34,15 +34,36 @@ const elice = localFont({
   display: 'swap',
 });
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://unicorn.co.kr';
+const OG_IMAGE = `${BASE_URL}/og/og-default.png`;
+
 export const metadata: Metadata = {
-  title: 'Unicorn',
-  description: 'Unicorn E-commerce Platform',
-  icons: {
-    icon: '/favicons/favicon.ico',
-    apple: '/favicons/apple-touch-icon.png',
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: 'UNICORN',
+    template: '%s | UNICORN',
   },
-  other: {
-    'font-suit': 'SUIT',
+  description: '유니콘의 차세대 모빌리티 솔루션을 만나보세요.',
+  keywords: ['유니콘', 'UNICORN', '모빌리티', '전동킥보드', '전동휠체어'],
+  openGraph: {
+    type: 'website',
+    siteName: 'UNICORN',
+    title: 'UNICORN',
+    description: '유니콘의 차세대 모빌리티 솔루션을 만나보세요.',
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'UNICORN' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'UNICORN',
+    description: '유니콘의 차세대 모빌리티 솔루션을 만나보세요.',
+    images: [OG_IMAGE],
+  },
+  icons: {
+    icon: [
+      { url: '/favicons/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicons/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+    ],
+    apple: { url: '/favicons/apple-touch-icon.png', sizes: '180x180' },
   },
 };
 
