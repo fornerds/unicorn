@@ -6,21 +6,37 @@ SET NAMES utf8mb4;
 INSERT IGNORE INTO users (id, email, password_hash, name, status, role, created_at, updated_at) VALUES
 (1, 'admin@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', '관리자', 'active', 'ADMIN', NOW(), NOW());
 
+-- 상위 카테고리 5개: 프론트엔드 디자인(HOME, FIREFIGHTING, INDUSTRIAL, MEDICAL, LOGISTICS)과 매핑
 INSERT IGNORE INTO categories (id, parent_id, name, slug, sort_order, created_at, updated_at) VALUES
-(1, NULL, '휴머노이드 로봇', 'humanoid', 1, NOW(), NOW()),
-(2, NULL, '논휴머노이드 로봇', 'non-humanoid', 2, NOW(), NOW());
+(1, NULL, 'HOME', 'home', 1, NOW(), NOW()),
+(2, NULL, 'FIREFIGHTING', 'firefighting', 2, NOW(), NOW()),
+(3, NULL, 'INDUSTRIAL', 'industrial', 3, NOW(), NOW()),
+(4, NULL, 'MEDICAL', 'medical', 4, NOW(), NOW()),
+(5, NULL, 'LOGISTICS', 'logistics', 5, NOW(), NOW()),
+(6, 1, '청소/가사 로봇', 'home-cleaning', 1, NOW(), NOW()),
+(7, 1, '요리/생활 보조 로봇', 'home-living', 2, NOW(), NOW()),
+(8, 2, '화재 진압/구조', 'firefighting-rescue', 1, NOW(), NOW()),
+(9, 2, '방화·탐지 설비', 'firefighting-detection', 2, NOW(), NOW()),
+(10, 3, '휴머노이드 로봇', 'humanoid', 1, NOW(), NOW()),
+(11, 3, '논휴머노이드 로봇', 'non-humanoid', 2, NOW(), NOW()),
+(12, 3, '산업/위험지역', 'industrial-hazard', 3, NOW(), NOW()),
+(13, 3, '원격 탐사/작업', 'industrial-remote', 4, NOW(), NOW()),
+(14, 4, '의료/환자 케어', 'medical-care', 1, NOW(), NOW()),
+(15, 4, '병원 업무/배송 로봇', 'medical-delivery', 2, NOW(), NOW()),
+(16, 5, '물류/포장', 'logistics-packaging', 1, NOW(), NOW()),
+(17, 5, '피킹/분류 로봇', 'logistics-picking', 2, NOW(), NOW());
 
 -- 가격·통화: DB에는 USD 저장. API 응답 시 환율 적용해 원화로 전달.
-INSERT IGNORE INTO products (id, category_id, name, short_description, ai_summary, content, price, currency, stock, weight, total_height, operating_time, battery, speed, created_at, updated_at) VALUES
-(1, 1, '1X Technologies NEO', '가정용 휴머노이드 167cm 30kg. $20,000 또는 월 $499 리스.', '1X NEO. 가정용 휴머노이드. $20,000 또는 월 $499. https://www.1x.tech/neo', '<p><a href="https://www.1x.tech/neo" target="_blank" rel="noopener">공식</a>. $20,000 / 월 $499 리스.</p>', 20000.00, 'USD', 0, '30kg', '167cm', NULL, NULL, NULL, NOW(), NOW()),
-(2, 1, 'Unitree G1', '127cm 35kg 휴머노이드. Basic $19,995~$21,600, EDU $43,500~.', 'Unitree G1. 휴머노이드. $19,995~$21,600. https://www.unitree.com/', '<p><a href="https://www.unitree.com/g1" target="_blank" rel="noopener">공식</a>. $19,995~.</p>', 19995.00, 'USD', 3, '35kg', '127cm', NULL, NULL, NULL, NOW(), NOW()),
-(3, 1, 'Unitree H1', '180cm 대형 휴머노이드. $90,000.', 'Unitree H1. 휴머노이드. $90,000. https://www.unitree.com/', '<p><a href="https://www.unitree.com/" target="_blank" rel="noopener">공식</a>. $90,000.</p>', 90000.00, 'USD', 2, NULL, '180cm', NULL, NULL, NULL, NOW(), NOW()),
-(4, 1, 'Figure 03', 'Figure AI 휴머노이드. 소비자 $20,000, 상용 $130,000.', 'Figure 03. 휴머노이드. $20,000~$130,000. https://www.figure.ai/', '<p><a href="https://www.figure.ai/" target="_blank" rel="noopener">공식</a> / <a href="https://www.figure.ai/figure" target="_blank" rel="noopener">제품</a>.</p>', 20000.00, 'USD', 0, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
-(5, 1, 'Agility Robotics DIGIT', '물류 휴머노이드 175cm 64kg. $250,000.', 'Agility DIGIT. 휴머노이드 물류. $250,000. https://www.agilityrobotics.com/', '<p><a href="https://www.agilityrobotics.com/" target="_blank" rel="noopener">공식</a>. $250,000~.</p>', 250000.00, 'USD', 2, '64kg', '175cm', '8시간', NULL, NULL, NOW(), NOW()),
-(6, 1, 'Boston Dynamics Atlas', '전기 휴머노이드 제조/물류. 가격 문의.', 'Boston Dynamics Atlas. 휴머노이드. 가격 문의. https://bostondynamics.com/products/atlas/', '<p><a href="https://bostondynamics.com/products/atlas/" target="_blank" rel="noopener">제품</a>. 가격 문의.</p>', 0.00, 'USD', 0, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
-(7, 2, 'Boston Dynamics Spot', '4족 로봇. Explorer Kit 약 $74,500.', 'Boston Dynamics Spot. 4족. $74,500. https://bostondynamics.com/products/spot/', '<p><a href="https://bostondynamics.com/products/spot/" target="_blank" rel="noopener">제품</a>. 약 $74,500.</p>', 74500.00, 'USD', 3, NULL, NULL, '90분/배터리', '2팩 포함', NULL, NOW(), NOW()),
-(8, 2, 'Boston Dynamics Stretch', '창고 언로딩. 50lb 600~800케이스/시간. 가격 문의.', 'Boston Dynamics Stretch. 창고 언로딩. 가격 문의. https://bostondynamics.com/products/stretch/', '<p><a href="https://bostondynamics.com/products/stretch/" target="_blank" rel="noopener">제품</a>. 가격 문의.</p>', 0.00, 'USD', 0, NULL, NULL, '16시간', NULL, NULL, NOW(), NOW()),
-(9, 2, 'Unitree Go2 (Edu)', '교육용 4족. Standard $13,999~. 15kg.', 'Unitree Go2 Edu. 4족 교육. $13,999~. https://www.unitree.com/go2', '<p><a href="https://www.unitree.com/go2" target="_blank" rel="noopener">제품</a>. $13,999~.</p>', 13999.00, 'USD', 5, '15kg', NULL, '2~4시간', NULL, NULL, NOW(), NOW());
+INSERT IGNORE INTO products (id, category_id, name, company, short_description, ai_summary, content, price, currency, stock, weight, total_height, operating_time, battery, speed, created_at, updated_at) VALUES
+(1, 10, '1X Technologies NEO', '1X Technologies', '가정용 휴머노이드 167cm 30kg. $20,000 또는 월 $499 리스.', '1X NEO. 가정용 휴머노이드. $20,000 또는 월 $499. https://www.1x.tech/neo', '<p><a href="https://www.1x.tech/neo" target="_blank" rel="noopener">공식</a>. $20,000 / 월 $499 리스.</p>', 20000.00, 'USD', 0, '30kg', '167cm', NULL, NULL, NULL, NOW(), NOW()),
+(2, 10, 'Unitree G1', 'Unitree', '127cm 35kg 휴머노이드. Basic $19,995~$21,600, EDU $43,500~.', 'Unitree G1. 휴머노이드. $19,995~$21,600. https://www.unitree.com/', '<p><a href="https://www.unitree.com/g1" target="_blank" rel="noopener">공식</a>. $19,995~.</p>', 19995.00, 'USD', 3, '35kg', '127cm', NULL, NULL, NULL, NOW(), NOW()),
+(3, 10, 'Unitree H1', 'Unitree', '180cm 대형 휴머노이드. $90,000.', 'Unitree H1. 휴머노이드. $90,000. https://www.unitree.com/', '<p><a href="https://www.unitree.com/" target="_blank" rel="noopener">공식</a>. $90,000.</p>', 90000.00, 'USD', 2, NULL, '180cm', NULL, NULL, NULL, NOW(), NOW()),
+(4, 10, 'Figure 03', 'Figure', 'Figure AI 휴머노이드. 소비자 $20,000, 상용 $130,000.', 'Figure 03. 휴머노이드. $20,000~$130,000. https://www.figure.ai/', '<p><a href="https://www.figure.ai/" target="_blank" rel="noopener">공식</a> / <a href="https://www.figure.ai/figure" target="_blank" rel="noopener">제품</a>.</p>', 20000.00, 'USD', 0, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+(5, 10, 'Agility Robotics DIGIT', 'Agility Robotics', '물류 휴머노이드 175cm 64kg. $250,000.', 'Agility DIGIT. 휴머노이드 물류. $250,000. https://www.agilityrobotics.com/', '<p><a href="https://www.agilityrobotics.com/" target="_blank" rel="noopener">공식</a>. $250,000~.</p>', 250000.00, 'USD', 2, '64kg', '175cm', '8시간', NULL, NULL, NOW(), NOW()),
+(6, 10, 'Boston Dynamics Atlas', 'Boston Dynamics', '전기 휴머노이드 제조/물류. 가격 문의.', 'Boston Dynamics Atlas. 휴머노이드. 가격 문의. https://bostondynamics.com/products/atlas/', '<p><a href="https://bostondynamics.com/products/atlas/" target="_blank" rel="noopener">제품</a>. 가격 문의.</p>', 0.00, 'USD', 0, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+(7, 11, 'Boston Dynamics Spot', 'Boston Dynamics', '4족 로봇. Explorer Kit 약 $74,500.', 'Boston Dynamics Spot. 4족. $74,500. https://bostondynamics.com/products/spot/', '<p><a href="https://bostondynamics.com/products/spot/" target="_blank" rel="noopener">제품</a>. 약 $74,500.</p>', 74500.00, 'USD', 3, NULL, NULL, '90분/배터리', '2팩 포함', NULL, NOW(), NOW()),
+(8, 11, 'Boston Dynamics Stretch', 'Boston Dynamics', '창고 언로딩. 50lb 600~800케이스/시간. 가격 문의.', 'Boston Dynamics Stretch. 창고 언로딩. 가격 문의. https://bostondynamics.com/products/stretch/', '<p><a href="https://bostondynamics.com/products/stretch/" target="_blank" rel="noopener">제품</a>. 가격 문의.</p>', 0.00, 'USD', 0, NULL, NULL, '16시간', NULL, NULL, NOW(), NOW()),
+(9, 11, 'Unitree Go2 (Edu)', 'Unitree', '교육용 4족. Standard $13,999~. 15kg.', 'Unitree Go2 Edu. 4족 교육. $13,999~. https://www.unitree.com/go2', '<p><a href="https://www.unitree.com/go2" target="_blank" rel="noopener">제품</a>. $13,999~.</p>', 13999.00, 'USD', 5, '15kg', NULL, '2~4시간', NULL, NULL, NOW(), NOW());
 
 INSERT IGNORE INTO product_color_stock (product_id, color, color_code, stock, created_at, updated_at) VALUES
 (1, '기본', NULL, 0, NOW(), NOW()),
@@ -56,36 +72,18 @@ INSERT IGNORE INTO news_tags (news_id, tag_id, created_at) VALUES
 (4, 1, NOW()),
 (4, 3, NOW());
 
--- 카테고리 추가 (id 3~17, 기존 1~2와 중복 없음)
-INSERT IGNORE INTO categories (id, parent_id, name, slug, sort_order, created_at, updated_at) VALUES
-(3, NULL, '가정용 로봇/가사 도우미', 'home', 3, NOW(), NOW()),
-(4, NULL, '화재진압/인명구조용 로봇', 'firefighting', 4, NOW(), NOW()),
-(5, NULL, '단순 업무/환자케어 로봇', 'medical', 5, NOW(), NOW()),
-(6, NULL, '위험 현장', 'industrial', 6, NOW(), NOW()),
-(7, NULL, '분류/포장 로봇', 'logistics', 7, NOW(), NOW()),
-(8, 3, '청소/가사 로봇', 'home-cleaning', 1, NOW(), NOW()),
-(9, 3, '요리/생활 보조 로봇', 'home-living', 2, NOW(), NOW()),
-(10, 4, '화재 진압/구조', 'firefighting-rescue', 1, NOW(), NOW()),
-(11, 4, '방화·탐지 설비', 'firefighting-detection', 2, NOW(), NOW()),
-(12, 5, '의료/환자 케어', 'medical-care', 1, NOW(), NOW()),
-(13, 5, '병원 업무/배송 로봇', 'medical-delivery', 2, NOW(), NOW()),
-(14, 6, '산업/위험지역', 'industrial-hazard', 1, NOW(), NOW()),
-(15, 6, '원격 탐사/작업', 'industrial-remote', 2, NOW(), NOW()),
-(16, 7, '물류/포장', 'logistics-packaging', 1, NOW(), NOW()),
-(17, 7, '피킹/분류 로봇', 'logistics-picking', 2, NOW(), NOW());
-
--- 제품 추가 (id 11~20, 기존 1~9와 중복 없음). 스키마에 맞게 description 제거, currency 추가
-INSERT IGNORE INTO products (id, category_id, name, short_description, ai_summary, content, price, currency, stock, weight, total_height, operating_time, battery, speed, created_at, updated_at) VALUES
-(11, 8, '가정용 청소 로봇 A', '스마트 바닥 청소', '가사 도우미용 스마트 청소 로봇.', '<p>가정용 청소 로봇 A의 상세 설명입니다.</p>', 389000.00, 'KRW', 30, '3.5kg', '10cm', '120분', '5200mAh', '0.5m/s', NOW(), NOW()),
-(12, 8, '가정용 로봇 청소기 B', '알레르기 케어 청소', '일상 가사 지원 로봇.', '<p>가정용 로봇 청소기 B 상세.</p>', 459000.00, 'KRW', 25, '4.0kg', '9.5cm', '150분', '6400mAh', '0.6m/s', NOW(), NOW()),
-(13, 10, '화재 진압 로봇', '고온 환경 화재 진압', '인명구조용 방화 로봇.', '<p>화재 진압 로봇입니다.</p>', 12500000.00, 'KRW', 5, '120kg', '1.2m', '4시간', '대용량 배터리팩', '1.5m/s', NOW(), NOW()),
-(14, 10, '인명구조 탐색 로봇', '열화상 감지 탐색', '화재현장 탐색·구조용 로봇.', '<p>구조 탐색용 로봇입니다.</p>', 9800000.00, 'KRW', 8, '45kg', '0.8m', '6시간', '리튬이온 100Ah', '2.0m/s', NOW(), NOW()),
-(15, 12, '병원 업무 보조 로봇', '병원 물류 배송', '단순 업무 자동화 로봇.', '<p>병원 내 배송 로봇입니다.</p>', 3200000.00, 'KRW', 12, '35kg', '1.1m', '8시간', '리튬이온 60Ah', '1.2m/s', NOW(), NOW()),
-(16, 12, '환자 케어 로봇', '실시간 환자 모니터링', '환자 모니터링·케어 지원 로봇.', '<p>환자 케어 로봇입니다.</p>', 4500000.00, 'KRW', 10, '25kg', '1.4m', '12시간', '리튬이온 80Ah', '1.0m/s', NOW(), NOW()),
-(17, 14, '위험 현장 작업 로봇', '방사능/가스 현장 투입', '위험 구역 작업용 로봇.', '<p>위험 구역 특수 로봇입니다.</p>', 8500000.00, 'KRW', 6, '80kg', '1.0m', '5시간', '내환경 배터리', '1.0m/s', NOW(), NOW()),
-(18, 14, '산업용 위험지역 로봇', '원격 조작 탐사', '고위험 현장 투입용.', '<p>산업용 탐사 로봇입니다.</p>', 11200000.00, 'KRW', 4, '150kg', '1.5m', '4시간', '산업용 배터리팩', '1.5m/s', NOW(), NOW()),
-(19, 16, '물류 분류 로봇', '자동 물류 피킹', '물류 분류 자동화 로봇.', '<p>물류 센터 분류 로봇입니다.</p>', 2800000.00, 'KRW', 15, '15kg', '0.5m', '10시간', '리튬이온 40Ah', '2.5m/s', NOW(), NOW()),
-(20, 16, '자동 포장 로봇', '포장 라벨링 일체형', '분류/포장 로봇.', '<p>포장 자동화 로봇입니다.</p>', 3500000.00, 'KRW', 12, '60kg', '1.8m', '상시(유선)', 'AC전원', 'N/A', NOW(), NOW());
+-- 제품 추가 (id 11~20). 카테고리: 6=청소, 8=화재, 12=산업, 14=의료, 15=병원, 16=물류
+INSERT IGNORE INTO products (id, category_id, name, company, short_description, ai_summary, content, price, currency, stock, weight, total_height, operating_time, battery, speed, created_at, updated_at) VALUES
+(11, 6, '가정용 청소 로봇 A', '유니콘', '스마트 바닥 청소', '가사 도우미용 스마트 청소 로봇.', '<p>가정용 청소 로봇 A의 상세 설명입니다.</p>', 389000.00, 'KRW', 30, '3.5kg', '10cm', '120분', '5200mAh', '0.5m/s', NOW(), NOW()),
+(12, 6, '가정용 로봇 청소기 B', '유니콘', '알레르기 케어 청소', '일상 가사 지원 로봇.', '<p>가정용 로봇 청소기 B 상세.</p>', 459000.00, 'KRW', 25, '4.0kg', '9.5cm', '150분', '6400mAh', '0.6m/s', NOW(), NOW()),
+(13, 8, '화재 진압 로봇', '유니콘', '고온 환경 화재 진압', '인명구조용 방화 로봇.', '<p>화재 진압 로봇입니다.</p>', 12500000.00, 'KRW', 5, '120kg', '1.2m', '4시간', '대용량 배터리팩', '1.5m/s', NOW(), NOW()),
+(14, 8, '인명구조 탐색 로봇', '유니콘', '열화상 감지 탐색', '화재현장 탐색·구조용 로봇.', '<p>구조 탐색용 로봇입니다.</p>', 9800000.00, 'KRW', 8, '45kg', '0.8m', '6시간', '리튬이온 100Ah', '2.0m/s', NOW(), NOW()),
+(15, 14, '병원 업무 보조 로봇', '유니콘', '병원 물류 배송', '단순 업무 자동화 로봇.', '<p>병원 내 배송 로봇입니다.</p>', 3200000.00, 'KRW', 12, '35kg', '1.1m', '8시간', '리튬이온 60Ah', '1.2m/s', NOW(), NOW()),
+(16, 14, '환자 케어 로봇', '유니콘', '실시간 환자 모니터링', '환자 모니터링·케어 지원 로봇.', '<p>환자 케어 로봇입니다.</p>', 4500000.00, 'KRW', 10, '25kg', '1.4m', '12시간', '리튬이온 80Ah', '1.0m/s', NOW(), NOW()),
+(17, 12, '위험 현장 작업 로봇', '유니콘', '방사능/가스 현장 투입', '위험 구역 작업용 로봇.', '<p>위험 구역 특수 로봇입니다.</p>', 8500000.00, 'KRW', 6, '80kg', '1.0m', '5시간', '내환경 배터리', '1.0m/s', NOW(), NOW()),
+(18, 12, '산업용 위험지역 로봇', '유니콘', '원격 조작 탐사', '고위험 현장 투입용.', '<p>산업용 탐사 로봇입니다.</p>', 11200000.00, 'KRW', 4, '150kg', '1.5m', '4시간', '산업용 배터리팩', '1.5m/s', NOW(), NOW()),
+(19, 16, '물류 분류 로봇', '유니콘', '자동 물류 피킹', '물류 분류 자동화 로봇.', '<p>물류 센터 분류 로봇입니다.</p>', 2800000.00, 'KRW', 15, '15kg', '0.5m', '10시간', '리튬이온 40Ah', '2.5m/s', NOW(), NOW()),
+(20, 16, '자동 포장 로봇', '유니콘', '포장 라벨링 일체형', '분류/포장 로봇.', '<p>포장 자동화 로봇입니다.</p>', 3500000.00, 'KRW', 12, '60kg', '1.8m', '상시(유선)', 'AC전원', 'N/A', NOW(), NOW());
 
 -- 제품 11~20 색상·재고
 INSERT IGNORE INTO product_color_stock (product_id, color, color_code, stock, created_at, updated_at) VALUES
