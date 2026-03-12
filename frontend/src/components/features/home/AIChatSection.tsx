@@ -369,10 +369,10 @@ export const AIChatSection = () => {
                                 <Link
                                   key={product.id}
                                   href={ROUTES.PRODUCT_DETAIL(String(product.id))}
-                                  className="flex shrink-0 flex-col w-[229px] h-[300px] py-[6px] px-[14px] rounded-[16px] border border-[#eaebef] bg-white hover:opacity-90 transition-opacity"
+                                  className="flex shrink-0 flex-col items-center justify-between w-[229px] h-[300px] py-[6px] rounded-[9.863px] border-[0.822px] border-[#EEEFF1] bg-[#F9FAFB] hover:opacity-90 transition-opacity"
                                 >
-                                  <div className="flex items-center justify-between mb-[8px]">
-                                    <p className="font-suit font-medium text-[14px] leading-[1.4] text-[#9ca3af]">
+                                  <div className="flex h-[36px] items-center justify-end gap-[10px] shrink-0 self-stretch px-[18px] py-[6px]">
+                                    <p className="font-suit font-medium text-[16px] leading-[150%] text-[#959BA9] flex-1">
                                       {getCategoryDisplayName(product.category)}
                                     </p>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -398,11 +398,11 @@ export const AIChatSection = () => {
                                       </div>
                                     )}
                                   </div>
-                                  <div className="flex flex-col items-center gap-[4px] mt-[8px]">
-                                    <p className="font-suit font-semibold text-[16px] leading-[1.4] text-[#1f2937] text-center truncate w-full">
+                                  <div className="flex flex-col items-start gap-[6px] self-stretch px-[20px] py-[6px]">
+                                    <p className="overflow-hidden font-suit font-medium text-[16px] leading-[150%] text-black text-center text-ellipsis w-full whitespace-nowrap">
                                       {product.name}
                                     </p>
-                                    <p className="font-suit font-medium text-[14px] leading-[1.4] text-[#9ca3af] text-center">
+                                    <p className="font-suit font-medium text-[14px] leading-[150%] text-[#6B7280] text-center w-full">
                                       {new Intl.NumberFormat("ko-KR").format(product.price)}원
                                     </p>
                                   </div>
